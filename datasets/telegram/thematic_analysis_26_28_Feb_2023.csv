@@ -1,0 +1,885 @@
+MESSAGE_ID,THEMES,TOPICS
+20,Request for assistance,"['Where to send help', 'Address']"
+34,Logistics and Communication,"['Leaving Wrocław', 'Making plans', 'Deliveries and contacts at the border']"
+46,Desire for urgent help with cross-border travel,"['Travel to Poland', 'Oncology nurse', 'Przemysl/Krakow', 'Crossing the border', 'Need for a car']"
+48,Generosity and admiration for the unexpected help received,"['help', 'respect', 'admiration']"
+49,Hospitality and accommodation,Polish woman offering accommodation near Dresden for a girl with a child
+53,Transportation restrictions during Covid-19,"['Traveling from Odessa to Poland', 'Transportation limitation for tomorrow']"
+101,Worries about finding a good person,"Child on power of attorney, encountering a good person"
+124,Travel,Directions
+126,Accessible services for foreigners,"['Free consultations', 'Poland', 'Foreigners', 'Native language']"
+127,Humanitarian assistance,"['Polish Railways', 'Ukrainians', 'free travel']"
+167,Travel and Difficulties,"['Getting to Poland', 'Chaos in Lviv']"
+168,The theme of the text is the difference between reality and appearance.,Photos
+172,Financial Assistance,"['Lack of Money', 'Request for Financial Help']"
+175,Humanitarian Assistance and Community Support,"['Offering a transfer from Breslau/Poland to the North of Germany', 'Collecting money for food and fuel', 'Providing accommodations in Flensburg/Germany', 'Assistance for families with children', 'Safety and well-being']"
+176,Offering transportation and accommodation assistance,"['Transfer to Breslau/Poland and northern Germany', 'Collection of money for food and fuel', 'Availability of a child seat', 'Offer of assistance in Flensburg/Germany']"
+187,Negation,[]
+188,Age demographics,18-60
+191,Inequality,"['Race', 'Discrimination']"
+195,Family and responsibilities,"['White ticket', 'father of many children', 'guardian']"
+196,Legal and ethical concerns,['Underage']
+201,Unfitness in military,Military ID
+203,Restrictions and generalizations,Age-based restrictions on going out
+205,Practical Concerns and Needs,"['Availability of Contact Lenses', 'Need for Prescription', 'Accommodation for Women and Children']"
+206,Request for assistance,"['Location: Przemysl', 'Request for a ride to Wroclaw']"
+208,limitation,['maximum']
+210,humanitarian support for refugees,"['refugees in Poland', 'support groups', 'integration programs']"
+231,Humanitarian assistance and assistance for travel,"['Travel from Lviv to Poland', 'Accommodation for 2 women and 5 children']"
+234,unclear,
+238,Transportation,Traveling from Przemysl to Lodz
+245,Humanitarian Assistance,"['Transportation', 'Expatriates']"
+248,Family and pets,"['Teenage children', 'Small dog']"
+249,Humanitarian assistance,"['Transportation assistance', 'Accommodation support']"
+274,Aggression and concern,Gun violence
+278,Possession/Ownership,Whose object
+280,Unclear request,Document request
+283,Desire,Ban
+284,Appeal for peace and compassion,"['Stop bloodshed', 'Treat Russian people well', 'Russian soldiers as friends']"
+286,rejection,document
+287,Deletion and retrieval,Deleting items and returning them
+288,Unclear,['Request']
+292,Censorship and moderation,"['Offensive content', 'Deletion']"
+293,distrust,['creation of a group to help Ukrainians']
+294,Emotional impact of bombs and travel,"['Emotions', 'Bombs', 'Travel']"
+300,Gratitude,['Appreciation']
+302,Banking question,Banking institution
+305,Not enough information to provide a thematic assessment of the text.,
+307,negative emotions,"overwhelm, inability to continue"
+312,balance,['balance']
+313,Cultural Stereotypes and Frustration,"['Group link posted in wrong place', 'Origin of Russians']"
+314,Earn a living,['earning money']
+316,unclear,[]
+318,Emotional detachment,['You']
+320,Positive attitude and fearlessness,Fear
+324,Request for immediate assistance with transportation,"['Transportation', 'Urgency', 'Family']"
+327,Information request,"['American Embassy', 'applications', 'Warsaw']"
+329,Gratitude,Expressing thanks
+333,Migration,"['City of Konstantivka', 'Leaving Konstantivka', 'Means of leaving']"
+334,Criticism of societal expectations towards women,"['Identity', 'Motherhood', 'Beauty standards']"
+337,Communication,Administrative message
+341,Language filtering,Write in Ukrainian to filter out people
+342,unclear,[]
+362,Humanitarian aid and support,"['Assistance for people in need', 'Challenges faced by individuals at the crossroads']"
+371,Transportation,Last bus and return
+372,Price promotion for children,Free admission for children under 10 years old
+373,Provocation,Emotional response
+374,Questioning,Purpose of being here
+375,Uncertainty,Thinking and Communication
+376,negativity and contempt,knowledge and intelligence
+377,Communication,Writing
+378,Negative tone,['Stupid questions']
+379,Blocking and stopping communication,"['Blocking', 'Stopping discussion', 'Dealing with conflict']"
+385,Reservations about Russian intentions,Russian help in Ukraine
+391,Migration,Seeking assistance for crossing border
+392,Language and Communication,"['Pigs', 'Understanding']"
+397,Negative judgment,Devaluation
+401,Unknown,[]
+402,Citizenship and Border Control,Allowing men with different citizenship across the border
+403,Citizenship and residence permits,"['Ukrainian citizenship', 'European residence permit']"
+406,Restriction on release for 18-year-olds,Age-based release limitations
+407,problem-solving,['problem']
+410,Border crossing conditions for men aged 18 to 60,"['Deferral from conscription or placement on special military records', 'Unsuitability for military service based on medical commission conclusion', 'Having three or more children under the age of 18', 'Being a single parent of a minor child', 'Providing care for a disabled child', 'Loss or disappearance of close relatives in the area of the Joint Forces Operation']"
+414,expression of gratitude,['thank you']
+415,Emotion,Symbolism
+416,Gratitude,Expressing appreciation
+418,Politeness and gratitude,You're welcome
+426,Transportation and travel,Free transportation to Krakow or settlements towards Krakow from the Grebenne border (Rava-Ruska)
+449,Request for urgent assistance,Finding a bus from Lviv to Poland
+470,Transportation,"Lviv to Poland, Women, Children"
+473,Desperation and Seeking Help,"['Shigini hiking trail', 'distance left', ""mother's inability to continue"", 'seeking assistance from others', 'bus option', 'desire for pick-up', 'people driving by', 'inability to afford a ticket']"
+476,Gratitude,Thanks
+477,Humanitarian assistance,"['Volunteers at Medics', 'Assistance for a stressed woman and her baby']"
+481,Immigration and international travel,"Citizenship, residency, and travel restrictions"
+492,Humanitarian assistance,"['Water provision', 'Healthcare']"
+497,Immigration and Asylum,"['Obtaining a foreign passport in Poland', 'Applying for asylum', 'Biometric passport']"
+517,Positive outlook,Ability
+518,Uncertainty,Polish border
+521,Reflection and self-exploration,Looking within ourselves
+522,Request for assistance,Need for pick-up
+523,Contempt,['border']
+524,Refugee application and legal documentation,"['Necessity of writing a refugee application', 'Pros and cons of writing a refugee application', 'Obtaining missing documents in order to legally stay in Poland', 'Finding a job in Poland', 'Enrolling children in school in Poland']"
+525,Refugee assistance,"['Border crossing', 'Refugee centers']"
+526,Technology and online assistance,"['Support', 'Mapping', 'Help', 'Online assistance']"
+535,impression,['train']
+536,Request for driver services,Hiring a driver
+538,Stability and control in Kiev,"['Calm situation', 'Control by Ukrainian army', 'Clashes with sabotage groups']"
+546,Travel,"['Location', 'Transportation']"
+550,Humanitarian Assistance,"['Volunteers', 'Feeding people', 'Providing water']"
+552,Movement/Progress,Distance and Time
+554,Unknown,Krakovec
+562,Healthcare,Medication usage
+564,Slow progress,Progress
+568,Confusion,Line length
+573,Transportation advertisement,Going from Dorogusk-Yagodin to Wroclaw
+577,Emergency Assistance Request,"['Medical Emergency', 'Contacting Ministry of Foreign Affairs of Ukraine', 'Contacting Responsible Police']"
+581,Transportation services,Free transportation from the Grebenne border to Krakow
+582,Travel,Traveling from Lviv to Poland by train
+586,Humanitarian Crisis,"['Border Situation', 'Blockage of Passage', 'Waiting for Relatives', 'Idling Buses', 'Long Queues']"
+600,Transportation,"['Goloseevskaya', 'Vokzal']"
+604,Transportation in the Russian field,Lack of pedestrian access and reliance on special buses
+607,Travel inquiry,Travel to the Czech Republic
+608,Transportation,Pickup and return
+615,The text is about seeking assistance in conducting a thematic analysis of a specific text.,Conducting thematic analysis
+620,Transportation,"['Contact information', 'Drivers', 'Chernivtsi', 'Ternopil', 'Border']"
+621,Interrogative sentence,Origin and destination
+622,Transportation and payment,"['Request for transportation', 'Specific location']"
+625,Transportation,"['Free driver', 'Krakovets border', 'Krakow', 'Car', ""Grandma's inability to travel""]"
+640,Uncertain situation at Lviv railway station,Current events at Lviv railway station
+641,uncertainty,[]
+666,Transportation,"['Transportation of people', 'Travel arrangements']"
+668,Content Assessment: Social Media,Facebook post
+672,Evacuation and overcrowding,Evacuation flights from Odessa train station to Lviv
+673,Restrictions and regulations,Curfew
+678,Hospitality and assistance,"['Welcoming guests', 'Providing basic needs', 'Transportation services']"
+679,Accommodation inquiry,"['Travel', 'Accommodation', 'Crossing borders']"
+687,logistics and transportation,"['bus arrangement', 'crossing time', 'number of people', 'city of Wroclaw', 'relatives at the border']"
+688,Technical Issue,Unable to Access External Content
+694,Emergency humanitarian situation,lack of water and food
+697,Humanitarian Assistance in Poland,"['Helping volunteers', 'Evacuating people', 'Contact information']"
+700,uncertainty,"['lists', 'organizations']"
+704,Transportation,"['Transport chat', 'Hungary', 'Romania']"
+709,Immigration and relocation services,"['Clock map / permanent residence based on work', 'Extensive work experience', 'Personal and remote support', 'Company/Entrepreneurship registration', 'Accounting support', 'Relocation of the whole family', 'Search for suitable housing', 'Registration for the Polish Card examination', ""Replacement of Russian/Ukrainian/Belarusian driver's licenses with Polish ones"", 'Preparation of documentation']"
+710,Transportation assistance,"['Women', 'Children', 'Pickup', 'Zamosc', 'Wroclaw', 'Poznan']"
+712,Humanitarian Aid,"['Volunteers', 'Transportation', 'Borders', 'Big cities']"
+715,Information sharing,"['Distribution request', 'Verified information', 'Friend who is a lawyer in Lviv']"
+716,unclear,
+721,Help needed,['Immediate assistance']
+722,Transportation,"['Driver', 'Car']"
+724,Humanitarian emergency,"['Transportation assistance', 'Water scarcity']"
+726,Humanitarian Trip Planning,"['Tent truck', '70m3, 13m', 'aid delivery', 'Ukrainian border', 'Szczecin', 'Gorzow Wielkopolski', 'Miedzyrzecz', 'Swiebodzin', 'Wolsztyn', 'Poznan', 'Konin', 'Lodz', 'Warsaw', 'Lublin', 'Rzeszow', 'Aid Stations', 'volunteers', 'Ukraine', 'needed items', 'delivery permissions', 'contact details']"
+734,Border control and entry restrictions,Entry into Poland for men
+748,Humanitarian support and information sharing in the context of the situation in Ukraine,"['Chats for assistance', 'Up-to-date information sharing']"
+762,Housing,Apartment rental in Warsaw
+766,Social media group,Facebook group
+769,Financial difficulties and gratitude,"['Financial strain', 'Expression of gratitude']"
+771,Financial difficulties and gratitude,"['Difficult situation', 'Gratitude', 'Financial support']"
+774,Restrictions on Ukrainian citizens,"['Age restrictions (18 to 60)', 'Gender discrimination (only applies to men)']"
+776,The text expresses gratitude towards people who provide help during a difficult situation and raises concerns about the transportation costs for receiving aid.,"Gratitude, Help, Difficult situation, Transportation costs"
+778,Accommodation search,"['Accommodation', 'Girls', 'Grusheva border']"
+785,Privacy and Information Security,Private Message
+790,humanitarian assistance needs,['location of humanitarian assistance']
+791,border,"border disputes, immigration, customs, geopolitics"
+794,Uncertainty and Gratitude,"Financial assistance, Difficult situation, Gratitude"
+800,Conflict/Confrontation,Administration and Actors
+819,Uncertainty,Identification
+823,Perception,"['Understanding', 'Interpretation', 'Comprehension']"
+824,Gratitude,Thankfulness
+834,Travel,"['Location: Budomezhe', 'Destination: Krakow', 'Number of people: 3-4']"
+842,Animal travel regulations in Italy,"['dogs without documents', 'vaccination passport', 'antibody analysis', 'chip']"
+845,travel and animal regulations,lack of document checks for animals in Poland
+847,Travel and Immigration,"['Travel plans', 'International travel restrictions']"
+848,Globalization,"['Borders', 'Missing out']"
+849,lack of branch control,branch control
+850,Uncertainty,['Checkpoints']
+852,Lack of awareness or attention to checking beyond Poland in Europe,European countries
+854,Freedom and flexibility,"['Go wherever', 'whenever you want']"
+855,Uncertainty,Stopping and document security
+856,Desire for affordable dogs,"['Preference for chihuahuas', 'Price of 600 euros']"
+857,Travel and Immigration,Entry requirements to Poland
+858,Inclusion,['Inclusive policies']
+859,gender and refugee status,['women']
+860,Lack of documentation and its implications,"['Documents', 'Absence of documents']"
+861,Gender and parenting,"['women with children', 'women without children']"
+862,Immigration policy,Ukrainians entering a country without proper documents
+863,Nationality and documentation,['Ukrainian passport']
+865,Border crossing requirements,Green card for car
+866,Freedom,"['Letting go', 'Release']"
+867,Information about Ukrainian numbers,"['Ukrainian language', 'Numerical system']"
+870,Border control and immigration,Border crossing experiences
+873,miscommunication,['conversation misunderstanding']
+880,Declaration of displeasure towards manipulation and a refusal to be taken for granted,Manipulation by the USA
+882,Protection and survival in times of conflict,"['Ukrainian women', 'children', 'elderly', 'men']"
+884,general assessment,admin
+886,Discontent and dissatisfaction,"['Removing someone', 'Lack of focus on primary task']"
+893,The theme of the text is the challenging situation faced by a mother with two children in Odessa.,"['Help for mothers with children', 'Diapers and groceries assistance in Odessa']"
+899,Job search,Work opportunities in Krakow
+904,Appeal for help,Request for assistance
+908,urgency,['situations that need immediate attention']
+912,unclear intention or miscommunication,"['identity', 'gender']"
+917,Travel plans,"['Lviv', 'Kyiv']"
+918,Defiance and bravery in the face of adversity,"['Ukrainian defense', 'cowardice', 'Titanic reference']"
+920,Humanitarian assistance,"['EMIC Foundation', 'Volunteer headquarters', 'Bydgoszcz', 'Free transfer', 'Temporary stay', 'Accommodation', 'Medical assistance', 'Psychological assistance', 'Legal assistance', 'Documentation legalization', 'Translation services', 'Assistance to children']"
+922,Financial distress,"['Difficult situation', 'General thanks to people']"
+923,Language translation,Banking translation
+924,Transportation arrangements,"['Picking up someone from the station in Przemyśl', 'Contact number for arranging the pickup']"
+928,Need for assistance,"Food, Single parenthood"
+932,Confusion or frustration regarding the lack of clear assistance or support,Help and group creation
+934,Lack of substance in discussions,Subscribers and discussions
+936,unclear or insufficient text,
+939,Lack of curiosity and indifference towards others,Interest in knowing others' destinations
+940,Information reading,Reading
+941,Disinformation,Evacuation
+942,Brotherhood and Bonding,"['Traveling to Moscow', 'Being brothers']"
+960,Emergency assistance and car trouble,"['Car breakdown', 'Border issue', 'Request for help', 'Mechanical repairs', 'Financial concern']"
+965,Promotion and dissemination of a social media channel,"['Sharing channel link on social media', 'Using QR codes in social media stories', 'Distributing flyers with QR codes at the Ukraine border']"
+979,Migration,"['Border crossing', 'Displacement', 'Refugees']"
+994,Assessment of text: Housing assistance in Wroclaw,Finding accommodation in Wroclaw
+997,Uncertainty,['Waiting at the border']
+1013,Assistance with finding accommodation,"['Helping families in need', 'Wloclawek and surrounding areas']"
+1022,Housing Assistance,"['Finding housing', 'Finding shelter']"
+1029,patriotic sentiment,"['Ukraine', 'glory']"
+1030,Humanitarian Assistance,"['Volunteers', 'Waiting at the border']"
+1032,Border crossing,"['Alternative border option', 'Pick up at another border', 'Return of two things']"
+1034,Accommodation search,"['accommodation', '4 adults', '5 children', 'Zamosc']"
+1041,Travel,"['Poland', 'Spain']"
+1042,Migration and Border Crossing,"['Border Crossing', 'Men Crossing Borders', 'Waiting in Line', 'Romania']"
+1044,Housing assistance,"['Finding housing', 'Wroclaw']"
+1046,Humanitarian Assistance,"['Border crossing', 'Transportation assistance', 'Family support']"
+1047,Border crossing,"['Border', 'Destination']"
+1056,Transportation and Assistance,"['Crossing borders', 'Travel', 'Airport assistance', 'Community help']"
+1057,Migration,"['Crossing borders', 'Ukraine']"
+1063,Humanitarian assistance,"['Accommodation', 'Medicine', 'Food', 'Availability']"
+1064,Communication and instruction,Drivers and passengers
+1066,unclear,[]
+1068,International Dialing Codes,['Country Code for Ukraine']
+1074,National Identity,Ukraine
+1079,Telephone country code,+48 Poland
+1090,Financial Assistance,"['Request for Money', 'Collection for a Trip']"
+1091,Transportation,"['Empty cars', 'Waiting for people']"
+1092,migration,"['residents of Israel', 'approach somewhere']"
+1097,Humanitarian assistance,Purchasing goods for people at the border
+1098,Conditions for cars and green cards in Hungary,"['conditions', 'cars', 'green cards', 'Hungary']"
+1101,Requirement for green card in transportation,"['Mandatory green card', 'Restriction on cars without green card']"
+1103,Request for assistance,Properly arranging and location for conducting the task
+1106,uncertainty and decision-making,coming with her to a place
+1109,negative emotions,"restriction, frustration"
+1114,Humanitarian Assistance,"['Seeking Help', 'Migration']"
+1121,Humanitarian Relief Efforts,"Volunteerism, Support for Refugees, Assistance"
+1123,Border crossing and travel,"['Applying for entry', 'Crossing the border with Poland']"
+1124,Humanitarian assistance and provision of basic needs,"['Free water', 'Food', 'Housing']"
+1129,Humanitarian aid,Financial assistance
+1133,Humanitarian support,Shared transportation for a woman with three children from Poznán to Spain
+1139,Logistics and delivery,Delivery to Germany
+1147,Humanitarian aid,"['Border crisis', 'Donations and purchasing goods', 'Volunteer transportation']"
+1152,Transportation,['Getting from Lviv train station to the village of Borenja']
+1153,Travel restrictions and requirements,"['Borders', 'Passport requirements', 'International travel']"
+1155,Localization,Living in Poland
+1158,Transportation,Travel plans
+1160,time,today-tomorrow
+1161,Apology,Apologizing
+1165,Transportation request,"['Shegini', 'transport for 2 people', 'payment required']"
+1170,Help-seeking,Request for assistance in traveling from Kiev to the Polish border
+1177,Information request,Train schedule
+1185,Desire for assistance,Request for help with leaving Izium
+1187,Travel and Border Crossings,"['Crossing the border', 'Travel plans']"
+1190,Travel,"['Border crossing', 'Germany', 'Przemysl', 'Korczowa', 'Dresden', 'Berlin', 'Cologne', 'Frankfurt', 'Freiburg']"
+1196,uncertainty,knowledge or lack thereof
+1201,uncertainty,"['travel', 'destination']"
+1202,Transportation and Travel,"['Deutsche Bahn', 'German railways', 'Travel website']"
+1203,Dispute or disagreement,Ukraine's perspective
+1205,Transportation options near the Poland border,Trains to cities near the border
+1206,Financial assistance and gratitude,"['Financial difficulties', 'Request for help', 'Gratitude']"
+1208,Transportation,Ukrzaliznytsia
+1213,Advantages and Disadvantages of Refugee Status in Poland,Information Sources on Refugee Status in Poland
+1214,Youth and aspirations,"['Youth', 'Aspirations', 'Applying', '17 years old']"
+1216,importance of information on traveling to Poland,travel logistics
+1217,Transportation and Assistance,"['Border crossing', 'Transporting people']"
+1220,Expression of gratitude and acknowledgement of a difficult situation,"Gratitude, Difficult situation"
+1226,Unknown,[]
+1228,Emotional distress,Border crossing
+1229,Unclear,"Psheml, osuo, Warsaw"
+1230,economic exploitation,"['speculators', 'earning from war']"
+1232,economic burden,"['transportation cost', 'financial constraint', 'expensive travel']"
+1233,uncertainty,['how to do it']
+1234,Frustration and inconvenience,"['Payment and lack of facilities', 'Challenges with transportation and pets']"
+1235,Horror,Horror
+1245,Humanitarian support,"['Efforts of foundations', 'Sleeping accommodations and transportation']"
+1246,refugee policies and entry regulations,refugees entering Germany through Poland
+1249,Transportation,Buses
+1263,Affirmation,Yes
+1266,Uncertainty,"['Time', 'Physical activity', 'Geographical location']"
+1268,Transportation and Booking,"['Booking tickets', 'Train schedules', 'Ticket prices']"
+1269,reduction/shortage,decrease in quantity
+1275,Location and travel,"['Dorokhutsk', 'Warsaw']"
+1282,Transportation and Assistance,"['Border crossing', 'Transporting people', 'Shehyni', 'Payment', 'Assistance']"
+1283,Legal implications of adoption,Release of a man who is an adopter
+1284,unclear,
+1285,uncertainty,['border situation in Grushevo']
+1289,Lists,List creation and organization
+1298,Travel,"['Poland', 'Spain']"
+1306,Travel,"['Lviv', 'Poland']"
+1309,humanitarian request,"['Donbass migrants', 'release man', 'advice']"
+1310,uncertain/indeterminate,going
+1311,positive,['good']
+1312,Pricing or cost,Cost inquiry
+1313,Currency,Russian Ruble
+1315,Emotional distress and the need for assistance,Missing person
+1318,Entertainment,TikTok video featuring a musical performance
+1319,Negative sentiment,Delete request
+1320,Humanitarian assistance for refugees,"['Accommodation', 'Transportation', 'Humanitarian aid']"
+1333,urgent request,"['travel', 'private message', 'Lviv to Poland', 'waiting', 'return', 'two things']"
+1334,Volunteer transportation across the border,"Volunteers from Lviv, cost of transportation"
+1335,Financial constraints,['money']
+1340,Need for Assistance,['Transportation']
+1345,Urgent call to action,Transporting humanitarian aid
+1355,Uncertainty,Border crossing
+1361,Travel and Transportation,"['Station in Helm', 'Places to Warsaw']"
+1363,Transportation and Efficiency,"['Travel distance and time', 'Comparison of transportation methods', 'Weather conditions']"
+1366,Travel,"['Transportation', 'Routes', 'Locations']"
+1377,Crossing the border,"['Passport change', 'Citizenship', 'Marriage', 'Russian Federation', 'Ukraine']"
+1378,Assertiveness,"['Action', 'Direction']"
+1384,Immigration and residency,Ukrainian child with a residence permit
+1385,Release,[]
+1391,Transportation,Leaving the city of Sumy
+1396,Miscellaneous,Replying
+1397,Deception,Fake
+1399,Unknown,[]
+1400,Request for assistance,Finding transportation from Sumy to Kiev
+1401,Exploring Belarus,Belarus
+1408,Employment,"['Job search', 'Unemployment']"
+1412,Unclear,['Okok']
+1413,Humanitarian crisis,Border crossing
+1414,Border situation in Smilnytsya,Smilnytsya border
+1419,Appreciation,Help and Communication
+1420,Refugee situation in Poland,Refugees in Poland
+1424,Humanitarian assistance,"Refugee accommodation in Suraz, Poland"
+1450,International collaboration for supporting Ukraine,"['Sharing information', 'Polish groups', 'Help for Ukraine']"
+1451,Travel and Transportation,Passing through a checkpoint without a car
+1453,support,"['problem-solving', 'assistance']"
+1458,Apology,Regret
+1459,Removal,Unknown
+1460,Negative sentiment towards pro-Russian content,Blocking pro-Russian content
+1473,Transportation,"['Traveling from Poland to Ukraine', 'Destination: Zaporizhia']"
+1482,Transportation inquiry,"['Travel', 'Logistics']"
+1485,Cautionary/Warning,['Beware of deception']
+1487,Opportunities and availability,"['Cross-border shopping', 'Access to goods']"
+1488,negative sentiment,warning or caution regarding dishonest individuals
+1492,Legal and ethical concerns,['Illegal activities']
+1497,uncertainty,expression of surprise
+1498,Illegal sale of registered cards,"['Help', 'Sale', 'Illegally registered cards', 'Higher price']"
+1501,Support and assistance for refugees,"Information on city adaptation, volunteer support, employment, and language courses"
+1507,government assistance,local government
+1508,Humanitarian assistance and support in Warsaw,"['Hotlines for citizens of Ukraine', 'Information points', 'Warsaw communication for refugees', 'Psychological Support', 'Veterinary care']"
+1510,Humanitarian support,"['Hotlines for Ukrainian citizens', 'Information points in Warsaw', 'Warsaw Communication for refugees', 'Psychological help', 'Veterinary help']"
+1519,Language Learning,Russian language
+1534,Offering assistance,['Proximity to Polish border']
+1544,Travel and Accommodation,"['Renting a house', 'Location: Zosin']"
+1547,border and migration,"['border control', 'immigration']"
+1548,Community engagement,Facebook group for humanitarian support
+1549,General inquiry,Situation assessment
+1551,unclear or vague,None
+1553,Financial Inquiry,['Cost estimation']
+1556,Immigration/Border crossing,"['Time', 'Nationality', 'Restrictions', 'Migration']"
+1567,Unclear/Unspecified,['Ukraine']
+1574,Travel inquiry,"['Transportation', 'Locations']"
+1579,Time,"['Time duration', 'Waiting']"
+1582,Eliminating online harassment,['Troll behavior']
+1596,Fear and concern regarding a shared video,Shared video from the Polish border
+1604,Denial/falseness,['Truth']
+1605,Positive sentiment,[]
+1609,Provocation,Warning
+1615,Deception and intimidation,Lies and intimidation
+1619,Perception of deception,Russian misinformation
+1621,Humanitarian assistance,"['Families in need of shelter', 'Women and children', 'Temporary accommodation', 'Crossing to Ugriniv']"
+1622,Positive experience at the Polish border,"['Smiling at us', 'Calmly letting us through']"
+1623,Inclusivity,"[""Ukraine's policy towards women and children""]"
+1624,Sadness,"['Disbelief', 'Shared thoughts']"
+1625,Interaction with animals,['Dogs']
+1626,Rules and regulations for traveling with pets,"['Passport requirements for cats in Poland', 'Necessity of microchipping and vaccinations for traveling with a cat']"
+1627,secrecy,"['communication', 'documents', 'dogs']"
+1628,Unknown,"['chip', 'analysis']"
+1629,Health and conspiracy theories,"['microchips', 'vaccinations']"
+1630,Lack/absence,Possessions/ownership
+1631,Lack or absence of something,"['Passing on something', 'Not having something']"
+1638,The theme of the text is positive perception of stage image.,"['stage image', 'liking']"
+1646,Financial hardship and gratitude,"['Financial struggle', 'Gratitude']"
+1654,Inappropriate Language,Clicking
+1656,Amusement,Slightly amused
+1689,Migration and Transportation,"['Travel', 'Volunteers']"
+1690,unclear,['There is']
+1703,Discrediting false information,Spreading of misinformation
+1704,Communication frustration,"['Transport arrangements', 'Disappearing dialogue']"
+1714,Identity and documentation,Ukrainian passport
+1715,Deleted correspondence in Telegram,[]
+1716,uncertainty,emotional affirmation
+1719,Restriction of movement across borders,Crossing the border
+1720,Uncertainty and seeking information,"['truth', 'accurate information']"
+1724,Fear and apprehension,['Scared']
+1726,Deception,"Fake information, Misleading"
+1729,Fear and concern about a specific issue,"['Admin action', 'Deletion', 'Scared']"
+1731,Humanitarian Assistance,"['Refugee Support', 'Collaboration', 'Logistics']"
+1732,Misinformation and critical thinking,"['Misleading information', 'Tracking information', 'Being focused', 'Not believing everything', 'Difficulty of the situation']"
+1734,User engagement,Group size and user count
+1737,invitation to a group,friends and acquaintances
+1738,Negative and offensive language,Homophobic slur
+1739,nationality and limited capacity for help,"['Poland', 'offering help']"
+1740,Education and Future Plans,Deferment for University Studies
+1741,Emphasis,Affirmation
+1742,gratitude,expression of thanks
+1743,Individuality,Diversity
+1752,Gratitude,Thank you
+1761,humanitarian assistance,"['war in Ukraine', 'difficult situation', 'gratitude for help']"
+1769,Financial hardship,Request for money for a family member stuck in Kharkiv
+1773,Clarity and Health,"Communication with others, Physical well-being"
+1775,Call for help,['Assistance']
+1776,international transportation,"['Poland', 'Germany', 'free train travel']"
+1780,Transportation,"['Person Pick-up', 'From Pshemeshlya to Germany']"
+1784,Business,DB Group
+1787,Request for assistance,"['Transportation', 'Emergency']"
+1788,greeting,evening
+1789,Social Media Group,Facebook Community for Sharing
+1791,Travel and Border Control,"['Location (Nuremberg)', 'Transportation (Buses)', 'The individuals bringing the author to Nuremberg)']"
+1792,Communicating with others,['Writing']
+1794,Humanitarian support for refugees in Germany,"['refugees', 'Germany']"
+1810,Gratitude,Thank you
+1816,uncertainty,location
+1818,Logistics,"['Arrival of mom', 'Volunteers at train station']"
+1821,Humanitarian assistance,"['Transportation', 'Crossing border', 'Krakowez', 'Grojec', 'Adults', 'Children']"
+1823,Travel Accommodation,Rzeszów and Kraków
+1824,Transportation,People transportation from Zhytomyr
+1826,Travel and Transportation,"['Getting from Panfil to Lviv and then to the Polish border', 'Information about the train']"
+1836,Emergency Transportation,Urgent Rescue
+1838,Urgency and compassion,"['Transportation assistance', 'Humanitarian crisis']"
+1839,Hospitality and Generosity,"['German Family', '6 month old baby', 'Farmhouse living', 'Offering space', 'Prepared for baby', 'Food and clothes available', 'Offering pick-up service', 'Welcoming guests from outside Germany']"
+1842,Questions about rules and conditions for refugees in Poland,"['rules for refugees', 'conditions of stay', 'amount of allowance', 'maternity leave', 'rental cost', 'salary range', 'leaving the country after being granted refugee status']"
+1844,Appreciation,Translation
+1845,Expressing gratitude,Thank you
+1847,Humanitarian Assistance,['Accommodation for Elderly Woman in Hrubieszów']
+1850,Urgent request for help,Travel assistance from Dnipro to Polish border
+1851,Humanitarian assistance,"['Food insecurity', 'Parenting during crisis']"
+1852,Accommodation,Free accommodation for 40 people
+1858,Emergency accommodation,"['Women', 'Children', 'Place to stay']"
+1861,Assistance fund for the military,Manufacturing and providing medical kits for the Ukrainian military
+1876,Uncertain inquiry,Mariupol sign
+1880,negativity/frustration,"['identity', 'geography']"
+1883,Familiarity with the city,knowledge of the city
+1890,neutral,"['greeting', 'time']"
+1893,Unclear or lacking in information,
+1894,Travel,"['Krakow', 'Wroclaw', 'Legnica']"
+1895,Concerns and considerations regarding personal identification and safety,"['Similarity of name and surname', 'Sending photos without passport', 'Sending video with passport and child', 'Money not being a problem', 'Question of destination']"
+1901,pride and admiration,"['courage', 'resilience', 'spirit']"
+1904,Transportation,"['Drivers', 'Medyka']"
+1905,Urgency and Concern,"['Safety of the Ukrainian President', 'Potential dangers posed by a setup or assassination plot']"
+1906,Uncategorized,[]
+1907,Hinting at an undisclosed issue,"['TV hints', 'Russian context']"
+1909,Frustration,Asking for clarification
+1914,Discrediting statements and mistrust,"['Government representatives', 'Limited access to information']"
+1916,sarcasm,"['provocateur', 'chat']"
+1917,Language and National Identity,National Anthem and Television
+1919,truth,whole truth
+1920,Inquiry about refugee status and entitlements in Poland,Duration and implications of 'refugee' status in Poland
+1921,Defensiveness,Provocateur
+1922,Understanding and managing risks,"['Risk assessment', 'Calmness']"
+1923,Transportation services,Taxi services in Ukraine
+1924,Worried,Emotion
+1935,Dismissiveness,Rest
+1938,caution,avoiding clicking on links
+1942,General,Greeting
+1945,work organization,help request
+1951,Intolerance and Political Divisions,"['Friendship between Poles and Ukrainians', 'Disapproval of Banderaism and UPA']"
+1954,Myth debunking,['Bandera supporters']
+1957,Evaluation of Ukrainian identity,Ukrainian nationalism and its association with Nazism
+1962,Hospitality and accommodation,"['Accommodating a mother with a child', ""Children's room and bedroom"", 'Free accommodation', 'House with a garden', 'Children aged 3 and 7', 'Location: Furt, Bavaria']"
+1963,Time perspective,"['80 years ago', 'still many of them']"
+1967,Existence/Non-existence,"['Russia', '50 million']"
+1970,Transportation,"['Travel', 'Location']"
+1992,Unity and solidarity in the face of war,"['Volunteer organizations', 'Support for soldiers, mothers, and children at the border', 'Nationalism and its role in the war']"
+1995,humanitarian assistance,accommodation for an elderly woman
+2002,Assistance and category classification,"['assistance', 'driver', 'category B']"
+2005,Concern for loved one's well-being and communication,"['Crossing the border', 'Lack of contact with a daughter', 'Worry and anxiety']"
+2006,Humanitarian Assistance,"['Accommodation', 'Meals', 'Bed', 'Clothes', 'Shelter', 'Refugees', 'Official and administrative matters']"
+2007,Humanitarian assistance and concern for refugees,"['Accommodation for refugees', 'Securing food and clothing for refugees', 'Assistance with official and administrative matters for refugees', 'Need for contact points and referrals for refugees', 'Concern for the actions of Putin', 'Hope for de-escalation and prayers']"
+2016,Travel,"['Budapest', 'Warsaw']"
+2018,Humanitarian Assistance,"['Shelter and Housing Support', 'Material Needs']"
+2020,Military Aid,"['Medical Kits', 'Humanitarian Assistance', 'Ukrainian Military']"
+2022,Assistance and support,"['Problem-solving', 'Free transportation', 'Relocation to Berlin', 'Finding a cheaper way']"
+2023,Housing needs for refugees,"['Contact person for housing assistance', 'Housing for a girl with two young children']"
+2046,Border crossing experience,Polish border crossing
+2047,Communication,"['Transportation', 'Help/Assistance']"
+2062,Block and Ban,"['censorship', 'restriction', 'prohibition']"
+2063,Security and Identity,"['Biometric passport', 'Application', 'Physical passport', 'Explosion']"
+2064,Uncertainty and concern,"['Fire accident', 'Location']"
+2065,Social and geographical analysis,Kyiv region
+2067,Hope,Inclusion
+2068,Emotional expression,Hope
+2069,Comparison of military pay between countries,"['Military pay', 'Poland']"
+2071,Migration and Family Support,"['Border-crossing', 'Meeting relatives', 'Settling', 'Travel to Kiev']"
+2072,Transportation details,"['Lviv-Warsaw journey', 'Minivan seats', 'No animals and minimum luggage', '250 zlotys per seat']"
+2073,Humanitarian Support,Ammunition Shortage and Volunteer Assistance
+2074,transportation,['transport']
+2077,Uncertainty,Preparation
+2078,neutral,['affirmation']
+2079,Gratitude,Expressing thanks
+2080,Request for assistance,Product information and help
+2081,war,
+2083,Help for those affected by war,"['war', 'help', 'affected']"
+2084,Seeking help,"['Requests', 'Assistance']"
+2086,Financial hardship and lack of support,"['asking for help', 'being alone with the child', 'lack of financial support']"
+2090,Unclear intent or purpose of the text,['Sharing or spreading something']
+2092,Desperation and Helplessness,"['Loneliness', 'Parenting', 'Food Insecurity']"
+2094,Uncertainty,"['Agreement', 'Products']"
+2097,Affirmation/Agreement,Yes
+2107,Family,"['Daughter Anastasia', 'Son Evgeniy']"
+2109,unspecified,Кривой Рог
+2111,Communication,Mailing
+2116,Loss and abandonment,"['Departure of the wife', 'Absence of relatives']"
+2117,Humanitarian Assistance,['Children in Need']
+2121,Gratitude,['Thank you']
+2126,drug use,['drug love']
+2131,Accommodation of people,Polish contact for accommodation
+2132,values,prioritization
+2133,Gender roles and societal expectations,"['Substance abuse', 'Domestic violence']"
+2136,unknown,[]
+2137,Humanitarianism,"['Traveling', 'Volunteering', 'Refugees']"
+2138,Communication,"['Phone call', 'Request for action']"
+2140,parenthood,"['showing children', 'parenting']"
+2142,geographical origin and residence,['Kryvyi Rih']
+2143,Travel and navigation,Seeking directions to Warsaw
+2147,Identity and Location,['Krivy Rog']
+2151,Geographical origin,Ternovsky district
+2152,Long-term residence in Germany,['Living in Germany']
+2153,concern or worry,current situation in the mentioned place
+2154,Nostalgia,Kovrov street
+2157,Transportation,Traffic conditions at Lausanne and Skulen
+2158,clarity,Clear
+2159,Communication,"['Location', 'Travel']"
+2163,Travel,"['Directions', 'Transportation']"
+2164,Transportation and logistics,"['Travel plans', 'Specific locations', 'Timings', 'Seating arrangement', 'Cost']"
+2167,economic exploitation,"['financial vulnerability', 'gas station scarcity']"
+2177,Transportation,"['Ride sharing', 'Travel']"
+2183,Fear and concern,Traveling with a little child
+2204,Travel and information seeking,"['Travel from Kharkiv', 'Crossing Ukraine', 'Help and information', 'Gratitude']"
+2206,Request for urgent transportation,"['Transportation', 'Urgency', 'Capacity', 'Payment', 'Dogs']"
+2208,travel,"['Kyiv', 'Kharkiv']"
+2214,Community and Spatial Arrangement,"['Group dynamics', 'Spatial distribution', 'Inclusion of animals']"
+2215,Population and Pet Ownership,"['Number of people in Pereyaslav and Kiev', 'Number of dogs in Pereyaslav and Kiev']"
+2216,Seeking assistance for transportation,['Picking up a girl from Pshemylo to Lodz']
+2223,location,"['Lwowska 36', 'Przemyśl']"
+2227,Event volunteering,"['Volunteer recruitment', 'Assisting visitors', 'Shift schedule']"
+2231,Transportation issues,['Buses not moving in Russia']
+2235,Location inquiry,Przemysl
+2236,travel,"['places', 'Berlin']"
+2237,Location of meeting points,Meeting points
+2240,Uncertainty,Occupation
+2246,Request for assistance in migration,"['Help needed', 'Migration', 'Family']"
+2259,Humanitarian aid,Collecting humanitarian aid in Krakow
+2265,Unclear message or instructions,"['pick up', 'return back two things']"
+2267,Rights,There are rights
+2271,Travel,"['Lviv', 'Border']"
+2272,Humanitarian Assistance,Medical Mission to Vienna
+2274,Transportation,"['Carpool', 'Passengers']"
+2278,Communication breakdown and frustration at the pedestrian border,"['Drivers', 'Aid stations', 'Volunteers', 'Customs buildings']"
+2284,Dehumanization,Not considering someone as human
+2286,Humanitarian assistance,"['Help', 'send', 'two women', 'breastfeeding child', 'Lviv', 'border']"
+2304,Communication and Community Support,Queue status and Volunteers in Smilnytsia District
+2325,Travel,Transportation from Kharkov to Poland
+2327,Border Crossings,Situation
+2328,Uncertainty,"['Transportation', 'Nighttime']"
+2329,Border crossing restrictions,"['Crossing by car', 'No pedestrian crossing']"
+2330,Borders and differences,"['Borders', 'Differences']"
+2331,Logistics and Transportation,Border crossing and transportation
+2332,Humanitarian assistance,"['Emergency relocation', 'Help needed', 'Child welfare']"
+2334,Humanitarian assistance,"['Migration', 'Family support']"
+2341,Transportation difficulties,"['Traveling from Budapest to Warsaw', 'Lack of available flights, trains, or buses']"
+2343,Uncertainty,"['People being taken to the border', 'Drohobych']"
+2347,Travel,"['Transportation options: train or bus', 'Destination options: Krakow-Frankfurt or Baden Baden Germany', 'Uncertainty about availability', 'Inquiring about current availability']"
+2348,Appeal for help and assistance,"['Lonely young mother', 'Urgent need', 'Lack of relatives', 'Gratitude', 'Bank account information', 'Religious sentiment', 'National pride']"
+2349,Accommodation rental,"['Accommodation', 'Renting', 'Warsaw']"
+2350,Youth,['Girls']
+2351,Travel,Planning a trip to Germany
+2356,Uncertainty/Postponement,"['We', 'today']"
+2361,Youth,"['age', 'youth']"
+2366,Disregard and disrespect,"['Nonsense', 'Fuss', 'Old women']"
+2367,Emergency accommodation request,Shelter for families in Krakow
+2368,humanitarian assistance,"['Warsaw', 'Lodz', 'finances', 'products', 'work']"
+2370,Request for assistance,"['Request', 'Assistance']"
+2374,Negative tone and dismissiveness,"['Time', 'Communication']"
+2375,Gender identity and aggression,"['Aggressive behavior', 'Gender identity']"
+2376,Emotional response to the dynamic of assistance and identification,"['Helping others', 'Identity recognition', 'Shock', 'Anger']"
+2377,self-identity,gender
+2378,Unity and cohesion,"Arguments, affiliation, and equality"
+2381,Social unrest and frustration due to illness and lack of clarity,"Anger, sickness, confusion, frustration"
+2382,Negative Remarks,"['Nonsense', 'Curing oneself', 'Being cunning']"
+2385,motivation,personal contribution
+2386,Healing,self-care
+2388,Switching attention,Attention
+2392,Disengagement,"['lack of interest', 'ignoring conversation']"
+2393,Insanity,Blocking an insane person
+2397,Medical emergency,Patient removal
+2410,Transportation and travel,"['Przemysl', 'Medyka border crossing']"
+2411,Location,['Warsaw']
+2414,Immigration,Dogs without documents
+2415,uncertainty,"['heard', 'what']"
+2417,affirmation,"['agreement', 'consent']"
+2419,Travel and Transportation,"['Tickets', 'Warsaw-Berlin train']"
+2420,Uncertainty,['Lack of knowledge']
+2421,Animals,Document retrieval
+2423,Travel,"['Time', 'Activity']"
+2424,Opportunity,Free Tickets
+2425,Requests for information,"['Volunteer centers', 'Addresses', 'Contacts', 'Sopot', 'Gdansk']"
+2426,Vaccinations and border control,"['Vaccinations', 'Polish border']"
+2429,Assistance for crossing the border with special needs,"['Border crossing from Lviv', 'Help for women with children', 'Assistance for people with disabilities']"
+2432,Travel and Transportation,"['Crossing the border', 'Driving by car', 'Long driving time']"
+2443,presence of admins,admin support
+2444,unknown,[]
+2452,Logistics and Assistance,"['Retrieving the wife from Katowice to Lodz', 'The presence of one girl in Katowice in 2 hours']"
+2457,Humanitarian Assistance,"['Facebook group', 'housing offers', 'Germany', 'Ukrainian refugees']"
+2461,Transportation and Communication,"['Location inquiry', 'Waiting time']"
+2462,border costs,"['Poland', 'car travel']"
+2464,Transportation,['Traveling from Warsaw to Przemyśl or the Medyka border crossing']
+2465,Inclusion and acceptance,"['Immigration', 'Documentation']"
+2484,Migration,"['Border crossing', 'Wait in line']"
+2485,Border points,"['Queues', 'Information', 'Situation']"
+2486,language barrier,Turkish
+2489,Encouragement,['Cheering up']
+2495,Transportation,"['Finding help', 'Traveling from Katowice to the border']"
+2503,Frustration with spam,Spamming and seeking genuine help
+2504,Uncertainty,"['Traveling through Yagodin', 'Time perception']"
+2505,Transportation and travel,Getting to Poland with children
+2506,Language,Polish
+2514,Communication,Babbling
+2518,inquiry,specific question
+2520,Advertisement,Flat rental in Warsaw
+2521,Gratitude,['Thank you']
+2522,Possibility of renting a car in Warsaw from someone,Car rental in Warsaw
+2523,Incomplete information,Numbers
+2525,Family and companionship,"['Number of individuals', 'Pet ownership']"
+2529,Travel,Transportation
+2531,Transportation,['Trains in Poland and Germany']
+2533,Gratitude,Thank you
+2535,Accommodation request,Help with accommodation for 4 people
+2537,"Psychological stress, shock, and fear in the face of a dangerous situation","['Stampede at the train station', 'Safety concerns and the need to find a secure place', 'Ukrainian patriotism']"
+2539,Communication and social interaction,Contacts and interaction in a queue
+2542,Travel arrangements,"['Bus tickets', 'Cross-border travel', 'Poland', 'Mother with two children']"
+2543,Humanitarian Assistance,"['Transportation', 'Volunteer']"
+2548,Business and Services,"['Ukraine', 'services']"
+2549,Local assistance in Poland,help on any topic
+2551,Travel and transportation,['Traveling from Poltava to Lviv']
+2553,Love,
+2556,Call for Assistance,"['Travel', 'Volunteer']"
+2560,Uncertainty,"['Przemyśl - Grudziądz', 'going', '4 people']"
+2562,Settlement options,"['Konin', 'Strzałkowie']"
+2567,Transportation and logistics,Travel restrictions and international borders
+2568,Humanitarian situation and support for refugees in Ukraine,Refugees in Ukraine
+2569,procedures in Poland,['procedures']
+2571,General procedure for consulting 70-year-old amount,"Procedure, consultation, 70-year-old amount"
+2572,Migration and refugee support,"['Refugees in Germany', 'Humanitarian aid', 'Integrating refugees', 'German immigration policies']"
+2574,Travel arrangement,"['Hotel checkout', 'Reservation modification']"
+2575,Logistical information inquiry,"['Queues in Hrusheve, Lviv region', 'Waiting time at the borders between Ukraine and Poland']"
+2578,Gratitude,Thankfulness
+2579,Travel,"['Delay', 'Transportation']"
+2580,Hospitality and support,"['Offering accommodation on a farm', 'Availability of food and clothing', 'Transportation assistance']"
+2582,Gratitude,Words of appreciation
+2583,Transportation assistance,"[""Ukrainian driver's license"", 'passenger transport']"
+2597,Refugee registration process,Registration points in Warsaw
+2599,Seeking accommodation,"['Krakow', 'Family', 'Hosting', 'Mother', 'Grandmother', 'Girlfriend', 'Child', 'Contacts']"
+2604,Transportation and Border Security,Transporting individuals from Gdansk to the border
+2610,Humanitarian assistance and volunteering,"['Travel request', 'Transportation', 'Volunteer']"
+2613,Humanitarian support and transportation,"['Transportation request', 'Volunteer assistance']"
+2615,Neutral,['Greeting']
+2616,Refugee reception points,Krakow
+2619,Refugee status and decision-making process,"['Processing refugee status', 'Restrictions on leaving the country', 'Inability to return to Ukraine', 'Waiting period without a visa', 'Decision-making']"
+2620,Refugee registration process in Poland,Passport requirement
+2622,Travel regulations,Ukrainians' stay in Europe
+2625,Caregiving and responsibility,"['Intention', 'Mother', 'Traveling', 'Weary']"
+2627,Accommodation,Budget accommodation in Krakow
+2628,negation or disagreement,opposing or denying a statement
+2629,Request for assistance,['Talking to border guards']
+2632,Security and Travel,"['Passports', 'Border Guards']"
+2633,Freedom of movement and identification,Passport requirement
+2635,Transportation,"['Airport pickup', 'Travel arrangements', 'Seeking help']"
+2640,Refugee and immigration issues,"['Surrendering passport', 'Finding accommodation without refugee status']"
+2642,Recognition of special documents,['special documents']
+2643,Refugees,['Refugee status']
+2644,Restriction of movement,Living in Poland
+2646,Uncertainty,Duration of absence
+2648,uncertainty and bureaucracy in obtaining refugee status,"['refugee status', 'obtaining refugee status']"
+2649,refugee status and international travel,"['refugee status', 'France', 'Poland', 'biometric passport']"
+2650,Uncertainty and Resolution,"['90 days limit in Germany', '180 days limit in Euro']"
+2651,duration of the situation,difficult situation
+2652,Unknown,[]
+2653,Official documentation,Content of official documents
+2654,complex situation,"['situation', 'complex']"
+2655,Knowledge and authority of border guards,"['Border guards', 'Knowledge']"
+2656,Travel and Transportation,"['Lviv', 'Zosin train station', 'border crossing', '150 zloty per seat', '4 seats left']"
+2657,Positive perception of police in Poland,Police assistance in Poland
+2658,Refugee status and staying in Europe,Duration of stay in Europe
+2659,Uncertainty,Travel restrictions
+2660,Undefined,[]
+2661,approval,thumbs up
+2662,Border regulations and restrictions for travelers,"['Border crossing in Poland', 'Biometric identification', 'Maximum stay duration']"
+2663,Numbers and Quantities,"['Germany', '180']"
+2666,Limited duration of refugee status and restrictions on leaving the country,"['Refugee status for 15 days', 'Compulsory return', 'Restrictions on leaving the country']"
+2670,Lack of necessary documentation,"['Article reading', 'Passport requirement']"
+2671,Language preference,Ukrainian
+2672,Emotional distress,Inability to stay for three months
+2676,Humanitarian support,Clothing donation for refugees
+2677,Excitement,Expression of astonishment
+2678,Positive sentiment,Good
+2680,Travel,"['Kiev', 'journey']"
+2681,Borders and Crossings,['Ukrainian border']
+2684,Emotions and Affection,"['Flowers', 'Happiness', 'Love']"
+2686,Immigration and Refugees,Biometrics and Passport Control
+2687,unclear,"reading, presence"
+2691,Travel,"['Chisinau', 'Warsaw']"
+2696,Assistance for overnight stays and accommodation in Warsaw,"['Contacts', 'Addresses', 'Acceptance for overnight stays', 'Assistance', 'First time in Warsaw', 'Accommodate', 'Women', 'Minors']"
+2697,,[]
+2708,Request for assistance,Help with finding contacts in Warsaw
+2731,Travel,"['Planning', 'Transportation', 'Itinerary']"
+2744,Request for assistance,Renting an apartment or house in Lublin
+2745,Migration and Border Control,"['Refugee status', 'Ukrainian-Polish border', 'Attack']"
+2752,Social media influencer,Kasia Ovsiuk's Instagram profile
+2757,Human trafficking awareness,Border safety
+2758,Humanitarian Crisis in Ukraine,"['refugees', 'Ukraine']"
+2762,humanitarian support for refugees,['refugees in Poland']
+2763,Humanitarian support for refugees in Germany,Refugees in Germany
+2767,Assessment of text,"['Provision of services in Poland', 'Special centers for packing belongings']"
+2773,Logistics and Request,"['People in Krakow', 'Transportation of things to a woman']"
+2774,Transportation and Travel,"['Border crossing', 'Passenger car']"
+2779,Instructions,Distribution
+2782,Transportation,"['Flixbus', 'Polish border', 'Free buses']"
+2787,Unidentified,731762537
+2788,Crossing borders and residency,"['Border crossing procedures', 'Internal passport', 'Residence permit', 'Working rights']"
+2790,Medical assistance for refugees from Ukraine,"['Free medical assistance', 'Refugees from Ukraine']"
+2796,Refugee visa application process in the USA,"['Obtaining a refugee visa', 'Advise on the refugee visa process in the USA']"
+2797,Assistance for Ukrainian refugees,['Help points']
+2800,expressing gratitude,thank you
+2803,Access to telecommunication services for migrants,Provision of free SIM cards for calls home to Ukrainian migrants in Poland
+2804,uncertainty and questioning,"['transition country', 'citizenship']"
+2805,Disapproval and frustration,"['Visa application', 'Destination to the USA', ""Disregard for others' situations""]"
+2807,Time,Seconds
+2809,Conflict and displacement,"['Living in Kyiv', 'Insecurity and shelling', 'Desire to leave for the USA']"
+2819,negative emotions,"['profanity', 'frustration']"
+2820,Lack of information,Unknown information
+2824,Emotion,Nervousness
+2825,information request,information
+2826,positivity,
+2833,Housing support for a family with two children,"['Homeless family', 'Need for assistance', 'Geographical location: Ozarow Mazowieski']"
+2834,Legalities and rights,"Power of attorney, Minimum age requirement"
+2835,Transportation information in Warsaw,"['Transportation applications', 'Movement of transportation']"
+2846,Travel and Geography,"['Crossing borders', 'Slovakia', 'Poland']"
+2847,Gratitude and Kindness,"['Border Crossing Experience', 'Volunteer Assistance']"
+2848,limited transportation options,transportation from Slovakia
+2849,Gratitude,Thankfulness
+2850,uncertainty,"['border', 'city', 'transportation']"
+2852,individuality,"['perspective', 'diversity']"
+2853,Politeness,Response message
+2857,Travel and Communication,"['Looking for someone going to Berlin', 'Location: Krakow with a friend']"
+2858,Urgent transportation request,"['Transportation', 'Urgency']"
+2862,Uncertainty/emotion,What happened
+2863,Transportation,Free trains from Poland to Germany
+2864,Everyday tasks and activities,"House painting, writing"
+2865,emotion,surprise
+2866,The general theme of the text is unclear.,[]
+2867,Lack of experience/understanding,['Pedestrian crossing']
+2868,Nationality-based discrimination,Free train service for Ukrainian people
+2870,Consumer inquiry,['Buying a power bank in Kiev']
+2871,The theme of the text is the negative impact of war on innocent people.,"['war', 'innocent people']"
+2872,Political unrest and conflict,"['Protests', 'Government crackdown', ""Citizen's rights""]"
+2873,Transportation and Volunteerism,"['Travel from Lublin to Przemyśl', 'Seats for volunteers']"
+2879,negative emotions,exclamation
+2881,Advertising or promotion,Telegram channel
+2882,Urgent request for help in transporting people and children,"['Travel from Lutsk to Ustyluh', 'Request for assistance on Viber']"
+2890,Humanitarian Assistance,['Location of humanitarian aid warehouses in Warsaw']
+2893,Access to services for refugees,"['Status issuance', 'Wait time', 'Hospital services', 'Free first aid']"
+2894,Gratitude,Thank you
+2895,travel and seating arrangements,"['someone abroad', '2 seats']"
+2896,positive decision,Foreigners Affairs Office - Website
+2897,Information sharing and reference,Link and details
+2898,action,['check']
+2901,Communication and information exchange,"['Availability of goods', 'Location-based access']"
+2902,Transportation request,"['Opole', 'women', 'transport', 'call', '690645248', 'Tesco', 'Przemysl']"
+2903,Sense of proximity or closeness,Nearness to the speaker
+2904,Humanitarian Support,Financial Assistance
+2905,request for information,['Pereolu borders']
+2907,Travel and Legal Issues,"['Driving to Moldova', 'Vehicle Registration', 'Borders']"
+2908,Transportation,Travel route
+2909,humanitarian assistance,"['Waiting for information', 'Krakow', 'helping Ukrainians']"
+2913,Infrastructure,"['Road condition', 'Highway development']"
+2916,Transportation,['Train ticket availability']
+2917,Lost and found,Black backpack with documents
+2920,Positive,Free travel on all trains
+2921,Social Etiquette,"['Bypassing queue', 'Pedestrian access']"
+2922,Perception of pedestrians on cameras,"['Size of pedestrian', 'Visibility on cameras']"
+2923,uncertainty,"['recent events', 'unknown individuals']"
+2925,Transportation,Carpooling
+2928,Request for contact information,"[""Volunteer's phone number""]"
+2930,Travel recommendation,Carrier from Lviv to Medyka
+2931,Travel plans,"['Poltava', 'Lviv']"
+2934,Uncertainty and concern,"['Loss of documents', 'Possibility of going alone', 'Being 17 years old']"
+2935,Immigration and undocumented migration,"['Letting go', 'Being taken without documents']"
+2936,Gratitude,Expression of thanks
+2949,Housing assistance request,"['Krakow', 'Wroclaw', 'Katowice', '300-400 euros per month']"
+2952,Travel,"['Transportation', 'Family', 'Border Crossing']"
+2955,Financial difficulties and gratitude for help,"Financial need, gratitude"
+2959,Language and Communication,Language preference
+2961,lack of understanding,reason
+2962,Exclusion/Isolation,Blocked from Writing Group
+2963,Assistance with family reunification,"['seeking help', 'bringing relatives', 'Kharkiv']"
+2964,risk and concern,"['hailstorm', 'suicide']"
+2965,Safety and Security,"['Sheltering', 'Military equipment', 'Local authorities']"
+2967,Gratitude,Thank you
+2968,national identity and solidarity,Ukrainian Struggle Centre
+2972,Emergency Assistance,"['Locating someone from the Krakowiec area', 'Transportation for a person with their dog']"
+2983,Transportation,Travel from Krakow to Vienna
+2994,Transportation,Traveling from Krakow to Vienna
+2995,positive,thumbs-up
+3000,Friendship and social connections,Existence of friends in the town of Hosťin
+3001,Transportation,"['ride', 'Perepeshlyan', 'Budomezh', 'number']"
+3002,Humanitarian support and aid,Collecting humanitarian aid
+3003,Request for help,Assistance
+3004,Country,Ukraine
+3011,humanitarian assistance,Points of assistance for Ukrainian refugees
+3022,Urgency and need for transportation,Looking for a car for 4 people and 1 dog to Khmelnytsky region
+3024,confusion or absurdity,"['bananas', 'ears', 'drone']"
+3025,Communication and support for immigrants,['SIM card with free calls home for immigrants from Ukraine']
+3026,emotions,anger
+3027,Collaboration and support,"['help', 'group', 'each other']"
+3028,Negative Emotion,"['Anger', 'Disrespect']"
+3029,Conflicting priorities,"['Animal welfare', 'Humanitarian aid']"
+3030,Request for assistance,"['Accommodation', 'Transportation', 'Pets']"
+3035,Communication,"Thankfulness, Departure, Repetition"
+3038,Gratitude,Thank you
+3043,attachment to pets,"['dog as a child', 'dependence on the dog', 'having multiple dogs']"
+3051,Transportation,"['Number of people', 'Travel route']"
+3061,Unable to determine,[]
+3063,urgent request for transportation,"['car', '4 people', '1 dog', 'Khmelnytskyi Oblast']"
+3068,Transportation Inquiry,"['Przemyśl to Warsaw', 'Transportation for 1 person']"
+3071,Transportation,Travel options from Krakow to Wroclaw
+3079,Humorous comparison between attitude towards a cat and attitude towards humans,"['attitude towards pets', 'attitude towards humans']"
+3080,international negotiations and conditions for cessation of hostilities,"['demand for recognition of Crimea as part of Russia', 'demand for independence of DNR and LNR']"
+3082,Uncertainty,Self-awareness
+3083,Economic condition,Exchange rate in Russia
+3087,materialism,"['money', 'ass']"
+3088,Financial currency,Rubles
+3090,Uncertainty,['channel identification']
+3092,emotional appeal for assistance,request for help
+3095,General response,Okay
+3110,The text discusses the topic of motherhood.,Mother
+3161,Positive Assessment,Russia
+3165,humanitarian appeal,"['request for help', 'collecting funds for porridge and diapers']"
+3172,Humanitarian support for the Rivne military,"['Bulletproof vests shortage', 'Delivery from Poland', 'Volunteer assistance']"
+3178,Travel,"['Border crossing', 'Transportation', 'Destination']"
+3185,Uncertainty and inquiry,Location near the Ugryniv border
+3187,Visa regulations and entry requirements,"['Entering Poland without a visa', 'Duration of stay', 'Corridor']"
+3188,Urgency and seeking assistance,"['Travel to Lutsk', 'Travel to Ustyluh', 'Travel to Yahodyn', 'Seeking help on Viber']"
+3193,Transportation and travel,"['Striy', 'border', 'Krakow', 'person']"
+3196,Humanitarian assistance and transportation,Ugriniv border crossing
+3197,Travel plans,Transportation route
+3198,Accommodation search,"['Accommodation', 'Number of people', 'Gender', 'Pets', 'Location']"
+3200,Logistics and Border-crossing,Accommodation for 3 women and 1 child
+3205,Border control measures,Exempting women and children from searches
+3209,Accommodation offer,"['Free accommodation', 'Location', 'Contact']"
+3210,Travel,"['Ticket', 'Krakow', 'Vienna']"
+3211,Migration and travel,"['Leaving Ukraine', 'Requirements for leaving Ukraine']"
+3212,Possibility and Feasibility,Child development
+3213,Travel and Migration,"['Crossing borders', 'Visa requirements']"
+3214,Youth age,['Age']
+3215,Disability,27-year-old with a disability
+3217,Mental health and coping,Coping with mental challenges
+3218,Disability as an exception,['disability']
+3219,Humanitarian aid collection points for Ukrainians in Warsaw,Addresses
+3223,Border crossing requirements for individuals without passports,"['Passport', 'Grandmother', 'Ukrainian passport', 'Border crossing']"
+3224,affirmation,positive response
+3225,Anticipation of the war's conclusion,"War, Grandma"
+3226,Hope and optimism,Victory
+3228,unclear,None
+3229,Financial distress and plea for assistance,"['Lack of money for food', 'Request for financial help']"
+3230,Promises of support and assistance,"['sign up', 'fed', 'settled somewhere to live', 'given everything necessary']"
+3231,humanitarian assistance,"['transportation', 'shelter', 'sanitation', 'support for women and children']"
+3233,Gratitude and appreciation,Support and encouragement
+3236,Settling in Poland as a refugee or not,"['Information on settling in Poland', 'Working in Poland']"
+3238,Legal restrictions on refugees' ability to work,Refugee status and employment limitations
+3240,Travel,"['Leaving', 'Warsaw']"
+3241,Requirements at the border,['Documents']
