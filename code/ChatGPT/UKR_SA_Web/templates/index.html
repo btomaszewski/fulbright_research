@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UKR PL SA</title>
+</head>
+<body>
+    <h1>UKR PL SA</h1>
+
+    <div class="container">
+      <form id="date-range-form" action="/csvqry" method="post">
+        
+        <h2>Step 1: Select a Prompt</h2>
+        <select name="selected_item" id="selected_item">
+            <!-- Templating language called Jinja2 ID and prompt name -->
+            {% for i in range(len(items)) %}
+            <option value="{{ items[i][0] }}">{{ items[i][1] }}</option>
+            {% endfor %}
+        </select>
+        <a href="https://docs.google.com/spreadsheets/d/1jceJ7AZP93hMkkJGOBedUDhOYP77hj1X7GC8NtDX0wg/edit#gid=0" target="_blank">Edit/View Prompts</a>
+    
+        
+        <h2>Step 2: Select a Date Range</h2>
+        
+        <div class="form-group">
+          <label for="start-date">Start Date:</label>
+          <input type="text" class="form-control" id="start-date" name="start-date"  placeholder="Select start date">
+        </div>
+        <div class="form-group">
+          <label for="end-date">End Date:</label>
+          <input type="text" class="form-control" id="end-date" name="end-date" placeholder="Select end date">
+        </div>
+  
+        <input type="submit" value="Submit Analysis" id="submit-dates-btn">
+      </form>
+  </div>
+  
+
+
+      <!-- Date Range  Include Bootstrap and jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Include Bootstrap Datepicker JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+  <script>
+    $(document).ready(function(){
+
+        // Define specific start date and end date that match what is in the CSV file
+      var startDate = new Date('2024-05-16');
+      var endDate = new Date('2024-05-24');
+
+      // Initialize datepicker for start date
+      $('#start-date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true,
+        startDate: startDate,
+        endDate: endDate
+      });
+
+      // Initialize datepicker for end date
+      $('#end-date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true,
+        startDate: startDate,
+        endDate: endDate
+      });
+    });
+
+    // Function to get selected date range
+    function getSelectedDateRange() {
+      var startDate = $('#start-date').val();
+      var endDate = $('#end-date').val();
+      //console.log("Start Date: " + startDate);
+      //console.log("End Date: " + endDate);
+      // You can perform further actions with the selected date range here
+    }
+  </script>
+
+
+
+
+
+
+    <!-- open question  -->
+
+    <form id="question-form" name="question-form" action="/ask" method="post">
+        <input type="text" name="user_input" placeholder="Ask a question...">
+        <input type="submit" value="Submit Question" id="submit-question-btn">
+    </form>
+    <div id="response"></div>
+
+    <!-- determine which button was clicked and post accordingly-->
+
+
+    <script>
+        document.getElementById('submit-dates-btn').addEventListener('click', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(document.getElementById('date-range-form'));
+    
+            try {
+              const response = await fetch('/csvqry', {
+              method: 'POST',
+              body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch word cloud image.');
+            }
+
+          /*const imageData = await response.text();*/
+          const imageData = await response.blob();
+        
+        // Create an <img> element with the image data
+        const imgElement = document.createElement('img');
+        
+        imgElement.src =  URL.createObjectURL(imageData); // Set binary image data as src
+        imgElement.alt = 'Word Cloud';
+
+        // Replace the content of the wordcloud-container div with the image
+        const wordcloudContainer = document.getElementById('wordcloud-container');
+        wordcloudContainer.innerHTML = '';
+        wordcloudContainer.appendChild(imgElement);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+
+
+
+
+        });
+
+        document.getElementById('submit-question-btn').addEventListener('click', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(document.getElementById('question-form'));
+            const response = await fetch('/ask', {
+                method: 'POST',
+                body: formData
+            });
+            const text = await response.text();
+            document.getElementById('response').innerHTML = text;
+            document.getElementById('question-form').reset();
+        });
+
+
+    </script>
+
+<div id="wordcloud-container">
+  <!-- Word cloud image will be dynamically inserted here -->
+</div>
+
+
+</body>
+</html>

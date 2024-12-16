@@ -1,0 +1,61 @@
+
+1. The geographical references you will be looking for will likely be cities in Poland or cities in Ukraine. You may also find references to countries in Europe such as Germany, Poland, and Ukraine. There are no  limit to the number of locations you want to find in a single text.
+2. Return back one of two possible items. 
+
+3.The first is if you find any geographical references from  the text that was between the <start> and <end> tags, return a GeoJSON string with all of the geographical references you found and their corresponding longitude and latitude  coordinates. You must include a name in all geographical references you find. You must put the longitude  coordinate first and the latitude coordinate second in the coordinate pair you return.
+
+4. Ensure the GeoJSON output consists of a Feature Collection containing all identified features.
+5. Each feature should be represented as a Feature object with appropriate properties.
+6. Include relevant properties such as "type", "coordinates", and any additional information available.
+7. Follow the GeoJSON specification for formatting.
+
+8. Example:
+Text Document:
+'We are going to Poland with my oncology nurse, Przemysl/Krakow\n\nHelp to cross the border 🥺🙏🏻 There is no car, need it as soon as possible'
+
+Expected Output:
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Przemysl",
+        "type": "City"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [22.767400, 49.783367]
+      }
+    },
+     {
+      "type": "Feature",
+      "properties": {
+        "name": "Krakow",
+        "type": "City"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [19.944981, 50.049683]
+      }
+    },{
+      "type": "Feature",
+      "properties": {
+        "name": "Poland",
+        "type": "Country"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [19.1451, 51.9194]
+      }
+    }
+  
+    // Add more features if necessary
+  ]
+}
+
+9. The second is if you DO NOT find any geographical references from  the text that was between the <start> and <end> tags, simply respond with the word NONE. Do not put the word none into a GeoJSON format.
+
+10. You must reply with only one of the two options that were previously specified. 
+
+11.To be clear, only reply back with a GeoJSON structure if you found a geographical references or one word NONE.Do not send any messages back about using external libraries or other information. Do not provide an explanation of the fact you did not find anything if that is the case. I have seen you do geocoding before you have this ability.
