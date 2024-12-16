@@ -1,5 +1,6 @@
 '''
-use ChatGPT to geocode messages  
+use ChatGPT to geocode messages
+test  
 '''
 
 #C:\Users\BrianT\AppData\Local\Programs\Python\Python310\openai-env\Scripts
