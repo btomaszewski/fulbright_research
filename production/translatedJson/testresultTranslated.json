@@ -13,8 +13,10 @@
             "text": [
                 "Активне посилання на реєстрацію допомоги IRC компанія\n",
                 {
-                    "type": "link",
-                    "text": "https://enketo.redrose.io/cnDF7w0b"
+                    "type": "plain",
+                    "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
+                    "LANGUAGE": "Ukrainian",
+                    "MESSAGE_ENG": "Active link for IRC company aid registration"
                 },
                 ""
             ],
@@ -22,18 +24,20 @@
                 {
                     "type": "plain",
                     "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
-                    "LANGUAGE": "Ukrainian",
-                    "TRANSLATED_TEXT": "Active link for IRC assistance registration company"
-                },
-                {
-                    "type": "link",
-                    "text": "https://enketo.redrose.io/cnDF7w0b",
-                    "LANGUAGE": "URL",
-                    "TRANSLATED_TEXT": "https://enketo.redrose.io/cnDF7w0b"
+                    "LANGUAGE": "Russian",
+                    "TRANSLATED_TEXT": "Active link for IRC company aid registration"
                 },
                 {
                     "type": "plain",
-                    "text": ""
+                    "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Active link for IRC company assistance registration"
+                },
+                {
+                    "type": "plain",
+                    "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Active link for IRC assistance registration company"
                 }
             ]
         }
