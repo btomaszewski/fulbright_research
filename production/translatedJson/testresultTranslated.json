@@ -1,0 +1,41 @@
+{
+    "name": "Українці у Варшаві",
+    "type": "public_supergroup",
+    "id": 1648711930,
+    "messages": [
+        {
+            "id": 20,
+            "type": "message",
+            "date": "2022-07-17T08:13:35",
+            "date_unixtime": "1658060015",
+            "from": "Юрій Овсянніков",
+            "from_id": "user1575641827",
+            "text": [
+                "Активне посилання на реєстрацію допомоги IRC компанія\n",
+                {
+                    "type": "link",
+                    "text": "https://enketo.redrose.io/cnDF7w0b"
+                },
+                ""
+            ],
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Active link to IRC assistance registration company"
+                },
+                {
+                    "type": "link",
+                    "text": "https://enketo.redrose.io/cnDF7w0b",
+                    "LANGUAGE": "English",
+                    "TRANSLATED_TEXT": "https://enketo.redrose.io/cnDF7w0b"
+                },
+                {
+                    "type": "plain",
+                    "text": ""
+                }
+            ]
+        }
+    ]
+}
