@@ -23,12 +23,12 @@
                     "type": "plain",
                     "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
                     "LANGUAGE": "Ukrainian",
-                    "TRANSLATED_TEXT": "Active link to IRC assistance registration company"
+                    "TRANSLATED_TEXT": "Active link for IRC assistance registration company"
                 },
                 {
                     "type": "link",
                     "text": "https://enketo.redrose.io/cnDF7w0b",
-                    "LANGUAGE": "English",
+                    "LANGUAGE": "URL",
                     "TRANSLATED_TEXT": "https://enketo.redrose.io/cnDF7w0b"
                 },
                 {
