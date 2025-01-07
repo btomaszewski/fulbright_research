@@ -4,40 +4,25 @@
     "id": 1648711930,
     "messages": [
         {
-            "id": 20,
+            "id": 2,
             "type": "message",
-            "date": "2022-07-17T08:13:35",
-            "date_unixtime": "1658060015",
-            "from": "Юрій Овсянніков",
-            "from_id": "user1575641827",
+            "date": "2022-07-17T07:56:34",
+            "date_unixtime": "1658058994",
+            "from": "Українці у Варшаві",
+            "from_id": "channel1648711930",
             "text": [
-                "Активне посилання на реєстрацію допомоги IRC компанія\n",
                 {
-                    "type": "plain",
-                    "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
-                    "LANGUAGE": "Ukrainian",
-                    "MESSAGE_ENG": "Active link for IRC company aid registration"
-                },
-                ""
+                    "text": "Супер!!!",
+                    "LANGUAGE": "Russian",
+                    "MESSAGE_ENG": "Super!!!"
+                }
             ],
             "text_entities": [
                 {
                     "type": "plain",
-                    "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
+                    "text": "Супер!!!",
                     "LANGUAGE": "Russian",
-                    "TRANSLATED_TEXT": "Active link for IRC company aid registration"
-                },
-                {
-                    "type": "plain",
-                    "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
-                    "LANGUAGE": "Ukrainian",
-                    "TRANSLATED_TEXT": "Active link for IRC company assistance registration"
-                },
-                {
-                    "type": "plain",
-                    "text": "Активне посилання на реєстрацію допомоги IRC компанія\n",
-                    "LANGUAGE": "Ukrainian",
-                    "TRANSLATED_TEXT": "Active link for IRC assistance registration company"
+                    "TRANSLATED_TEXT": "Super!!!"
                 }
             ]
         }

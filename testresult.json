@@ -1,0 +1,22 @@
+{
+    "name": "Українці у Варшаві",
+    "type": "public_supergroup",
+    "id": 1648711930,
+    "messages": [
+        {
+            "id": 2,
+            "type": "message",
+            "date": "2022-07-17T07:56:34",
+            "date_unixtime": "1658058994",
+            "from": "Українці у Варшаві",
+            "from_id": "channel1648711930",
+            "text": "Супер!!!",
+            "text_entities": [
+             {
+              "type": "plain",
+              "text": "Супер!!!"
+             }
+            ]
+           }
+    ]
+}

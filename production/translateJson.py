@@ -41,23 +41,44 @@ for rawJsonFile in rawJsonDir.iterdir():
             for individual_message in message_data:
                 # Process only messages of type 'message'
                 if individual_message.get("type") == "message":
+                    print(individual_message.get("id"))
                     # Translate main text (if applicable)
                     if "text" in individual_message and individual_message["text"]:
-                        main_text = individual_message['text'][1]['text']
-                        
-                        try:
-                            completion = client.chat.completions.create(
-                                model="gpt-4o",
-                                store=True,
-                                messages=[
-                                    {"role": "user", "content": PROMPT_PART_1 + main_text + PROMPT_PART_2 + PROMPT_PART_3}
-                                ]
-                            )
-                            result_JSON = json.loads(completion.choices[0].message.content)
-                            individual_message["text"][1]['LANGUAGE'] = result_JSON.get("language", "unknown")
-                            individual_message["text"][1]['MESSAGE_ENG'] = result_JSON.get("translation", "")
-                        except Exception as e:
-                            print("Error translating main text:", e)
+                        if type(individual_message["text"]) == list:
+                            main_text = individual_message['text'][1]['text'] #TODO fix somehow. some 'text' entries contain strings outside of the list
+                            
+                            try:
+                                completion = client.chat.completions.create(
+                                    model="gpt-4o",
+                                    store=True,
+                                    messages=[
+                                        {"role": "user", "content": PROMPT_PART_1 + main_text + PROMPT_PART_2 + PROMPT_PART_3}
+                                    ]
+                                )
+                                result_JSON = json.loads(completion.choices[0].message.content)
+                                individual_message["text"][1]['LANGUAGE'] = result_JSON.get("language", "unknown")
+                                individual_message["text"][1]['MESSAGE_ENG'] = result_JSON.get("translation", "")
+                            except Exception as e:
+                                print("Error translating main text:", e)
+                        else:
+                            main_text = individual_message['text']
+                            individual_message['text'] = [{'text': main_text}]
+
+                            try:
+                                completion = client.chat.completions.create(
+                                    model="gpt-4o",
+                                    store=True,
+                                    messages=[
+                                        {"role": "user", "content": PROMPT_PART_1 + main_text + PROMPT_PART_2 + PROMPT_PART_3}
+                                    ]
+                                )
+                                result_JSON = json.loads(completion.choices[0].message.content)
+                                
+                                individual_message['text'][0]['LANGUAGE'] = result_JSON.get("language", "unknown")
+                                individual_message['text'][0]['MESSAGE_ENG'] = result_JSON.get("translation", "")
+                            except Exception as e:
+                                print("Error translating main text:", e)
+
 
                     # Translate text entities
                     text_entities = individual_message.get("text_entities", [])
