@@ -77,3 +77,4 @@ while True:
             
     # Wait before re-scanning the directory for new files
     time.sleep(1)
+    
