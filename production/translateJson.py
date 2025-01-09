@@ -9,7 +9,7 @@ from pathlib import Path
 # Constants
 MESSAGE_DOCUMENTATION_FIELDS = ['MESSAGE_ID', 'MESSAGE_FULL_DATE', 'MESSAGE_DATE_MONTH_DAY_YEAR', 'MESSAGE_DATE_HOUR_SEC', 'MESSAGE_FILE_NAME', 'MESSAGE_SOURCE_LANGUAGE', 'MESSAGE_DETECTED_LANGUAGE', 'MESSAGE_TRANSLATED_ENG']
 PROMPT_PART_1 = "Translate this text to English <start> " 
-PROMPT_PART_2 = " <end>. Return back two things. The first is your translation to English of text that was between the <start> and <end> tags. The second is a one word description of the language of text that was between the <start> and <end> tags. "
+PROMPT_PART_2 = " <end>. Return back two things. The first is your translation to English of text that was between the <start> and <end> tags. The second is a one word description of the language of text that was between the <start> and <end> tags. If the text between the <start> and <end> tags is only whitespace, escape characters, or non-alphanumeric characters, as in not real words, return an empty string for both the translation and the description."
 PROMPT_PART_3 = "Put the two items you return into a JSON structure. Your translation to English of text that was between the <start> and <end> tags placed inside a JSON tag named translation. Your one word description of the language of text that was between the <start> and <end> tags inside a JSON tag named language. Do not return any additional text, descriptions of your process or information beyond two items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
 
 # Load environment variables from the .env file
@@ -31,7 +31,6 @@ while True:
     # List all files in the directory
     for rawJsonFile in rawJsonDir.iterdir():
         if rawJsonFile.is_file() and rawJsonFile.name not in files_to_process:
-            print(f"Processing file: {rawJsonFile.name}")
             files_to_process.add(rawJsonFile.name)
             # Process files
             if rawJsonFile.is_file():
@@ -54,7 +53,8 @@ while True:
                         print(individual_message.get('id'))
                         text_entities = individual_message.get("text_entities", [])
                         for entity in text_entities:
-                            if "text" in entity and entity["text"] and (entity["type"] == "plain" or entity["type"] == "bold"):
+                            if "text" in entity and len(entity['text']) > 3 and (entity["type"] == "plain" or entity["type"] == "bold" or entity["type"] == "italic"):
+                                print(entity['text'])
                                 try:
                                     completion = client.chat.completions.create(
                                         model="gpt-4o",
@@ -75,6 +75,4 @@ while True:
 
                     print(f"Translation completed for {rawJsonFile.name}, output saved to {outputFile}")
             
-    # Wait before re-scanning the directory for new files
-    time.sleep(1)
     
