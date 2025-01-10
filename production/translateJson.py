@@ -48,6 +48,8 @@ while True:
                         if individual_message.get("type") == "service": # Remove "service" messages from destination file
                             message_data.remove(individual_message)
 
+
+
                     # Translate text entities
                     for individual_message in message_data: # Loop through messages
                         print(individual_message.get('id'))
