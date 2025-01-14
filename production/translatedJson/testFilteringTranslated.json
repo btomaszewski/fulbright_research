@@ -1,0 +1,532 @@
+{
+    "name": "Наші люди 🇺🇦 | Щецин | Szczecin",
+    "type": "public_supergroup",
+    "id": 1261837394,
+    "messages": [
+        {
+            "id": 84652,
+            "type": "message",
+            "date": "2024-12-01T14:52:52",
+            "date_unixtime": "1733082772",
+            "from": "Oleksandr",
+            "from_id": "user6498518034",
+            "forwarded_from": "Oleksandr",
+            "file": "(File not included. Change data exporting settings to download.)",
+            "thumbnail": "(File not included. Change data exporting settings to download.)",
+            "media_type": "video_file",
+            "mime_type": "video/mp4",
+            "duration_seconds": 187,
+            "width": 720,
+            "height": 1280,
+            "text": "Хоча вже не ранок... ) ми працювали !",
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Хоча вже не ранок... ) ми працювали !",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Although it's not morning anymore... ) we were working!"
+                }
+            ]
+        },
+        {
+            "id": 84655,
+            "type": "message",
+            "date": "2024-12-01T15:22:52",
+            "date_unixtime": "1733084572",
+            "from": "Андрей",
+            "from_id": "user1046400074",
+            "text": "Добрый вечер всем. Подскажите пожалуйста кто знает нормального мастера по дискам, надо выровнять 4 диска. И царапину глубокую на двери кто то ключом провел. Спасибо)",
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Добрый вечер всем. Подскажите пожалуйста кто знает нормального мастера по дискам, надо выровнять 4 диска. И царапину глубокую на двери кто то ключом провел. Спасибо)",
+                    "LANGUAGE": "Russian",
+                    "TRANSLATED_TEXT": "Good evening everyone. Please let me know if anyone knows a good rim specialist, I need to straighten 4 rims. And someone made a deep scratch on the door with a key. Thank you)"
+                }
+            ]
+        },
+        {
+            "id": 84661,
+            "type": "message",
+            "date": "2024-12-01T16:57:15",
+            "date_unixtime": "1733090235",
+            "from": "Arsenii Krasiuk",
+            "from_id": "user1051708719",
+            "photo": "(File not included. Change data exporting settings to download.)",
+            "width": 1280,
+            "height": 721,
+            "text": [
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker.webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (1).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (2).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (3).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (4).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🥶",
+                    "document_id": "stickers/sticker (5).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🥶",
+                    "document_id": "stickers/sticker (6).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker.webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (1).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (2).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (3).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (4).webp"
+                },
+                "\n",
+                {
+                    "type": "custom_emoji",
+                    "text": "🖥",
+                    "document_id": "stickers/sticker (7).webp"
+                },
+                " ",
+                {
+                    "type": "bold",
+                    "text": "Комп'ютерний сервіс у Щецині та Старгарді"
+                },
+                "  ",
+                {
+                    "type": "custom_emoji",
+                    "text": "🎀",
+                    "document_id": "stickers/sticker (8).webp"
+                },
+                "\n\n ",
+                {
+                    "type": "italic",
+                    "text": "Популярні послуги:"
+                },
+                "\n",
+                {
+                    "type": "custom_emoji",
+                    "text": "🤩",
+                    "document_id": "stickers/sticker (9).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🤩",
+                    "document_id": "stickers/sticker (10).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🤩",
+                    "document_id": "stickers/sticker (11).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🤩",
+                    "document_id": "stickers/sticker (12).webp"
+                },
+                "\n🧹",
+                {
+                    "type": "bold",
+                    "text": "Чистка та заміна термопасти для ноутбуків і ПК "
+                },
+                "\n\n",
+                {
+                    "type": "custom_emoji",
+                    "text": "⚙️",
+                    "document_id": "stickers/sticker (13).webp"
+                },
+                " ",
+                {
+                    "type": "bold",
+                    "text": "Діагностика та ремонт"
+                },
+                "\n\n",
+                {
+                    "type": "custom_emoji",
+                    "text": "📱",
+                    "document_id": "stickers/AnimatedSticker.tgs"
+                },
+                {
+                    "type": "bold",
+                    "text": " Встановлення та налаштування Windows та програм"
+                },
+                "\n\n",
+                {
+                    "type": "custom_emoji",
+                    "text": "☃️",
+                    "document_id": "video_files/sticker.webm"
+                },
+                " ",
+                {
+                    "type": "bold",
+                    "text": "Апгрейд ПК"
+                },
+                " — збільшення продуктивності\n      ",
+                {
+                    "type": "custom_emoji",
+                    "text": "🎄",
+                    "document_id": "stickers/sticker (14).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🎄",
+                    "document_id": "stickers/sticker (15).webp"
+                },
+                "\n",
+                {
+                    "type": "custom_emoji",
+                    "text": "📞",
+                    "document_id": "stickers/sticker (16).webp"
+                },
+                {
+                    "type": "bold",
+                    "text": " "
+                },
+                {
+                    "type": "phone",
+                    "text": "+48786466209"
+                },
+                {
+                    "type": "bold",
+                    "text": " "
+                },
+                " ",
+                {
+                    "type": "custom_emoji",
+                    "text": "📱",
+                    "document_id": "stickers/AnimatedSticker (1).tgs"
+                },
+                " ",
+                {
+                    "type": "text_link",
+                    "text": "Instagram",
+                    "href": "https://www.instagram.com/arsen_krasiuk/"
+                },
+                " ",
+                {
+                    "type": "custom_emoji",
+                    "text": "📱",
+                    "document_id": "stickers/AnimatedSticker (2).tgs"
+                },
+                "\n",
+                {
+                    "type": "custom_emoji",
+                    "text": "💬",
+                    "document_id": "stickers/AnimatedSticker (3).tgs"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "💌",
+                    "document_id": "stickers/AnimatedSticker (4).tgs"
+                },
+                " Пишіть у приватні повідомлення або телефонуйте — завжди радий допомогти!"
+            ],
+            "text_entities": [
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker.webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (1).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (2).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (3).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (4).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🥶",
+                    "document_id": "stickers/sticker (5).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🥶",
+                    "document_id": "stickers/sticker (6).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker.webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (1).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (2).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (3).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "❄️",
+                    "document_id": "stickers/sticker (4).webp"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🖥",
+                    "document_id": "stickers/sticker (7).webp"
+                },
+                {
+                    "type": "plain",
+                    "text": " "
+                },
+                {
+                    "type": "bold",
+                    "text": "Комп'ютерний сервіс у Щецині та Старгарді",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Computer service in Szczecin and Stargard"
+                },
+                {
+                    "type": "plain",
+                    "text": "  "
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🎀",
+                    "document_id": "stickers/sticker (8).webp"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n\n "
+                },
+                {
+                    "type": "italic",
+                    "text": "Популярні послуги:",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Popular services:"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🤩",
+                    "document_id": "stickers/sticker (9).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🤩",
+                    "document_id": "stickers/sticker (10).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🤩",
+                    "document_id": "stickers/sticker (11).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🤩",
+                    "document_id": "stickers/sticker (12).webp"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n🧹"
+                },
+                {
+                    "type": "bold",
+                    "text": "Чистка та заміна термопасти для ноутбуків і ПК ",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Cleaning and replacing thermal paste for laptops and PCs"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n\n"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "⚙️",
+                    "document_id": "stickers/sticker (13).webp"
+                },
+                {
+                    "type": "plain",
+                    "text": " "
+                },
+                {
+                    "type": "bold",
+                    "text": "Діагностика та ремонт",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Diagnostics and repair"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n\n"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "📱",
+                    "document_id": "stickers/AnimatedSticker.tgs"
+                },
+                {
+                    "type": "bold",
+                    "text": " Встановлення та налаштування Windows та програм",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Installation and setup of Windows and programs"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n\n"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "☃️",
+                    "document_id": "video_files/sticker.webm"
+                },
+                {
+                    "type": "plain",
+                    "text": " "
+                },
+                {
+                    "type": "bold",
+                    "text": "Апгрейд ПК",
+                    "LANGUAGE": "Russian",
+                    "TRANSLATED_TEXT": "PC Upgrade"
+                },
+                {
+                    "type": "plain",
+                    "text": " — збільшення продуктивності\n      ",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "increase in productivity"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🎄",
+                    "document_id": "stickers/sticker (14).webp"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "🎄",
+                    "document_id": "stickers/sticker (15).webp"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "📞",
+                    "document_id": "stickers/sticker (16).webp"
+                },
+                {
+                    "type": "bold",
+                    "text": " "
+                },
+                {
+                    "type": "phone",
+                    "text": "+48786466209"
+                },
+                {
+                    "type": "bold",
+                    "text": " "
+                },
+                {
+                    "type": "plain",
+                    "text": " "
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "📱",
+                    "document_id": "stickers/AnimatedSticker (1).tgs"
+                },
+                {
+                    "type": "plain",
+                    "text": " "
+                },
+                {
+                    "type": "text_link",
+                    "text": "Instagram",
+                    "href": "https://www.instagram.com/arsen_krasiuk/"
+                },
+                {
+                    "type": "plain",
+                    "text": " "
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "📱",
+                    "document_id": "stickers/AnimatedSticker (2).tgs"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "💬",
+                    "document_id": "stickers/AnimatedSticker (3).tgs"
+                },
+                {
+                    "type": "custom_emoji",
+                    "text": "💌",
+                    "document_id": "stickers/AnimatedSticker (4).tgs"
+                },
+                {
+                    "type": "plain",
+                    "text": " Пишіть у приватні повідомлення або телефонуйте — завжди радий допомогти!",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Write in private messages or call — always happy to help!"
+                }
+            ]
+        }
+    ]
+}

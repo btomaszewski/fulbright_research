@@ -1,7 +1,7 @@
 import os
 import json
 import shutil
-import time
+import ffmpeg
 from openai import OpenAI
 from dotenv import load_dotenv
 from pathlib import Path
@@ -24,57 +24,85 @@ rawJsonDir = Path("./rawJson")
 translatedJsonDir = Path("./translatedJson")
 translatedJsonDir.mkdir(exist_ok=True)
 
-files_to_process = set()
+filesToProcess = set()
 
-# Scan for all files in directory and add to set
-while True:
-    # List all files in the directory
-    for rawJsonFile in rawJsonDir.iterdir():
-        if rawJsonFile.is_file() and rawJsonFile.name not in files_to_process:
-            files_to_process.add(rawJsonFile.name)
-            # Process files
-            if rawJsonFile.is_file():
-                print(f"Processing file: {rawJsonFile.name}")
-                outputFile = rawJsonFile.stem + "Translated.json"
-                destination = translatedJsonDir / outputFile
+def translate(individualMessage):
+    text_entities = individualMessage.get("text_entities", [])
+    for entity in text_entities:
+        if "text" in entity and len(entity['text']) > 3 and (entity["type"] == "plain" or entity["type"] == "bold" or entity["type"] == "italic"):
+            try:
+                completion = client.chat.completions.create(
+                    model="gpt-4o",
+                    store=True,
+                    messages=[
+                        {"role": "user", "content": PROMPT_PART_1 + entity["text"] + PROMPT_PART_2 + PROMPT_PART_3}
+                    ]
+                )
+                result_JSON = json.loads(completion.choices[0].message.content)
+                entity['LANGUAGE'] = result_JSON.get("language", "unknown")
+                entity['TRANSLATED_TEXT'] = result_JSON.get("translation", "")
+            except Exception as e:
+                print(f"Error translating text entity {individualMessage.get('id')}:", e)
 
-                # Copy raw JSON file to the destination directory
-                shutil.copy(rawJsonFile, destination)
-
-                with open(destination, 'r', encoding='utf-8') as f:
-                    json_data = json.load(f)
-                    message_data = json_data.get("messages", []) # Create array of message data
-                    for individual_message in message_data: # Loop through messages
-                        if individual_message.get("type") == "service": # Remove "service" messages from destination file
-                            message_data.remove(individual_message)
-
-
-
-                    # Translate text entities
-                    for individual_message in message_data: # Loop through messages
-                        print(individual_message.get('id'))
-                        text_entities = individual_message.get("text_entities", [])
-                        for entity in text_entities:
-                            if "text" in entity and len(entity['text']) > 3 and (entity["type"] == "plain" or entity["type"] == "bold" or entity["type"] == "italic"):
-                                print(entity['text'])
-                                try:
-                                    completion = client.chat.completions.create(
-                                        model="gpt-4o",
-                                        store=True,
-                                        messages=[
-                                            {"role": "user", "content": PROMPT_PART_1 + entity["text"] + PROMPT_PART_2 + PROMPT_PART_3}
-                                        ]
-                                    )
-                                    result_JSON = json.loads(completion.choices[0].message.content)
-                                    entity['LANGUAGE'] = result_JSON.get("language", "unknown")
-                                    entity['TRANSLATED_TEXT'] = result_JSON.get("translation", "")
-                                except Exception as e:
-                                    print(f"Error translating text entity {individual_message.get('id')}:", e)
-
-                                # Write messages to destination file
-                    with open(destination, 'w', encoding='utf-8') as f:
-                        json.dump(json_data, f, ensure_ascii=False, indent=4)
-
-                    print(f"Translation completed for {rawJsonFile.name}, output saved to {outputFile}")
-            
+def transcribe(individualMessage, chatExportDir):
+    file = individualMessage.get("file")
+    # Filter out files that exceed maximum size and messages not containing them
+    if file and file != "(File exceeds maximum size. Change data exporting settings to download.)":
+        # Input and output file paths
+        input_file = f"{chatExportDir}/{file}"
+        input_file = input_file.replace("\\", "/")
+        print(input_file)
+        output_file = f"{chatExportDir}/converted.mp4"
+        output_file = output_file.replace("\\", "/")
+        print(output_file)
+        # Convert MOV to MP4
+        ffmpeg.input(input_file).output(output_file, vcodec="h264", acodec="aac").run()
+        print(f"Conversion complete: {output_file}")
     
+    '''
+        filePath = f"{chatExportDir}/{output_file}"
+        audio_file= open(filePath, "rb")
+        transcription = client.audio.transcriptions.create(
+            model="whisper-1", 
+            file=audio_file
+        )
+
+        print(transcription.text)
+    '''
+def main():
+    # Scan for all files in directory and add to set
+    while True:
+        # List all files in the directory
+        for chatExportDir in rawJsonDir.iterdir():
+            for rawJsonFile in chatExportDir.iterdir():
+                if rawJsonFile.is_file() and rawJsonFile.name not in filesToProcess:
+                    filesToProcess.add(rawJsonFile.name)
+                    # Process files
+                    if rawJsonFile.is_file():
+                        print(f"Processing file: {rawJsonFile.name}")
+                        outputFile = rawJsonFile.stem + "Translated.json"
+                        destination = translatedJsonDir / outputFile
+
+                        # Copy raw JSON file to the destination directory
+                        shutil.copy(rawJsonFile, destination)
+
+                        with open(destination, 'r', encoding='utf-8') as f:
+                            jsonData = json.load(f)
+                            messageData = jsonData.get("messages", []) # Create array of message data
+                            for individualMessage in messageData: # Loop through messages
+                                if individualMessage.get("type") == "service": # Remove "service" messages from destination file
+                                    messageData.remove(individualMessage)
+
+                            # Complete all processing on each message: translate text_entities, 
+                            for individualMessage in messageData: # Loop through messages
+                                print(individualMessage.get('id'))
+                                translate(individualMessage)
+                                transcribe(individualMessage, chatExportDir)
+
+                                        # Write messages to destination file
+                            with open(destination, 'w', encoding='utf-8') as f:
+                                json.dump(jsonData, f, ensure_ascii=False, indent=4)
+
+                            print(f"Translation completed for {rawJsonFile.name}, output saved to {outputFile}")
+                
+main()
