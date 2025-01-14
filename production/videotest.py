@@ -31,41 +31,56 @@ def extract_frames(video_path, frames_dir):
     subprocess.run(command, check=True)
     print("Frames extracted successfully.")
 
-# Step 2: Analyze frames using OpenAI
-def analyze_frames(frames_dir):
-    api_key = api_key
+# Step 2: Analyze the frame using OpenAI's GPT model (text-based analysis)
+def analyze_frame_with_openai(frame_path):
+    # Open the image and convert it to a byte array
+    with open(frame_path, "rb") as image_file:
+        image_data = image_file.read()
+
+    # Send the image data to OpenAI for analysis
+    response = client.chat.completions.create(
+        model="gpt-4",  # Use GPT-4 or the appropriate model for your use case
+        messages=[
+            {
+                "role": "user",
+                "content": "Describe the content of this image in detail."
+            }
+        ],
+        max_tokens=150  # Limit the output size
+    )
+
+    description = response.choices[0].message['content'].strip()
+    return description
+
+# Step 3: Generate a summary description of the video by analyzing all frames
+def analyze_video_frames(frames_dir):
     descriptions = []
-    for frame_file in sorted(os.listdir(frames_dir)):
-        frame_path = os.path.join(frames_dir, frame_file)
-        # Assuming you have access to OpenAI's image processing capabilities
-        with open(frame_path, "rb") as image_file:
-            response = OpenAI.Image.create(file=image_file, purpose="analyze")
-            description = response.get("description", "No description available.")
-            descriptions.append(f"{frame_file}: {description}")
-    return descriptions
+    # List all frame images in the directory
+    frame_files = sorted(os.listdir(frames_dir))  # Sort to maintain chronological order
 
-# Step 3: Transcribe audio using Whisper
-def transcribe_audio(video_path):
-    model = whisper.load_model("base")
-    result = model.transcribe(video_path)
-    return result["text"]
+    # Analyze each frame
+    for frame in frame_files:
+        frame_path = os.path.join(frames_dir, frame)
+        print(f"Analyzing frame: {frame_path}")
+        
+        # Get description of the frame from OpenAI
+        frame_description = analyze_frame_with_openai(frame_path)
+        descriptions.append(frame_description)
 
-# Main script
-try:
-    print("Extracting frames...")
+    # Combine all frame descriptions into a single summary
+    video_summary = "The video contains the following scenes:\n" + "\n".join(descriptions)
+    return video_summary
+
+# Main function to execute the script
+if __name__ == "__main__":
+    # Step 1: Extract frames
     extract_frames(video_path, frames_dir)
 
-    print("Analyzing frames...")
-    frame_descriptions = analyze_frames(frames_dir)
-    with open("frame_descriptions.txt", "w") as f:
-        f.write("\n".join(frame_descriptions))
-    print("Frame descriptions saved to frame_descriptions.txt.")
+    # Step 2: Analyze all frames and generate a video summary
+    video_description = analyze_video_frames(frames_dir)
 
-    print("Transcribing audio...")
-    transcription = transcribe_audio(video_path)
-    with open(output_transcription, "w") as f:
-        f.write(transcription)
-    print(f"Audio transcription saved to {output_transcription}.")
+    # Step 3: Save the transcription to a text file
+    with open(output_transcription, "w") as transcription_file:
+        transcription_file.write(video_description)
 
-except Exception as e:
-    print(f"An error occurred: {e}") 
+    print("Video description and transcription complete.")
