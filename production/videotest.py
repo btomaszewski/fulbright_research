@@ -3,7 +3,6 @@ from openai import OpenAI
 import ffmpeg
 import subprocess 
 from dotenv import load_dotenv
-import whisper 
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
