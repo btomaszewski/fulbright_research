@@ -4,7 +4,7 @@ from openai import OpenAI
 import ffmpeg
 
 # Input and output file paths
-input_file = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/production/IMG_1238(1).MOV"
+input_file = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/production/IMG_1238 (1).MOV"
 output_file = "./output.mp4"
 
 # Convert MOV to MP4
