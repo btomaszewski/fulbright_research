@@ -26,6 +26,9 @@ processedJsonDir.mkdir(exist_ok=True)
 
 filesToProcess = set()
 
+# Helper Functions
+
+# Takes string, returns an AI description of the original language and translation a to English.
 def translate(text):
     try:
         completion = client.chat.completions.create(
@@ -41,21 +44,25 @@ def translate(text):
         print(f"Error translating text.", e)
         return None
 
+# Takes a message Json object, loops through all text_entities for that message, calls translate() on text, and places the language/translation in processed Json file. 
 def translateTextEntities(individualMessage):
     text_entities = individualMessage.get("text_entities", [])
+    textTypes = set("plain", "bold", "italic", "hashtag") #add any text types to be translated to this set
     for entity in text_entities:
-        if "text" in entity and len(entity['text']) > 3 and (entity["type"] == "plain" or entity["type"] == "bold" or entity["type"] == "italic" or entity["type"] == "hashtag"):
+        if "text" in entity and len(entity['text']) > 3 and entity["type"] in textTypes: #filters out non-text entities
             result_JSON = translate(entity["text"])
             entity['LANGUAGE'] = result_JSON.get("language", "unknown")
             entity['TRANSLATED_TEXT'] = result_JSON.get("translation", "")
     
+# Takes a message Json object and the directory containing all data for the exported chat, converts file to .mp4 if necessary, returns AI generated transcription. 
 def transcribe(individualMessage, chatExportDir):
     file = individualMessage.get("file")
-    print(file)
 
     if file and file != "(File exceeds maximum size. Change data exporting settings to download.)":
         fExtension = os.path.splitext(file)[1]
-        outputFile = (f"{chatExportDir}/{file}").replace("\\", "/")
+        outputFile = (f"{chatExportDir}/{file}").replace("\\", "/") # If conversion to mp4 is not necessary, no new outputFile is generated for transcription. In this case, outputFile = filePath/to/file.
+        
+        # Convert to mp4 if necessary. Potential TODO: refactor to handle other file types
         if fExtension == ".MOV" or fExtension == ".mov":
             # Input and output file paths
             inputFile = (f"{chatExportDir}/{file}").replace("\\", "/")
@@ -70,6 +77,7 @@ def transcribe(individualMessage, chatExportDir):
             except Exception as e:
                     print("Error converting file to .mp4", e)
 
+        # Transcribe
         try:
             audio_file= open(outputFile, "rb")
             transcription = client.audio.transcriptions.create(
@@ -91,6 +99,7 @@ def main():
             for rawJsonFile in chatExportDir.iterdir():
                 if rawJsonFile.is_file() and rawJsonFile.name not in filesToProcess:
                     filesToProcess.add(rawJsonFile.name)
+
                     # Process files
                     if rawJsonFile.is_file():
                         print(f"Processing file: {rawJsonFile.name}")
@@ -114,12 +123,9 @@ def main():
                                 translateTextEntities(individualMessage)
 
                                 transcription = transcribe(individualMessage, chatExportDir)
-                                print(transcription)
                                 individualMessage['VIDEO_TRANSCRIPTION'] = transcription
-
                                 if transcription:
                                     transcriptionTranslation = translate(transcription)
-                                    print(transcriptionTranslation)
                                     individualMessage['TRANSCRIPTION_TRANSLATION'] = transcriptionTranslation
 
                             # Write messages to destination file
