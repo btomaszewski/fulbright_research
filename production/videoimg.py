@@ -3,6 +3,8 @@ import base64
 from dotenv import load_dotenv
 from openai import OpenAI
 
+PROMPT_PART_1 = "Summarize this String " 
+
 # Load environment variables from the .env file
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
@@ -10,32 +12,46 @@ if not api_key:
     raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
 client = OpenAI(api_key=api_key)
 
+
 # Function to encode the image
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
-        
 
 # Path to the folder containing the images
 image_folder = "frames"  # Path to your image folder
 
-# Open a text file in write mode to capture the output
-output_file_path = "output_log.txt"
-with open(output_file_path, 'w') as file:
+# Function to summarize text using OpenAI
+def summary(text):
+    try:
+        completion = OpenAI.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "user", "content": PROMPT_PART_1 + text}
+            ]
+        )
+        return completion.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"Error summarizing text: {e}")
+        return None
 
-    # Loop through images in the folder
-    image_number = 1
-    while True:
-        # Ensure the filename has 4 digits for the image number
-        image_path = os.path.join(image_folder, f"frame_{image_number:04d}.png")
+# Open a string to store outputs
+response_log = ""
 
-        # Check if the image exists
-        if not os.path.exists(image_path):
-            break
-        
-        # Correctly call the encode_image function
+# Loop through images in the folder
+image_number = 1
+while True:
+    # Generate the image path
+    image_path = os.path.join(image_folder, f"frame_{image_number:04d}.png")
+    
+    # Check if the image exists
+    if not os.path.exists(image_path):
+        break
+
+    try:
+        # Encode the image
         base64_image = encode_image(image_path)
-
+        
         # Call the API (add your OpenAI logic here)
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -55,14 +71,21 @@ with open(output_file_path, 'w') as file:
                 }
             ],
         )
+        response_output = response.choices[0].message.content.strip()
+        response_log += f"Image {image_number:04d}:\n{response_output}\n\n"
 
-        # Capture the output (what would be printed)
-        response_output = str(response.choices[0])  # Assuming the response has this structure
+    except Exception as e:
+        print(f"Error processing image {image_number:04d}: {e}")
 
-        # Write the response into the output file
-        file.write(f"Image {image_number:04d}: {response_output}\n")
+    # Increment image number
+    image_number += 1
 
-        # Increment the image number
-        image_number += 1
+# Summarize the collected responses
+summary_text = summary(response_log)
 
-print(f"Output saved to {output_file_path}")
+# Print the summary
+if summary_text:
+    print("Summary of the processed images:")
+    print(summary_text)
+else:
+    print("Failed to generate a summary.")
