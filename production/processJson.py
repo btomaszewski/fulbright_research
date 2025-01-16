@@ -2,52 +2,29 @@ import os
 import json
 import shutil
 import ffmpeg
-from openai import OpenAI
-from dotenv import load_dotenv
 from pathlib import Path
+from frameExtraction import extractFrames
+from videoAnalysis import summarize
+from imageAnalysis import analyzeImage
+from aiLoader import loadAI
+from textHelpers import translate
 
-# Constants
-MESSAGE_DOCUMENTATION_FIELDS = ['MESSAGE_ID', 'MESSAGE_FULL_DATE', 'MESSAGE_DATE_MONTH_DAY_YEAR', 'MESSAGE_DATE_HOUR_SEC', 'MESSAGE_FILE_NAME', 'MESSAGE_SOURCE_LANGUAGE', 'MESSAGE_DETECTED_LANGUAGE', 'MESSAGE_TRANSLATED_ENG']
-PROMPT_PART_1 = "Translate this text to English <start> " 
-PROMPT_PART_2 = " <end>. Return back two things. The first is your translation to English of text that was between the <start> and <end> tags. The second is a one word description of the language of text that was between the <start> and <end> tags. If the text between the <start> and <end> tags is only whitespace, escape characters, or non-alphanumeric characters, as in not real words, return an empty string for both the translation and the description."
-PROMPT_PART_3 = "Put the two items you return into a JSON structure. Your translation to English of text that was between the <start> and <end> tags placed inside a JSON tag named translation. Your one word description of the language of text that was between the <start> and <end> tags inside a JSON tag named language. Do not return any additional text, descriptions of your process or information beyond two items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
-
-# Load environment variables from the .env file
-load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
-client = OpenAI(api_key=api_key)
+client = loadAI()
 
 # Paths
 rawJsonDir = Path("./rawJson")
 processedJsonDir = Path("./processedJson")
 processedJsonDir.mkdir(exist_ok=True)
+currentDir = os.path.dirname(os.path.abspath(__file__)) # currentDir = production
 
 filesToProcess = set()
 
 # Helper Functions
 
-# Takes string, returns an AI description of the original language and translation a to English.
-def translate(text):
-    try:
-        completion = client.chat.completions.create(
-            model="gpt-4o",
-            store=True,
-            messages=[
-                {"role": "user", "content": PROMPT_PART_1 + text + PROMPT_PART_2 + PROMPT_PART_3}
-            ]
-        )
-        return json.loads(completion.choices[0].message.content)
-
-    except Exception as e:
-        print(f"Error translating text.", e)
-        return None
-
 # Takes a message Json object, loops through all text_entities for that message, calls translate() on text, and places the language/translation in processed Json file. 
-def translateTextEntities(individualMessage):
+def processTextEntities(individualMessage):
     text_entities = individualMessage.get("text_entities", [])
-    textTypes = set("plain", "bold", "italic", "hashtag") #add any text types to be translated to this set
+    textTypes = {"plain", "bold", "italic", "hashtag"} #add any text types to be translated to this set
     for entity in text_entities:
         if "text" in entity and len(entity['text']) > 3 and entity["type"] in textTypes: #filters out non-text entities
             result_JSON = translate(entity["text"])
@@ -55,10 +32,7 @@ def translateTextEntities(individualMessage):
             entity['TRANSLATED_TEXT'] = result_JSON.get("translation", "")
     
 # Takes a message Json object and the directory containing all data for the exported chat, converts file to .mp4 if necessary, returns AI generated transcription. 
-def transcribe(individualMessage, chatExportDir):
-    file = individualMessage.get("file")
-
-    if file and file != "(File exceeds maximum size. Change data exporting settings to download.)":
+def transcribe(file, chatExportDir):
         fExtension = os.path.splitext(file)[1]
         outputFile = (f"{chatExportDir}/{file}").replace("\\", "/") # If conversion to mp4 is not necessary, no new outputFile is generated for transcription. In this case, outputFile = filePath/to/file.
         
@@ -91,6 +65,29 @@ def transcribe(individualMessage, chatExportDir):
             print("Error transcribing audio", e)
             return None
 
+def processVideo(individualMessage, chatExportDir, file):
+    # Get video transcription
+    transcription = transcribe(file, chatExportDir)
+    if transcription:
+        individualMessage['VIDEO_TRANSCRIPTION'] = transcription
+        transcriptionTranslation = translate(transcription)
+        individualMessage['TRANSCRIPTION_TRANSLATION'] = transcriptionTranslation
+
+    # Extract frames
+    filePath = (f"{chatExportDir}/{file}").replace("\\", "/")
+    extractFrames(filePath, currentDir)
+    print("Frames extracted successfully.")
+
+    # Perform analysis of video frames
+    summary = summarize()
+    if summary:
+        individualMessage['VIDEO_SUMMARY'] = summary
+
+def processImage(individualMessage, photo):
+    analysis = analyzeImage(photo)
+    if analysis:
+        individualMessage['PHOTO_ANALYSIS'] = analysis
+
 def main():
     # Scan for all files in directory and add to set
     while True:
@@ -116,18 +113,22 @@ def main():
                                 if individualMessage.get("type") == "service": # Remove "service" messages from destination file
                                     messageData.remove(individualMessage)
 
-                            # Complete all processing on each message: translate text_entities, transcribe audio/video
+                            # Complete all processing on each message: translate text_entities, analyze/transcribe video, analyze images
                             for individualMessage in messageData: # Loop through messages
                                 print(individualMessage.get('id'))
 
-                                translateTextEntities(individualMessage)
+                                processTextEntities(individualMessage)
 
-                                transcription = transcribe(individualMessage, chatExportDir)
-                                individualMessage['VIDEO_TRANSCRIPTION'] = transcription
-                                if transcription:
-                                    transcriptionTranslation = translate(transcription)
-                                    individualMessage['TRANSCRIPTION_TRANSLATION'] = transcriptionTranslation
+                                video = individualMessage.get("file")
+                                if video and video != "(File exceeds maximum size. Change data exporting settings to download.)":
+                                    processVideo(individualMessage, chatExportDir, video)
 
+                                photo = individualMessage.get("photo")
+                                if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
+                                    photo = (f"{chatExportDir}/{photo}").replace("\\", "/")
+                                    processImage(individualMessage, photo)
+
+                                        
                             # Write messages to destination file
                             with open(destination, 'w', encoding='utf-8') as f:
                                 json.dump(jsonData, f, ensure_ascii=False, indent=4)
