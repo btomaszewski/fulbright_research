@@ -1,6 +1,6 @@
 import os
-import json
 import shutil
+import json
 from pathlib import Path
 from frameExtraction import extractFrames
 from videoAnalysis import summarize
@@ -16,8 +16,6 @@ processedJsonDir = Path("./processedJson")
 processedJsonDir.mkdir(exist_ok=True)
 currentDir = os.path.dirname(os.path.abspath(__file__)) # currentDir = production
 
-filesToProcess = set()
-
 # Helper Functions
 
 # Takes a message Json object, loops through all text_entities for that message, calls translate() on text, and places the language/translation in processed Json file. 
@@ -29,8 +27,8 @@ def processTextEntities(text_entities):
             entity['LANGUAGE'] = result_JSON.get("language", "unknown")
             entity['TRANSLATED_TEXT'] = result_JSON.get("translation", "")
 # Takes a message Json object and the directory containing all data for the exported chat, converts file to .mp4 if necessary, returns AI generated transcription. 
-
 def processVideo(individualMessage, video):
+    video = os.path.join(processedJsonDir, video)
     # Get video transcription
     transcription = transcribe(video)
     if transcription:
@@ -39,66 +37,76 @@ def processVideo(individualMessage, video):
         individualMessage['TRANSCRIPTION_TRANSLATION'] = transcriptionTranslation
 
     # Extract frames
-    extractFrames(video, currentDir)
+    framesDir = video + "Frames"
+    extractFrames(video, framesDir)
 
     # Perform analysis of video frames
     summary = summarize()
     if summary:
         individualMessage['VIDEO_SUMMARY'] = summary
 
+    # Delete frames dir
+    shutil.rmtree(framesDir)
+
 def processImage(individualMessage, photo):
     analysis = analyzeImage(photo)
     if analysis:
         individualMessage['PHOTO_ANALYSIS'] = analysis
 
-def main():
+def processJson(messageData, chatDir):
+    # Complete all processing on each message: translate text_entities, analyze/transcribe video, analyze images
+    for individualMessage in messageData: # Loop through messages
+        if individualMessage.get("type") == "service": # Remove "service" messages from destination file
+            messageData.remove(individualMessage)
+
+        print(f"Processing message id: {individualMessage.get('id')}")
+
+        text_entities = individualMessage.get("text_entities", [])
+        if text_entities:
+            processTextEntities(text_entities)
+
+        video = individualMessage.get("file")
+        if video and video != "(File exceeds maximum size. Change data exporting settings to download.)":
+            video = (f"{chatDir}/{video}").replace("\\", "/")
+            processVideo(individualMessage, video)
+
+        photo = individualMessage.get("photo")
+        if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
+            photo = (f"{chatDir}/{photo}").replace("\\", "/")
+            processImage(individualMessage, photo)
+
+
+chatsToProcess = set()
+
+def main(): # put all main() functionality in a while True: if we want it to automatically add new chatDirs to the set while processing
     # Scan for all files in directory and add to set
-    while True:
-        # List all files in the directory
-        for chatExportDir in rawJsonDir.iterdir():
-            for rawJsonFile in chatExportDir.iterdir():
-                if rawJsonFile.is_file() and rawJsonFile.name not in filesToProcess:
-                    filesToProcess.add(rawJsonFile.name)
+    for chatExportDir in rawJsonDir.iterdir():
+        if chatExportDir.is_dir() and chatExportDir.name not in chatsToProcess:
+            chatsToProcess.add(chatExportDir.name)
+            print(chatsToProcess)
 
-                    # Process files
-                    if rawJsonFile.is_file():
-                        print(f"Processing file: {rawJsonFile.name}")
-                        outputFile = rawJsonFile.stem + "Processed.json"
-                        destination = processedJsonDir / outputFile
+    # Process files
+    for chatDir in chatsToProcess:
+        chatDirPath = os.path.join(rawJsonDir, chatDir)
+        chatDir = f"{chatDir}Processed"
+        processedDirPath = os.path.join(processedJsonDir, chatDir)
+        shutil.copytree(chatDirPath, processedDirPath)
+        
+        resultJson = Path(processedDirPath) / "result.json"  # Construct the path
+        print(resultJson)
+        if resultJson.is_file():  # Check if result.json exists
+            print(f"Processing file: {resultJson.name}")
 
-                        # Copy raw JSON file to the destination directory
-                        shutil.copy(rawJsonFile, destination)
+            with open(resultJson, 'r', encoding='utf-8') as f:
+                jsonData = json.load(f)
+                messageData = jsonData.get("messages", []) # Create array of message data
 
-                        with open(destination, 'r', encoding='utf-8') as f:
-                            jsonData = json.load(f)
-                            messageData = jsonData.get("messages", []) # Create array of message data
+                processJson(messageData, chatDir)
+                            
+            # Write messages to destination file
+            with open(resultJson, 'w', encoding='utf-8') as f:
+                json.dump(jsonData, f, ensure_ascii=False, indent=4)
 
-                            # Complete all processing on each message: translate text_entities, analyze/transcribe video, analyze images
-                            for individualMessage in messageData: # Loop through messages
-                                if individualMessage.get("type") == "service": # Remove "service" messages from destination file
-                                    messageData.remove(individualMessage)
+            print(f"Translation completed for {resultJson}")
 
-                                print(f"Processing message id: {individualMessage.get('id')}")
-
-                                text_entities = individualMessage.get("text_entities", [])
-                                if text_entities:
-                                    processTextEntities(text_entities)
-
-                                video = individualMessage.get("file")
-                                if video and video != "(File exceeds maximum size. Change data exporting settings to download.)":
-                                    video = (f"{chatExportDir}/{video}").replace("\\", "/")
-                                    processVideo(individualMessage, video)
-
-                                photo = individualMessage.get("photo")
-                                if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
-                                    photo = (f"{chatExportDir}/{photo}").replace("\\", "/")
-                                    processImage(individualMessage, photo)
-
-                                        
-                            # Write messages to destination file
-                            with open(destination, 'w', encoding='utf-8') as f:
-                                json.dump(jsonData, f, ensure_ascii=False, indent=4)
-
-                            print(f"Translation completed for {rawJsonFile.name}, output saved to {outputFile}")
-                
 main()
