@@ -10,17 +10,22 @@ PROMPT_PART_1 = "Each of the paragraphs in this string between the <start> and <
 PROMPT_PART_2 = "<end> Return back 1 item: the summary of the video in string format. Do not provide any other explanations. Do not refer to the frames in your summary, treat it as a summary of the video as a whole."
 
 # Path to the folder containing the frames
-frameFolder = Path("frames")  # Path to your frame folder
+# frameFolder = Path("frames")  # Path to your frame folder
 
 # Loop through frames in the folder
-def logResponses():
+def logResponses(framesDir):
+    print("**************")
+    print(framesDir)
+    print("**************")
+
+    framesDir = Path(framesDir)
     frameNum = 0
     responseLog = ""
 
-    for frame in frameFolder.iterdir():
+    for frame in framesDir.iterdir():
         # Generate the frame path
         frameNum += 1
-        framePath = os.path.join(frameFolder, f"frame_{frameNum:04d}.png")
+        framePath = os.path.join(framesDir, f"frame_{frameNum:04d}.png")
         
         # Check if the frame exists
         if not os.path.exists(framePath):
@@ -40,8 +45,8 @@ def logResponses():
         frameNum += 1
 
 # Function to summarize text using OpenAI
-def summarize():
-    responseLog = logResponses()
+def summarize(framesDir):
+    responseLog = logResponses(framesDir)
     try:
         completion = client.chat.completions.create(
             model="gpt-4o",

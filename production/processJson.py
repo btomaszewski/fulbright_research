@@ -41,7 +41,7 @@ def processVideo(individualMessage, video):
     extractFrames(video, framesDir)
 
     # Perform analysis of video frames
-    summary = summarize()
+    summary = summarize(framesDir)
     if summary:
         individualMessage['VIDEO_SUMMARY'] = summary
 
