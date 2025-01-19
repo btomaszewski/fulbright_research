@@ -61,9 +61,9 @@ def processJson(messageData, chatDir):
 
         print(f"Processing message id: {individualMessage.get('id')}")
 
-        text_entities = individualMessage.get("text_entities", [])
-        if text_entities:
-            processTextEntities(text_entities)
+        textEntities = individualMessage.get("text_entities", [])
+        if textEntities:
+            processTextEntities(textEntities)
 
         video = individualMessage.get("file")
         if video and video != "(File exceeds maximum size. Change data exporting settings to download.)":
