@@ -4,6 +4,7 @@ from aiLoader import loadAI
 
 client = loadAI()
 
+#keywords and subtopics will at some point become user-defined
 keywordsDict = {
     "Legal Status and Documentation" : "temporary protection, residence permit, ID card, TIN, passport",
     "Safety and Security" : "discrimination, harassment, physical attack, safety, security",
@@ -31,17 +32,13 @@ keywordsDict = {
     "Challenges Returning to Poland" : "lost protection status, visa issues, re-entry problem, waiting time"
 }
 
-jsonFile = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/production/processedJson/ChatExport_2025-01-20Processed/result.json"
-
 # Prompts
 PROMPT_PART_1 = "Conduct a thematic analysis of this text <start> " 
-PROMPT_PART_2 = " <end>. Return back one thing:"
+PROMPT_PART_2 = " <end>. First conduct a general thematic assessment of text that was between the <start> and <end> tags."
 
-PROMPT_PART_3 = "A set containing any subtopics that the text between the <start> and <end> tags may belong to. The text can belong to one, many, or no subtopics. The subtopics are listed out as keys in this dictionary between the <dict> tags, the value for each key contains keywords that you may use to sort the text into subtopics. <dict>"
+PROMPT_PART_3 = "Return an array containing any subtopics that the text between the <start> and <end> tags may belong to. The text can belong to one, many, or no subtopics. The subtopics are listed out as keys in this dictionary between the <dict> tags, the value for each key contains keywords that you may use to sort the text into subtopics. If any of the keywords exist in the text between the <start> and <end> tags, or your own thematic assessment, they likely belong to that subtopic. <dict>"
 
-PROMPT_PART_4 = " <dict> Put the two items you return into a JSON structure. Your general thematic assesment of text that was between the <start> and <end> tags placed inside a JSON tag named theme. Any topics you found in the text that was between the <start> and <end> tags inside a JSON tag named topic."
-
-PROMPT_PART_5 = " <dict> Do not return any additional text, descriptions of your process or information beyond two items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
+PROMPT_PART_5 = " <dict> If no subtopics match, return 'Undefined'. Do not return any additional text, descriptions of your process or information beyond two items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
 
 MOTIVATION_MESSAGE = "You are a skilled humanitarian analyst who is an expert in conducting thematic analysis of English language texts."
 
@@ -55,8 +52,9 @@ def thematize(text, subtopics):
                 {"role": "user", "content": PROMPT_PART_1 + text + PROMPT_PART_2 + PROMPT_PART_3 + str(keywordsDict) + PROMPT_PART_5}
             ]
         )
+
         results = ast.literal_eval(completion.choices[0].message.content.strip())
-        #print(results)
+
         for result in results:
             if result not in subtopics:
                 subtopics.append(result)
@@ -66,45 +64,37 @@ def thematize(text, subtopics):
         print(f"Error summarizing text: {e}")
         return None
 
-
 # start with just text_entity translations
-with open(jsonFile, 'r', encoding='utf-8') as f:
-    jsonData = json.load(f)
-    messageData = jsonData.get("messages", []) # Create array of message data
+def writeThemes(message):
+    #with open(jsonFile, 'r', encoding='utf-8') as f:
+        #jsonData = json.load(f)
+        # messageData = jsonData.get("messages", []) # Create array of message data
+    textEntities = message.get("text_entities", [])
+    subtopics = []
+    fullText = ""
 
-    for message in messageData:
-        textEntities = message.get("text_entities", [])
-        subtopics = []
+    for entity in textEntities:
+        if "TRANSLATED_TEXT" in entity:
+            fullText += entity["TRANSLATED_TEXT"]
 
-        fullText = ""
+    if fullText:
+        subtopics = thematize(fullText, subtopics)
 
-        for entity in textEntities:
-            if "TRANSLATED_TEXT" in entity:
-                fullText += entity["TRANSLATED_TEXT"]
+    vidSum = message.get("VIDEO_SUMMARY")
+    if vidSum:
+        subtopics = thematize(vidSum, subtopics)
 
-        if fullText:
-            subtopics = thematize(fullText, subtopics)
+    vidTrans = message.get("TRANSCRIPTION_TRANSLATION")
+    if vidTrans:
+        subtopics = thematize(vidTrans, subtopics)
 
-            # print(subtopics)
+    imageAn = message.get("IMAGE_ANALYSIS")
+    if imageAn:
+        subtopics = thematize(imageAn, subtopics)
 
-        vidSum = message.get("VIDEO_SUMMARY")
-        if vidSum:
-            subtopics = thematize(vidSum, subtopics)
+    return subtopics
 
-        vidTrans = message.get("TRANSCRIPTION_TRANSLATION")
-        if vidTrans:
-            subtopics = thematize(vidTrans, subtopics)
+    #with open(jsonFile, 'w', encoding='utf-8') as f:
+        #json.dump(jsonData, f, ensure_ascii=False, indent=4)
 
-        imageAn = message.get("IMAGE_ANALYSIS")
-        if imageAn:
-            subtopics = thematize(imageAn, subtopics)
-
-        print(f"FULLTEXT {message.get("id")}: {fullText} : {subtopics}")
-        print(f"VIDSUM {vidSum} : {subtopics}")
-        print(f"VIDTRANS {vidTrans} : {subtopics}")
-        print(f"IMAGEAN {imageAn} : {subtopics}")
-        print()
-
-
-
-
+print("Thematic analaysis complete")
