@@ -48,10 +48,10 @@ def processVideo(individualMessage, video):
     # Delete frames dir
     shutil.rmtree(framesDir)
 
-def processImage(individualMessage, photo):
-    analysis = analyzeImage(photo)
+def processImage(individualMessage, image):
+    analysis = analyzeImage(image)
     if analysis:
-        individualMessage['PHOTO_ANALYSIS'] = analysis
+        individualMessage['IMAGE_ANALYSIS'] = analysis
 
 def processJson(messageData, chatDir):
     # Complete all processing on each message: translate text_entities, analyze/transcribe video, analyze images
@@ -72,7 +72,8 @@ def processJson(messageData, chatDir):
 
         photo = individualMessage.get("photo")
         if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
-            photo = (f"{chatDir}/{photo}").replace("\\", "/")
+            photo = (f"processedJson/{chatDir}/{photo}").replace("\\", "/")
+            print(photo)
             processImage(individualMessage, photo)
 
 
