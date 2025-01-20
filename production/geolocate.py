@@ -6,17 +6,17 @@ client = loadAI()
 
 PROMPT_PART_1 = "Conduct a geographical analysis of text messages to determine if the English language text contains any geographical references.<start>"
 PROMPT_PART_2 = "You will return several things"
-PROMPT_PART_3 = "Each transled text corresponds to a message ID. For each translated text between the <start> and <end> tags determine a location. The geographical references you will be looking for will likely be, but not limited to, cities and provinces in Poland or cities in Ukraine. If a geographic reference was found, provide the corresponding information of country, city, province, county, commune, latitude and longitude. There is no  limit to the number of locations you want to find in a single text. There can be null values."
-PROMPT_PART_4 = "Return a string of for each geographical reference found in the translated text between the <start> and <end> tags. Return the string in the formation of 'Country,City,Province,County,Communes,Latitude,Longitude,Geographic_Analysis,translated_message'. Allow null values in the string."
+PROMPT_PART_3 = "Each translated text corresponds to a message id; some texts have the same message id. For each translated text between the <start> and <end> tags determine a location. The geographical references you will be looking for will likely be, but not limited to, cities and provinces in Poland or cities in Ukraine. If a geographic reference was found, provide the corresponding information of country, city, province, county, commune, latitude, longitude. There is no  limit to the number of locations you want to find in a single text. If there is a location there must be a latitude. If there is a location there must be a longitude. Other values may be null."
+PROMPT_PART_4 = "Return a string of each geographical reference found in the translated text between the <start> and <end> tags. The string will follow the format Message_id,translated_message,Country,City,Province,County,Communes,Latitude,Longitude"
 PROMPT_PART_5 = "Do not return any additional text, descriptions of your process or information beyond the items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
 MOTIVATION_MESSAGE = "You are a skilled humanitarian analyst who is an expert in identifying geographic locations in English language texts."
 
 json_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/processedJson/testgeo.json"
 csv_output_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/GeocodingResults.csv"
 
-GEOCODING_OUTPUT_FIELDS = ['Country', 'City', 'Province', 'County', 'Communes', 'Latitude', 'Longitude', 'Geographic_Analysis']
+GEOCODING_OUTPUT_FIELDS = ['Message_ID','Translated_Message', 'Country', 'City', 'Province', 'County', 'Communes', 'Latitude', 'Longitude',]
 
-def geolocate(text):
+def geolocate(text, message_id):
     try:
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -50,11 +50,16 @@ def process_messages(input_path, output_path):
             for message in messages:
                 message_id = message.get("id")
                 text_entities = message.get("text_entities", [])
-                full_text = " ".join(entity.get("TRANSLATED_TEXT", "") for entity in text_entities if "TRANSLATED_TEXT" in entity)
+                full_text = " ".join(
+                    entity.get("TRANSLATED_TEXT", "").replace(",", "") for entity in text_entities if "TRANSLATED_TEXT" in entity
+                )
+                
+                # Concatenate message_id with the full_text
+                full_text_with_id = f"Message ID: {message_id}\n{full_text}"
 
                 if full_text:
                     print(f"Processing Message {message_id}: {full_text}")
-                    analysis = geolocate(full_text)
+                    analysis = geolocate(full_text_with_id, message_id)
 
                     if analysis:
                         try:
@@ -71,7 +76,6 @@ def process_messages(input_path, output_path):
         print("Error decoding JSON file.")
     except Exception as e:
         print(f"Unexpected error: {e}")
-
 
 if __name__ == "__main__":
     process_messages(json_file, csv_output_file)
