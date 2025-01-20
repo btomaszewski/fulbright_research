@@ -7,6 +7,7 @@ from videoAnalysis import summarize
 from imageAnalysis import analyzeImage
 from aiLoader import loadAI
 from helpers import translate, transcribe
+from thematicAnalysis import writeThemes
 
 client = loadAI()
 
@@ -73,8 +74,10 @@ def processJson(messageData, chatDir):
         photo = individualMessage.get("photo")
         if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
             photo = (f"processedJson/{chatDir}/{photo}").replace("\\", "/")
-            print(photo)
             processImage(individualMessage, photo)
+
+        subtopics = writeThemes(individualMessage)
+        individualMessage["SUBTOPICS"] = subtopics
 
 
 chatsToProcess = set()
@@ -84,7 +87,6 @@ def main(): # put all main() functionality in a while True: if we want it to aut
     for chatExportDir in rawJsonDir.iterdir():
         if chatExportDir.is_dir() and chatExportDir.name not in chatsToProcess:
             chatsToProcess.add(chatExportDir.name)
-            print(chatsToProcess)
 
     # Process files
     for chatDir in chatsToProcess:
@@ -93,8 +95,7 @@ def main(): # put all main() functionality in a while True: if we want it to aut
         processedDirPath = os.path.join(processedJsonDir, chatDir)
         shutil.copytree(chatDirPath, processedDirPath)
         
-        resultJson = Path(processedDirPath) / "result.json"  # Construct the path
-        print(resultJson)
+        resultJson = Path(processedDirPath) / "result.json"  # Construct the path   
         if resultJson.is_file():  # Check if result.json exists
             print(f"Processing file: {resultJson.name}")
 

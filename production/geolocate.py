@@ -11,8 +11,8 @@ PROMPT_PART_4 = "Return a string of each geographical reference found in the tra
 PROMPT_PART_5 = "Do not return any additional text, descriptions of your process or information beyond the items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
 MOTIVATION_MESSAGE = "You are a skilled humanitarian analyst who is an expert in identifying geographic locations in English language texts."
 
-json_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/processedJson/testgeo.json"
-csv_output_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/GeocodingResults.csv"
+json_file = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/production/testgeo.json"
+csv_output_file = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/production/GeocodingResults.csv"
 
 GEOCODING_OUTPUT_FIELDS = ['Message_ID','Translated_Message', 'Country', 'City', 'Province', 'County', 'Communes', 'Latitude', 'Longitude',]
 

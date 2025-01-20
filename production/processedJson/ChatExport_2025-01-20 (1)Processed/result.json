@@ -1,0 +1,158 @@
+{
+    "name": "Чат Фонда DAR LOSU",
+    "type": "public_supergroup",
+    "id": 1777527135,
+    "messages": [
+        {
+            "id": 24884,
+            "type": "message",
+            "date": "2025-01-20T04:17:44",
+            "date_unixtime": "1737364664",
+            "edited": "2025-01-20T05:23:55",
+            "edited_unixtime": "1737368635",
+            "from": "Olga",
+            "from_id": "user5804143869",
+            "text": "Добрый день! Подскажите, пожалуйста , мне необходим сертифицированный переводчик на польский язык. Нужно перевести документы для полиции , подтверждающие факт взятия  денег в долг. Есть ли такой переводчик в фонде.?",
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Добрый день! Подскажите, пожалуйста , мне необходим сертифицированный переводчик на польский язык. Нужно перевести документы для полиции , подтверждающие факт взятия  денег в долг. Есть ли такой переводчик в фонде.?",
+                    "LANGUAGE": "Russian",
+                    "TRANSLATED_TEXT": "Good afternoon! Could you please tell me if I need a certified translator for the Polish language. I need to translate documents for the police confirming the fact of taking money on loan. Is there such a translator in the fund?"
+                }
+            ],
+            "reactions": [
+                {
+                    "type": "emoji",
+                    "count": 1,
+                    "emoji": "❤",
+                    "recent": [
+                        {
+                            "from": "Ольга",
+                            "from_id": "user173216669",
+                            "date": "2025-01-20T05:23:55"
+                        }
+                    ]
+                }
+            ],
+            "SUBTOPICS": [
+                "Polish Language Proficiency"
+            ]
+        },
+        {
+            "id": 24888,
+            "type": "message",
+            "date": "2025-01-20T07:31:42",
+            "date_unixtime": "1737376302",
+            "from": "Eduard Uait",
+            "from_id": "user412780003",
+            "text": "Пользовался услугами этого присяжного переводчика, цены демократичные, рекомендую. 536 262 845",
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Пользовался услугами этого присяжного переводчика, цены демократичные, рекомендую. 536 262 845",
+                    "LANGUAGE": "Russian",
+                    "TRANSLATED_TEXT": "Used the services of this certified translator, prices are reasonable, recommend."
+                }
+            ],
+            "SUBTOPICS": [
+                "Polish Language Proficiency",
+                "Livelihood Coping Strategies"
+            ]
+        },
+        {
+            "id": 24889,
+            "type": "message",
+            "date": "2025-01-20T07:48:18",
+            "date_unixtime": "1737377298",
+            "from": "Olga",
+            "from_id": "user5804143869",
+            "text": "Благодарю!🙏🤗",
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Благодарю!🙏🤗",
+                    "LANGUAGE": "Russian",
+                    "TRANSLATED_TEXT": "Thank you!🙏🤗"
+                }
+            ],
+            "SUBTOPICS": []
+        },
+        {
+            "id": 24891,
+            "type": "message",
+            "date": "2025-01-20T12:52:30",
+            "date_unixtime": "1737395550",
+            "from": "Stranger",
+            "from_id": "user5996803354",
+            "text": [
+                "Доброго дня!  Есть возможность иногда можно получать продовольственную помощь.  Более подробная информация здесь:\n\n ",
+                {
+                    "type": "link",
+                    "text": "https://www.facebook.com/100002618143394/posts/pfbid0HPdHHuVSZh45W3tPRpam31rbzaDHgkmVTibkHQgppHNuzDMLAMM5qrB8LMHZWCdUl/?app=fbl"
+                },
+                "\n\n\n И ещё - нужен волонтер с автомобилем."
+            ],
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Доброго дня!  Есть возможность иногда можно получать продовольственную помощь.  Более подробная информация здесь:\n\n ",
+                    "LANGUAGE": "Russian",
+                    "TRANSLATED_TEXT": "Good day! There is an opportunity to occasionally receive food assistance. More detailed information here:"
+                },
+                {
+                    "type": "link",
+                    "text": "https://www.facebook.com/100002618143394/posts/pfbid0HPdHHuVSZh45W3tPRpam31rbzaDHgkmVTibkHQgppHNuzDMLAMM5qrB8LMHZWCdUl/?app=fbl"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n\n\n И ещё - нужен волонтер с автомобилем.",
+                    "LANGUAGE": "Russian",
+                    "TRANSLATED_TEXT": "And also - a volunteer with a car is needed."
+                }
+            ],
+            "SUBTOPICS": [
+                "Aid Received",
+                "Information Needs"
+            ]
+        },
+        {
+            "id": 24892,
+            "type": "message",
+            "date": "2025-01-20T13:07:58",
+            "date_unixtime": "1737396478",
+            "from": "Eugeniusz",
+            "from_id": "user519464647",
+            "forwarded_from": "Stranger",
+            "text": [
+                "Хвала Хрысту! Ёсць магчымасць часам атрымоўваць харчовую дапамогу. Падрабязней тут:\n\n",
+                {
+                    "type": "link",
+                    "text": "https://www.facebook.com/100002618143394/posts/pfbid0HPdHHuVSZh45W3tPRpam31rbzaDHgkmVTibkHQgppHNuzDMLAMM5qrB8LMHZWCdUl/?app=fbl"
+                },
+                "\n\nЁсць патрэба ў валанцёры з машынай."
+            ],
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Хвала Хрысту! Ёсць магчымасць часам атрымоўваць харчовую дапамогу. Падрабязней тут:\n\n",
+                    "LANGUAGE": "Belarusian",
+                    "TRANSLATED_TEXT": "Praise Christ! There is an opportunity to sometimes receive food assistance. More details here:"
+                },
+                {
+                    "type": "link",
+                    "text": "https://www.facebook.com/100002618143394/posts/pfbid0HPdHHuVSZh45W3tPRpam31rbzaDHgkmVTibkHQgppHNuzDMLAMM5qrB8LMHZWCdUl/?app=fbl"
+                },
+                {
+                    "type": "plain",
+                    "text": "\n\nЁсць патрэба ў валанцёры з машынай.",
+                    "LANGUAGE": "Belarusian",
+                    "TRANSLATED_TEXT": "A volunteer with a car is needed."
+                }
+            ],
+            "SUBTOPICS": [
+                "Aid Received"
+            ]
+        }
+    ]
+}
