@@ -4,17 +4,17 @@ from aiLoader import loadAI
 
 client = loadAI()
 
-PROMPT_PART_1 = "Conduct a geographical analysis of text messages to determine if the English language text contains any geographical references."
-PROMPT_PART_2 = "Return back two things"
-PROMPT_PART_3 = "First Determine the location for these translated texts between the <start> and <end> tags. The geographical references you will be looking for will likely be, but not limited to, cities and provinces in Poland or cities in Ukraine. There are no  limit to the number of locations you want to find in a single text. Return any Country, City, Province, County, communes derived from the text and provide a longitude and latitude. Provide Null values in none found. Second provide an geographical analysis of the text between the start  the <start> and <end> tags"
-PROMPT_PART_4 = "Put the two items you return into a string formatted like a CSV file. The string will contain information for “Country”  City” “Province” “County” “communes” “Latitude” “Longitude”. The string format should create a new row for a message if the message contains more than one location."
-
-MOTIVATION_MESSAGE = "You are a skilled humanitarian analyst who is an expert in conducting identifying geographic locations in English language texts."
+PROMPT_PART_1 = "Conduct a geographical analysis of text messages to determine if the English language text contains any geographical references.<start>"
+PROMPT_PART_2 = "You will return several things"
+PROMPT_PART_3 = "Each transled text corresponds to a message ID. For each translated text between the <start> and <end> tags determine a location. The geographical references you will be looking for will likely be, but not limited to, cities and provinces in Poland or cities in Ukraine. If a geographic reference was found, provide the corresponding information of country, city, province, county, commune, latitude and longitude. There is no  limit to the number of locations you want to find in a single text. There can be null values."
+PROMPT_PART_4 = "Return a string of for each geographical reference found in the translated text between the <start> and <end> tags. Return the string in the formation of 'Country,City,Province,County,Communes,Latitude,Longitude,Geographic_Analysis,translated_message'. Allow null values in the string."
+PROMPT_PART_5 = "Do not return any additional text, descriptions of your process or information beyond the items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
+MOTIVATION_MESSAGE = "You are a skilled humanitarian analyst who is an expert in identifying geographic locations in English language texts."
 
 json_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/processedJson/testgeo.json"
 csv_output_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/GeocodingResults.csv"
 
-GEOCODING_OUTPUT_FIELDS = ['Country', 'City', 'Province', 'County', 'Communes', 'Latitude', 'Longitude',]
+GEOCODING_OUTPUT_FIELDS = ['Country', 'City', 'Province', 'County', 'Communes', 'Latitude', 'Longitude', 'Geographic_Analysis']
 
 def geolocate(text):
     try:
@@ -23,7 +23,7 @@ def geolocate(text):
             store=True,
             messages=[
                 {"role": "system", "content": MOTIVATION_MESSAGE},
-                {"role": "user", "content": PROMPT_PART_1 + text +PROMPT_PART_2 + PROMPT_PART_3 + PROMPT_PART_4}
+                {"role": "user", "content": PROMPT_PART_1 + text +PROMPT_PART_2 + PROMPT_PART_3 + PROMPT_PART_4 + PROMPT_PART_5}
             ]
         )
         return completion.choices[0].message.content.strip()
@@ -75,32 +75,3 @@ def process_messages(input_path, output_path):
 
 if __name__ == "__main__":
     process_messages(json_file, csv_output_file)
-
-
-'''
-   #write the geooding  results out to CSV for X Y table
-      #GEOCODING_OUTPUT_FIELDS = ['MESSAGE_ID','MESSAGE_TEXT','GEONAME','TYPE','X','Y']
-      GEOCODE_data_dict = {GEOCODING_OUTPUT_FIELDS[0]: Message_ID, 
-                                          GEOCODING_OUTPUT_FIELDS[1]: message, 
-                                          GEOCODING_OUTPUT_FIELDS[2]: latitude,
-                                          GEOCODING_OUTPUT_FIELDS[3]: Longitude,  
-                                          GEOCODING_OUTPUT_FIELDS[4]: Country, 
-                                          GEOCODING_OUTPUT_FIELDS[5]: City,
-                                          GEOCODING_OUTPUT_FIELDS[6]: Provice,
-                                          GEOCODING_OUTPUT_FIELDS[7]: District,
-                                          GEOCODING_OUTPUT_FIELDS[8]: Communes} 
-
-
-      with open(ROOT_DIRECTORY + GEOCODING_OUTPUT, 'a',newline='', encoding="utf-8") as f_object:
-
-        dictwriter_object = DictWriter(f_object, fieldnames=GEOCODING_OUTPUT_FIELDS)
-          
-              # Pass the dictionary as an argument to the Writerow()
-        dictwriter_object.writerow(GEOCODE_data_dict)
-
-        # Close the file object
-        f_object.close()
-
-    #for feature in features:
-
-'''
