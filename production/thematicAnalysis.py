@@ -1,4 +1,5 @@
 import json
+import ast
 from aiLoader import loadAI
 
 client = loadAI()
@@ -30,31 +31,37 @@ keywordsDict = {
     "Challenges Returning to Poland" : "lost protection status, visa issues, re-entry problem, waiting time"
 }
 
-jsonFile = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/production/processedJson/9Ukraine - Помощь в КраковеTranslated.json"
+jsonFile = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/production/processedJson/ChatExport_2025-01-20Processed/result.json"
 
 # Prompts
 PROMPT_PART_1 = "Conduct a thematic analysis of this text <start> " 
-PROMPT_PART_2 = " <end>. Return back two things."
+PROMPT_PART_2 = " <end>. Return back one thing:"
 
-PROMPT_PART_3 = "The first is your general thematic assesment of text that was between the <start> and <end> tags. The second are any subtopics that the text between the <start> and <end> tags may belong to. The text can belong to one, many, or no subtopics. The subtopics are listed out as keys in this dictionary between the <dict> tags, the value for each key contains keywords that you may use to sort the text into subtopics. <dict>"
+PROMPT_PART_3 = "A set containing any subtopics that the text between the <start> and <end> tags may belong to. The text can belong to one, many, or no subtopics. The subtopics are listed out as keys in this dictionary between the <dict> tags, the value for each key contains keywords that you may use to sort the text into subtopics. <dict>"
 
 PROMPT_PART_4 = " <dict> Put the two items you return into a JSON structure. Your general thematic assesment of text that was between the <start> and <end> tags placed inside a JSON tag named theme. Any topics you found in the text that was between the <start> and <end> tags inside a JSON tag named topic."
 
-PROMPT_PART_5 = "Do not return any additional text, descriptions of your process or information beyond two items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
+PROMPT_PART_5 = " <dict> Do not return any additional text, descriptions of your process or information beyond two items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
 
 MOTIVATION_MESSAGE = "You are a skilled humanitarian analyst who is an expert in conducting thematic analysis of English language texts."
 
-def thematize(text):
+def thematize(text, subtopics):
     try:
         completion = client.chat.completions.create(
             model="gpt-4o",
             store=True,
             messages=[
                 {"role": "system", "content": MOTIVATION_MESSAGE},
-                {"role": "user", "content": PROMPT_PART_1 + text + PROMPT_PART_2 + PROMPT_PART_3 + str(keywordsDict) + PROMPT_PART_4 + PROMPT_PART_5}
+                {"role": "user", "content": PROMPT_PART_1 + text + PROMPT_PART_2 + PROMPT_PART_3 + str(keywordsDict) + PROMPT_PART_5}
             ]
         )
-        return completion.choices[0].message.content.strip()
+        results = ast.literal_eval(completion.choices[0].message.content.strip())
+        #print(results)
+        for result in results:
+            if result not in subtopics:
+                subtopics.append(result)
+        return subtopics
+    
     except Exception as e:
         print(f"Error summarizing text: {e}")
         return None
@@ -67,6 +74,7 @@ with open(jsonFile, 'r', encoding='utf-8') as f:
 
     for message in messageData:
         textEntities = message.get("text_entities", [])
+        subtopics = []
 
         fullText = ""
 
@@ -75,7 +83,28 @@ with open(jsonFile, 'r', encoding='utf-8') as f:
                 fullText += entity["TRANSLATED_TEXT"]
 
         if fullText:
-            print(f"FULLTEXT {message.get("id")}: {fullText}")
-            analysis = thematize(fullText)
-            print(analysis)
-            print("*******")
+            subtopics = thematize(fullText, subtopics)
+
+            # print(subtopics)
+
+        vidSum = message.get("VIDEO_SUMMARY")
+        if vidSum:
+            subtopics = thematize(vidSum, subtopics)
+
+        vidTrans = message.get("TRANSCRIPTION_TRANSLATION")
+        if vidTrans:
+            subtopics = thematize(vidTrans, subtopics)
+
+        imageAn = message.get("IMAGE_ANALYSIS")
+        if imageAn:
+            subtopics = thematize(imageAn, subtopics)
+
+        print(f"FULLTEXT {message.get("id")}: {fullText} : {subtopics}")
+        print(f"VIDSUM {vidSum} : {subtopics}")
+        print(f"VIDTRANS {vidTrans} : {subtopics}")
+        print(f"IMAGEAN {imageAn} : {subtopics}")
+        print()
+
+
+
+
