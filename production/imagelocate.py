@@ -55,16 +55,13 @@ def process_messages(input_path, output_path):
                 if not photo_analysis:
                     print(f"Skipping Message {message_id} because it has no PHOTO_ANALYSIS data.")
                     continue  # Skip this message and go to the next one
-
-                full_text = " ".join(
-                    entity.get("PHOTO_ANALYSIS", "").replace(",", "") for entity in photo_analysis if "PHOTO_ANALYSIS" in entity
-                )
+                
 
                 # Concatenate message_id with the full_text
-                full_text_with_id = f"Message ID: {message_id}\n{full_text}"
-
-                if full_text:
-                    print(f"Processing Message {message_id}: {full_text}")
+                full_text_with_id = f"Message ID: {message_id}\n{photo_analysis}"
+                print(f"full text {photo_analysis}, {type(photo_analysis)}" )
+                if photo_analysis:
+                    print(f"Processing Message {message_id}: {photo_analysis}")
                     analysis = geolocate(full_text_with_id)
 
                     if analysis:
