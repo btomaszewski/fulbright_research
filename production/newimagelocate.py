@@ -18,7 +18,7 @@ PROMPT_TEMPLATE = (
 )
 
 json_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/processedJson/imagelocationtest.json"
-csv_output_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/imagelocation.csv"
+csv_output_file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/production/imagelocation2.csv"
 
 GEOCODING_OUTPUT_FIELDS = ['Message_ID', 'Text', 'Country', 'City', 'Province', 'County', 'Communes', 'Latitude', 'Longitude']
 
@@ -50,44 +50,21 @@ def process_messages(input_path, output_path):
             print("No messages found in the JSON file.")
             return
 
-        # Concatenate all PHOTO_ANALYSIS and VIDEO_SUMMARY texts
+        # Concatenate all PHOTO_ANALYSIS texts
         combined_text = ""
+        message_id_map = {}
         for message in messages:
             message_id = message.get("id")
-            photo_analysis = message.get("PHOTO_ANALYSIS", "")
-            video_summary = message.get("VIDEO_SUMMARY", "")
-            transcription_translation_data = message.get("TRANSCRIPTION_TRANSLATION", {})
-            text_entities = message.get("text_entities", [])
+            photo_analysis = message.get("PHOTO_ANALYSIS")
 
-            transcription_translation = transcription_translation_data.get("translation", "")
-
-            # Extract TRANSLATED_TEXT from text_entities if present
-            translated_texts = [
-                entity.get("TRANSLATED_TEXT", "")
-                for entity in text_entities
-                if "TRANSLATED_TEXT" in entity
-            ]
-
-            # Combine PHOTO_ANALYSIS, VIDEO_SUMMARY, and TRANSLATED_TEXT if present
-            content = []
             if photo_analysis:
-                content.append(f"PHOTO_ANALYSIS: {photo_analysis}")
-            if video_summary:
-                content.append(f"VIDEO_SUMMARY: {video_summary}")
-            if transcription_translation:
-                content.append(f"TRANSCRIPTION_TRANSLATION: {transcription_translation}")
-            if translated_texts:
-                content.append(f"TRANSLATED_TEXT: {' '.join(translated_texts)}")
-
-            # Add the combined content for the message if any content exists
-            if content:
-                combined_content = "\n".join(content)
-                combined_text += f"<start>Message ID: {message_id}\n{combined_content}<end>\n"
+                combined_text += f"<start>Message ID: {message_id}\n{photo_analysis}<end>\n"
+                message_id_map[message_id] = photo_analysis
             else:
-                print(f"Skipping Message {message_id} because it has no relevant data.")
+                print(f"Skipping Message {message_id} because it has no PHOTO_ANALYSIS data.")
 
         if not combined_text.strip():
-            print("No valid data found for PHOTO_ANALYSIS or VIDEO_SUMMARY.")
+            print("No valid PHOTO_ANALYSIS texts found.")
             return
 
         # Perform single geolocation request
@@ -114,5 +91,3 @@ def process_messages(input_path, output_path):
 
 if __name__ == "__main__":
     process_messages(json_file, csv_output_file)
-
-
