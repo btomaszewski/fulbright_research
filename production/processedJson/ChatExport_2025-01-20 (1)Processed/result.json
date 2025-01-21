@@ -18,7 +18,7 @@
                     "type": "plain",
                     "text": "Добрый день! Подскажите, пожалуйста , мне необходим сертифицированный переводчик на польский язык. Нужно перевести документы для полиции , подтверждающие факт взятия  денег в долг. Есть ли такой переводчик в фонде.?",
                     "LANGUAGE": "Russian",
-                    "TRANSLATED_TEXT": "Good afternoon! Could you please tell me if I need a certified translator for the Polish language. I need to translate documents for the police confirming the fact of taking money on loan. Is there such a translator in the fund?"
+                    "TRANSLATED_TEXT": "Good afternoon! Could you please tell me, I need a certified translator for the Polish language. I need to translate documents for the police confirming the fact of borrowing money. Is there such a translator in the fund?"
                 }
             ],
             "reactions": [
@@ -52,7 +52,7 @@
                     "type": "plain",
                     "text": "Пользовался услугами этого присяжного переводчика, цены демократичные, рекомендую. 536 262 845",
                     "LANGUAGE": "Russian",
-                    "TRANSLATED_TEXT": "Used the services of this certified translator, prices are reasonable, recommend."
+                    "TRANSLATED_TEXT": "I used the services of this sworn translator, the prices are reasonable, I recommend."
                 }
             ],
             "SUBTOPICS": [
@@ -76,7 +76,7 @@
                     "TRANSLATED_TEXT": "Thank you!🙏🤗"
                 }
             ],
-            "SUBTOPICS": []
+            "SUBTOPICS": null
         },
         {
             "id": 24891,
@@ -98,7 +98,7 @@
                     "type": "plain",
                     "text": "Доброго дня!  Есть возможность иногда можно получать продовольственную помощь.  Более подробная информация здесь:\n\n ",
                     "LANGUAGE": "Russian",
-                    "TRANSLATED_TEXT": "Good day! There is an opportunity to occasionally receive food assistance. More detailed information here:"
+                    "TRANSLATED_TEXT": "Good day! It is possible to occasionally receive food assistance. More detailed information here:"
                 },
                 {
                     "type": "link",
@@ -137,7 +137,7 @@
                     "type": "plain",
                     "text": "Хвала Хрысту! Ёсць магчымасць часам атрымоўваць харчовую дапамогу. Падрабязней тут:\n\n",
                     "LANGUAGE": "Belarusian",
-                    "TRANSLATED_TEXT": "Praise Christ! There is an opportunity to sometimes receive food assistance. More details here:"
+                    "TRANSLATED_TEXT": "Praise be to Christ! There is an opportunity to sometimes receive food assistance. More details here:"
                 },
                 {
                     "type": "link",
