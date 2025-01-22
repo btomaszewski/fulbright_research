@@ -1,0 +1,111 @@
+{
+    "name": "Українці у Варшаві",
+    "type": "public_supergroup",
+    "id": 1648711930,
+    "messages": [
+        {
+            "id": 158648,
+            "type": "message",
+            "date": "2025-01-07T15:42:44",
+            "date_unixtime": "1736282564",
+            "edited": "2025-01-07T17:03:47",
+            "edited_unixtime": "1736287427",
+            "from": "Teti",
+            "from_id": "user342771371",
+            "file": "video_files/video sitka.mov",
+            "file_name": "video sitka.mov",
+            "thumbnail": "video_files/video sitka.mov_thumb.jpg",
+            "media_type": "video_file",
+            "mime_type": "video/quicktime",
+            "duration_seconds": 8,
+            "width": 720,
+            "height": 1280,
+            "text": [
+                "Будь ласка, підтримайте збір на маскувальні сітки та тактичну медицину для ЗСУ 🇺🇦\n\n",
+                {
+                    "type": "link",
+                    "text": "https://send.monobank.ua/jar/5qMrgoRW2d"
+                },
+                ""
+            ],
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Будь ласка, підтримайте збір на маскувальні сітки та тактичну медицину для ЗСУ 🇺🇦\n\n",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Please support the collection of camouflage nets and tactical medicine for the Armed Forces of Ukraine 🇺🇦"
+                },
+                {
+                    "type": "link",
+                    "text": "https://send.monobank.ua/jar/5qMrgoRW2d"
+                },
+                {
+                    "type": "plain",
+                    "text": ""
+                }
+            ],
+            "VIDEO_SUMMARY": "The video depicts a person intricately working on a camouflage net or mesh, weaving or tying white and camouflaged fabric strips into it, likely in an outdoor setting."
+        },
+        {
+            "id": 158737,
+            "type": "message",
+            "date": "2025-01-08T06:11:21",
+            "date_unixtime": "1736334681",
+            "from": "Victoria ☁️",
+            "from_id": "user365308655",
+            "forwarded_from": "Спільно Wspólnie",
+            "file": "(File exceeds maximum size. Change data exporting settings to download.)",
+            "file_name": "UNICEF_Спільно_легше_вивчати_польську_мову!_6.mp4",
+            "thumbnail": "(File exceeds maximum size. Change data exporting settings to download.)",
+            "media_type": "video_file",
+            "mime_type": "video/mp4",
+            "duration_seconds": 94,
+            "width": 1080,
+            "height": 1920,
+            "text": [
+                "Тренуємо вимову складних польських слів 🇵🇱\n\nSzczęście, Przepraszam, Właśnie, Dziękuję, Chrząszcz — ці польські слова можуть стати справжнім викликом 😅 Особливо на початку вивчення мови, коли звуки та поєднання літер здаються незнайомими.\n\n\nУ відео розбираємо правильну вимову — дивіться скоріше! 🎥\n\nЯкі слова польською вам даються найскладніше? Пишіть у коментарях 👇\n\nІ не забувайте — якщо хочете більше безкоштовних ресурсів для вивчення польської, ставте «+» у коментарях, і ми поділимося корисними матеріалами!\n\nПідписатися: ",
+                {
+                    "type": "text_link",
+                    "text": "Spilno",
+                    "href": "https://t.me/spilno_pl"
+                },
+                " 👈"
+            ],
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Тренуємо вимову складних польських слів 🇵🇱\n\nSzczęście, Przepraszam, Właśnie, Dziękuję, Chrząszcz — ці польські слова можуть стати справжнім викликом 😅 Особливо на початку вивчення мови, коли звуки та поєднання літер здаються незнайомими.\n\n\nУ відео розбираємо правильну вимову — дивіться скоріше! 🎥\n\nЯкі слова польською вам даються найскладніше? Пишіть у коментарях 👇\n\nІ не забувайте — якщо хочете більше безкоштовних ресурсів для вивчення польської, ставте «+» у коментарях, і ми поділимося корисними матеріалами!\n\nПідписатися: ",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "Practicing the pronunciation of complex Polish words 🇵🇱\n\nSzczęście, Przepraszam, Właśnie, Dziękuję, Chrząszcz — these Polish words can be a real challenge 😅 Especially at the beginning of learning the language, when sounds and letter combinations seem unfamiliar.\n\nIn the video, we analyze the correct pronunciation — watch it soon! 🎥\n\nWhich Polish words do you find the most difficult? Write in the comments 👇\n\nAnd don't forget — if you want more free resources for learning Polish, put a \"+\" in the comments, and we will share useful materials!\n\nSubscribe:"
+                },
+                {
+                    "type": "text_link",
+                    "text": "Spilno",
+                    "href": "https://t.me/spilno_pl"
+                },
+                {
+                    "type": "plain",
+                    "text": " 👈"
+                }
+            ]
+        },
+        {
+            "id": 158738,
+            "type": "message",
+            "date": "2025-01-08T06:11:29",
+            "date_unixtime": "1736334689",
+            "from": "Valerii",
+            "from_id": "user592419143",
+            "reply_to_message_id": 158736,
+            "text": "Комплекс послуг як для фізичної особи так і для спулки",
+            "text_entities": [
+                {
+                    "type": "plain",
+                    "text": "Комплекс послуг як для фізичної особи так і для спулки",
+                    "LANGUAGE": "Ukrainian",
+                    "TRANSLATED_TEXT": "A range of services for both individuals and companies"
+                }
+            ]
+        }
+    ]
+}

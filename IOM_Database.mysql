@@ -1,0 +1,74 @@
+
+-- Drop the conMan database if it already exists
+DROP DATABASE IF EXISTS IOM;
+
+-- Create the conMan database
+CREATE DATABASE IOM;
+
+-- open the database
+USE IOM;
+
+CREATE TABLE LOCATION(
+	Location_ID INT UNSIGNED NOT NULL,
+	Country VARCHAR NULL,
+	City VARCHAR NULL,
+	Longitude DECIMAL(6,6) SIGNED NULL,
+	Latitude DECIMAL (6,6) SIGNED NULL,
+	CONSTRAINT Location_PK PRIMARY KEY(Location_ID),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+CREATE TABLE CATEGORY (
+	Category_ID INT UNSIGNED NOT NULL,
+	Main_Category VARCHAR,
+	Sub_Category VARCHAR NULL,
+	Key_Words VARCHAR NULL,
+	CONSTRAINT Category_PK PRIMARY KEY(Category_ID),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+CREATE TABLE MESSAGE(
+	Message_ID INT UNSIGNED NOT NULL,
+	Date DATE,
+	From VARCHAR,
+	From_ID INT,
+	Edited TIME, 
+	CONSTRAINT Message_PK PRIMARY KEY(Message_ID),
+	CONSTRAINT Message_Location_fk FOREIGN KEY (Location_ID) REFERENCES LOCATION(Location_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+CREATE TABLE REPLIES (
+	Reply_ID INT UNSIGNED NOT NULL,
+	Message_ID INT UNSIGNED NOT NULL,
+	Reply_Date DATE,
+	Reply_From VARCHAR,
+	Reply_From_ID INT UNSIGNED,
+	Reply_Edited TIME, 
+	CONSTRAINT REPLIES_PK PRIMARY KEY(Reply_ID),
+	CONSTRAINT Message_Reply_fk FOREIGN KEY (Message_ID) REFERENCES MESSAGE(Message_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+
+
+CREATE TABLE CONTENT (
+    Content_ID INT AUTO_INCREMENT,
+    Message_ID INT UNSIGNED,             -- Links to the MESSAGES table
+    Reply_ID INT UNSIGNED,
+    Content_Type ENUM('TEXT', 'IMAGE', 'VIDEO') NOT NULL, -- Type of content
+    Content_Text VARCHAR NULL,                   -- Stores text content
+    Content_Image VARCHAR(255) NULL,          -- Stores image file path or URL
+    Content_Video VARCHAR(255) NULL,          -- Stores video file path or URL
+    Content_Description TEXT NULL,            -- Optional description for the content
+    CONSTRAINT Content_PK PRIMARY KEY(Content_ID),
+	CONSTRAINT Message_Content_fk FOREIGN KEY (Message_ID) REFERENCES MESSAGE(Message_ID),
+	CONSTRAINT Reply_Content_fk FOREIGN KEY (Reply_ID) REFERENCES REPLY(Reply_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE OVERLAP (
+	Message_ID INT UNSIGNED NOT NULL,
+	Category_ID INT UNSIGNED NOT NULL,
+	CONSTRAINT Message_Overlap_fk FOREIGN KEY (Message_ID) REFERENCES MESSAGE(Message_ID),
+	CONSTRAINT Category_Overlap_fk FOREIGN KEY (Category_ID) REFERENCES CATEGORY(Category_ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
