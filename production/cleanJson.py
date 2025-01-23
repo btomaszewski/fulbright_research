@@ -1,9 +1,9 @@
 import json
 import shutil
 
-file = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/testCode&Data/data/cleanJsonTestChat/result.json"
+file = "../testCode&Data/data/cleanJsonTestChat/result.json"
 
-cleanFile = "C:/Users/Olivia Croteau/Documents/GitHub/fulbright_research/testCode&Data/data/cleanJsonTestChat/cleanResult.json"
+cleanFile = "../testCode&Data/data/cleanJsonTestChat/cleanResult.json"
 
 shutil.copy(file, cleanFile)
 
@@ -14,13 +14,22 @@ with open(cleanFile, 'r', encoding='utf-8') as f:
     messageData = jsonData.get("messages", []) # Create array of message data
 
 
-# get rid of /nn
-# make our own message ids/reply ids
-# combine textEntities
-# get rid of text
+for message in messageData:
+    # del(message['text'])
+    
+    textEntities = message.get("text_entities", [])
+    fullText = ""
+    textTypes = {"plain", "bold", "italic", "hashtag"}
+    for entity in textEntities:
+        if "text" in entity:
+            fullText += entity['text']
+    if fullText:
+        message['text'] = fullText
+    else:
+        del(message['text'])
+    del(message['text_entities'])
 
-
-
+# combine videos/photos into one message
 
 # Write messages to destination file
 with open(cleanFile, 'w', encoding='utf-8') as f:

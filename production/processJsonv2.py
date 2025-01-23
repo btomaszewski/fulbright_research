@@ -1,7 +1,6 @@
 import os
 import shutil
 import json
-import ast
 from pathlib import Path
 from frameExtraction import extractFrames
 from videoAnalysis import summarize
@@ -12,121 +11,48 @@ from thematicAnalysis import writeThemes
 
 client = loadAI()
 
-# Paths
-rawJsonDir = Path("./rawJson")
-processedJsonDir = Path("./processedJson")
-processedJsonDir.mkdir(exist_ok=True)
-currentDir = os.path.dirname(os.path.abspath(__file__)) # currentDir = production
+cleanFile = "../testCode&Data/data/cleanJsonTestChat/cleanResult.json"
 
-# MEGA STRINGS
-TEXT_ENTITIES = []
-VIDEO_TRANSCRIPTS = []
-VIDEO_FRAMES = []
-IMAGES = []
- 
-# Helper Functions
+# Define the static system prompt
+system_prompt = {
+    "role": "system",
+    "content": "You are a translator. Translate the given text to English. Return back two things. The first is your translation to English of text. The second is a one word description of the language of text. Put the two items you return into a JSON structure. Your translation to English of text placed inside a JSON tag named translation. Your one word description of the language of inside a JSON tag named language. Do not return any additional text, descriptions of your process or information beyond two items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters."
+}
+prompts = [system_prompt]
 
-# Takes a message Json object, loops through all text_entities for that message, calls translate() on text, and places the language/translation in processed Json file. 
-def processTextEntities(textEntities, individualMessage):
-    textTypes = {"plain", "bold", "italic", "hashtag"} #add any text types to be translated to this set
-    fullText = ""
-    for entity in textEntities:
-        if "text" in entity and len(entity['text']) > 3 and entity["type"] in textTypes: #filters out non-text entities
-         fullText += entity['text']
-         TEXT_ENTITIES.append([individualMessage['id'], fullText])
-         #entity['LANGUAGE'] = result_JSON.get("language", "unknown")
-         #entity['TRANSLATED_TEXT'] = result_JSON.get("translation", "")
-# Takes a message Json object and the directory containing all data for the exported chat, converts file to .mp4 if necessary, returns AI generated transcription. 
-def processVideo(individualMessage, video):
-    video = os.path.join(processedJsonDir, video)
-    # Get video transcription
-    transcription = transcribe(video)
-    if transcription:
-        individualMessage['VIDEO_TRANSCRIPTION'] = transcription
-        transcriptionTranslation = translate(transcription)
-        individualMessage['TRANSCRIPTION_TRANSLATION'] = transcriptionTranslation
+texts_to_analyze = []
+messageData = []
 
-    # Extract frames
-    framesDir = video + "Frames"
-    extractFrames(video, framesDir)
+with open(cleanFile, 'r', encoding='utf-8') as f:
+    jsonData = json.load(f)
+    messageData = jsonData.get("messages", [])
 
-    # Perform analysis of video frames
-    summary = summarize(framesDir)
-    if summary:
-        individualMessage['VIDEO_SUMMARY'] = summary
+# Simulate sending multiple queries
+for message in messageData:
+    if message.get('text'):
+        texts_to_analyze.append(message['text'])
 
-    # Delete frames dir
-    shutil.rmtree(framesDir)
-
-def processImage(individualMessage, image):
-    analysis = analyzeImage(image)
-    if analysis:
-        individualMessage['IMAGE_ANALYSIS'] = analysis
-
-def processJson(messageData, chatDir):
-    # Complete all processing on each message: translate text_entities, analyze/transcribe video, analyze images
-    for individualMessage in messageData: # Loop through messages
-        if individualMessage.get("type") == "service": # Remove "service" messages from destination file
-            messageData.remove(individualMessage)
-
-        print(f"Processing message id: {individualMessage.get('id')}")
-
-        textEntities = individualMessage.get("text_entities", [])
-        if textEntities:
-            processTextEntities(textEntities, individualMessage)
-
-    resultJSON = translate(TEXT_ENTITIES)
-    #resultJSON = ast.literal_eval(resultJSON)
-    print(resultJSON)
-    print()
-    return resultJSON
-
-    '''
-    video = individualMessage.get("file")
-    if video and video != "(File exceeds maximum size. Change data exporting settings to download.)":
-        video = (f"{chatDir}/{video}").replace("\\", "/")
-        processVideo(individualMessage, video)
-
-    photo = individualMessage.get("photo")
-    if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
-        photo = (f"processedJson/{chatDir}/{photo}").replace("\\", "/")
-        processImage(individualMessage, photo)
+for text in texts_to_analyze:
+    # Add the new user query
+    new_user_prompt = {"role": "user", "content": f"Analyze this text: {text}"}
+    prompts.append(new_user_prompt)
     
+    # Call the OpenAI API
+    completion = client.chat.completions.create(
+            model="gpt-4o",
+            store=True,
+            messages=prompts
+    )
 
-    subtopics = writeThemes(individualMessage)
-    individualMessage["SUBTOPICS"] = subtopics
-    '''
+    response = completion['choices'][0]['message']['content']
+    
+    # Add the model's response to the conversation
+    #assistant_prompt = {"role": "assistant", "content": completion['choices'][0]['prompts']['content']}
+    #prompts.append(assistant_prompt)
+    
+    # Optionally truncate older messages
+    if len(prompts) > 10:
+        prompts = [system_prompt] + prompts[-10:]
 
-chatsToProcess = set()
-
-def main(): # put all main() functionality in a while True: if we want it to automatically add new chatDirs to the set while processing
-    # Scan for all files in directory and add to set
-    for chatExportDir in rawJsonDir.iterdir():
-        if chatExportDir.is_dir() and chatExportDir.name not in chatsToProcess:
-            chatsToProcess.add(chatExportDir.name)
-
-    # Process files
-    for chatDir in chatsToProcess:
-        chatDirPath = os.path.join(rawJsonDir, chatDir)
-        chatDir = f"{chatDir}Processed"
-        processedDirPath = os.path.join(processedJsonDir, chatDir)
-        shutil.copytree(chatDirPath, processedDirPath)
-        
-        resultJson = Path(processedDirPath) / "result.json"  # Construct the path   
-        if resultJson.is_file():  # Check if result.json exists
-            print(f"Processing file: {resultJson.name}")
-
-            with open(resultJson, 'r', encoding='utf-8') as f:
-                jsonData = json.load(f)
-                messageData = jsonData.get("messages", []) # Create array of message data
-
-                resultJSON = processJson(messageData, chatDir)
-                
-                            
-            # Write messages to destination file
-            with open(resultJson, 'w', encoding='utf-8') as f:
-                json.dump(jsonData, f, ensure_ascii=False, indent=4)
-
-            print(f"Translation completed for {resultJson}")
-
-main()
+    # Print the response
+    print(response['choices'][0]['prompts']['content'])
