@@ -7,7 +7,7 @@ from videoAnalysis import summarize
 from imageAnalysis import analyzeImage
 from aiLoader import loadAI
 from helpers import translate, transcribe
-from thematicAnalysis import writeThemes
+#from thematicAnalysis import writeThemes
 
 client = loadAI()
 
@@ -44,15 +44,14 @@ for text in texts_to_analyze:
             messages=prompts
     )
 
-    response = completion['choices'][0]['message']['content']
+    response = (completion.choices[0].message.content)
     
     # Add the model's response to the conversation
-    #assistant_prompt = {"role": "assistant", "content": completion['choices'][0]['prompts']['content']}
-    #prompts.append(assistant_prompt)
+    assistant_prompt = {"role": "assistant", "content": response}
+    prompts.append(assistant_prompt)
     
     # Optionally truncate older messages
     if len(prompts) > 10:
-        prompts = [system_prompt] + prompts[-10:]
+       prompts = [system_prompt] + prompts[-10:]
 
-    # Print the response
-    print(response['choices'][0]['prompts']['content'])
+print(prompts)
