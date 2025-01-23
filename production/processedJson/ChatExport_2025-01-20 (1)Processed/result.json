@@ -18,7 +18,7 @@
                     "type": "plain",
                     "text": "Добрый день! Подскажите, пожалуйста , мне необходим сертифицированный переводчик на польский язык. Нужно перевести документы для полиции , подтверждающие факт взятия  денег в долг. Есть ли такой переводчик в фонде.?",
                     "LANGUAGE": "Russian",
-                    "TRANSLATED_TEXT": "Good afternoon! Could you please tell me, I need a certified translator for the Polish language. I need to translate documents for the police confirming the fact of borrowing money. Is there such a translator in the fund?"
+                    "TRANSLATED_TEXT": "Good afternoon! Please let me know if I need a certified translator for Polish. I need to translate documents for the police confirming the fact of borrowing money. Is there such a translator in the fund?"
                 }
             ],
             "reactions": [
@@ -36,7 +36,8 @@
                 }
             ],
             "SUBTOPICS": [
-                "Polish Language Proficiency"
+                "Polish Language Proficiency",
+                "Information Needs"
             ]
         },
         {
@@ -52,7 +53,7 @@
                     "type": "plain",
                     "text": "Пользовался услугами этого присяжного переводчика, цены демократичные, рекомендую. 536 262 845",
                     "LANGUAGE": "Russian",
-                    "TRANSLATED_TEXT": "I used the services of this sworn translator, the prices are reasonable, I recommend."
+                    "TRANSLATED_TEXT": "I used the services of this sworn translator, the prices are reasonable, I recommend it."
                 }
             ],
             "SUBTOPICS": [
@@ -76,7 +77,9 @@
                     "TRANSLATED_TEXT": "Thank you!🙏🤗"
                 }
             ],
-            "SUBTOPICS": null
+            "SUBTOPICS": [
+                "Undefined"
+            ]
         },
         {
             "id": 24891,
@@ -137,7 +140,7 @@
                     "type": "plain",
                     "text": "Хвала Хрысту! Ёсць магчымасць часам атрымоўваць харчовую дапамогу. Падрабязней тут:\n\n",
                     "LANGUAGE": "Belarusian",
-                    "TRANSLATED_TEXT": "Praise be to Christ! There is an opportunity to sometimes receive food assistance. More details here:"
+                    "TRANSLATED_TEXT": "Praise Christ! There is an opportunity to sometimes receive food assistance. More details here: "
                 },
                 {
                     "type": "link",
@@ -147,11 +150,12 @@
                     "type": "plain",
                     "text": "\n\nЁсць патрэба ў валанцёры з машынай.",
                     "LANGUAGE": "Belarusian",
-                    "TRANSLATED_TEXT": "A volunteer with a car is needed."
+                    "TRANSLATED_TEXT": "There is a need for a volunteer with a car."
                 }
             ],
             "SUBTOPICS": [
-                "Aid Received"
+                "Aid Received",
+                "Information Needs"
             ]
         }
     ]
