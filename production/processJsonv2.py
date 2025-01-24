@@ -3,8 +3,8 @@ import shutil
 import json
 from pathlib import Path
 from frameExtraction import extractFrames
-from videoAnalysis import logFrames, summarize
-from imageAnalysis import analyzeImage
+from videoAnalysis import logFrames
+from imageAnalysis import analyzePhoto
 from aiLoader import loadAI
 from helpers import translate, transcribe
 #from thematicAnalysis import writeThemes
@@ -55,7 +55,7 @@ def processText(texts, textIds, messageData):
 def processVideos(videos, videoIds, messageData, processedDirPath):
     summaryPrompt = {
         "role": "system",
-        "content": "You will be given a string containing paragraphs. Each paragraph is a description of an image. Each image is a frame from a single video. Use the descriptions of each frame to generate a summary of what the video is depicting. Return back 1 item: the summary of the video in string format. Do not provide any other explanations. Do not refer to the frames in your summary, treat it as a summary of the video as a whole."
+        "content": "You will be given a string containing paragraphs. Each paragraph is a description of an image. Each image is a frame from a single video. Use the descriptions of each frame to generate a summary of what the video is depicting. Return back 1 item: the summary of the video in string format. Do not provide any other explanations. Do not refer to the frames in your summary, treat it as a summary of the video as a whole. If there are specific quotes from the frames in the paragraphs, amke sure they are included in the summary."
     }
     summaryPrompts = [summaryPrompt]
     summaryResponses = [None]
@@ -78,10 +78,6 @@ def processVideos(videos, videoIds, messageData, processedDirPath):
         )
         summaryResponse = (completion.choices[0].message.content)
         summaryResponses.append(summaryResponse)
-        # *******************
-
-        # VIDEO TRANSCRIPTION LOGIC
-        
         # *******************
 
 
@@ -135,12 +131,23 @@ def main():
                 if message.get('text'):
                     texts.append(message['text'])
                     textIds.append(message['id'])
+
                 if message.get('file'):
                     videos.append(message['file'])
                     videoIds.append(message['id'])
 
-            #processText(texts, textIds, messageData)
+                    video = os.path.join(processedDirPath, (message['file']))
+                    transcription = transcribe(video)
+                    message['VIDEO_TRANSCRIPTION'] = transcription
+                    transcriptionTranslation = translate(transcription)
+                    message['TRANSCRIPTION_TRANSLATION'] = transcriptionTranslation
 
+                if message.get('photo'):
+                    photo = os.path.join(processedDirPath, (message['photo']))
+                    analysis = analyzePhoto(photo)
+                    message['PHOTO_ANALYSIS'] = analysis
+
+            processText(texts, textIds, messageData)
             processVideos(videos, videoIds, messageData, processedDirPath)
             
 
