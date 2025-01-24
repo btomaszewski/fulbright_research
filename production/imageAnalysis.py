@@ -26,7 +26,7 @@ def analyzeImage(framePath):
                         "content": [
                             {
                                 "type": "text",
-                                "text": "What is in this image?",
+                                "text": "Describe this image in one sentence.",
                             },
                             {
                                 "type": "image_url",

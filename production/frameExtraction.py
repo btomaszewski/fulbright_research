@@ -11,7 +11,7 @@ def extractFrames(videoPath, framesDir):
     command = [
         "ffmpeg",
         "-i", videoPath,
-        "-vf", "fps=1",
+        "-vf", "fps=0.5",
         f"{framesDir}/frame_%04d.png"
     ]
     subprocess.run(command, check=True)

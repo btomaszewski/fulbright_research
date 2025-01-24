@@ -2,13 +2,13 @@ import json
 import shutil
 
 # Step 1: Filter messages
-def filter_messages(jsonData):
+def filterMessages(jsonData):
     for message in jsonData["messages"]:
         if message.get("text") == "/n":
             message["text"] = None
 
 # Step 2: Modify reply IDs
-def modify_replies(jsonData):
+def modifyReplies(jsonData):
     incrementing_value = 100
     for message in jsonData["messages"]:
         if "reply_to_message_id" in message:
@@ -23,7 +23,7 @@ def modify_replies(jsonData):
             del message["reply_to_message_id"]
 
 # Step 3: Process text entities
-def process_text_entities(jsonData):
+def processTextEntities(jsonData):
     for message in jsonData["messages"]:
         textEntities = message.get("text_entities", [])
         fullText = ""
@@ -36,10 +36,24 @@ def process_text_entities(jsonData):
             message.pop('text', None)  # Safely remove 'text' if it doesn't exist
         message.pop('text_entities', None)  # Safely remove 'text_entities'
 
+def cleanJson(resultJson):
+    with open(resultJson, 'r', encoding='utf-8') as f:
+        jsonData = json.load(f)
+
+        # Call each function sequentially
+        print(f"Cleaning file {resultJson}")
+        filterMessages(jsonData)
+        modifyReplies(jsonData)
+        processTextEntities(jsonData)
+
+    with open(resultJson, 'w', encoding='utf-8') as f:
+        json.dump(jsonData, f, ensure_ascii=False, indent=4)
+
+'''
 def main():
     # File paths
-    file = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/testCode&Data/data/cleanJsonTestChat/result.json"
-    cleanFile = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/testCode&Data/data/cleanJsonTestChat/cleanResult.json"
+    file = "../testCode&Data/data/cleanJsonTestChat/result.json"
+    cleanFile = "../testCode&Data/data/cleanJsonTestChat/cleanResult.json"
 
     # Copy the original file to the clean file
     shutil.copy(file, cleanFile)
@@ -49,9 +63,9 @@ def main():
         jsonData = json.load(f)
 
     # Call each function sequentially
-    filter_messages(jsonData)
-    modify_replies(jsonData)
-    process_text_entities(jsonData)
+    filterMessages(jsonData)
+    modifyReplies(jsonData)
+    processTextEntities(jsonData)
 
     # Write the cleaned data back to the file
     with open(cleanFile, 'w', encoding='utf-8') as f:
@@ -62,5 +76,5 @@ def main():
 # Entry point
 if __name__ == "__main__":
     main()
-
+'''
 
