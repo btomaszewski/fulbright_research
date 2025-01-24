@@ -12,7 +12,7 @@ def encodeFrame(framePath):
         print(f"Error opening frameFile.", e)
         return None
     
-def analyzeImage(framePath):
+def analyzePhoto(framePath):
     # Encode the frame
     base64Frame = encodeFrame(framePath)
 
