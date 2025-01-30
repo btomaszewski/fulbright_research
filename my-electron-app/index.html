@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered JSON Processor</title>
+    <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('images/Globe01.jpg 01.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .container {
+            display: flex;
+            width: 75%;
+            max-width: 1200px;
+            height: 90vh; /* Set height to 90% of viewport */
+        }
+
+        /* Panels */
+        .panel {
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 0.625rem;
+            padding: 1.25rem;
+            margin: 0.625rem;
+            overflow-y: auto; /* Add scroll if content exceeds panel height */
+        }
+
+        .datasets-panel {
+            flex: 0 0 25%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.625rem;
+            height: 100%; /* Make the panel fill the height of the container */
+        }
+
+        .dashboard-panel {
+            flex: 0 0 50%;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Make the panel fill the height of the container */
+        }
+
+        /* File Upload Section */
+        .dataset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.625rem;
+            background-color: #E8F0F8;
+            border-radius: 0.3125rem;
+            cursor: pointer;
+        }
+
+        .dataset-item input[type="checkbox"] {
+            margin-right: 0.625rem;
+        }
+
+        .dataset-item input[type="file"] {
+            display: none;
+        }
+
+        .dataset-item label {
+            cursor: pointer;
+            color: #007BFF;
+            text-decoration: underline;
+        }
+
+        .dataset-item span {
+            margin-right: 0.625rem;
+        }
+
+        .dataset-item .file-name {
+            margin-left: 0.625rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .dataset-item button {
+            margin-left: 1rem;
+            padding: 0.375rem 0.75rem;
+            border: none;
+            background-color: #0033a0;
+            color: white;
+            cursor: pointer;
+            border-radius: 0.3125rem;
+        }
+
+        .dataset-item button:hover {
+            background-color: #218838;
+        }
+
+        /* Context menu */
+        .context-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 0.3125rem;
+            z-index: 1000;
+            width: 150px;
+            padding: 0.5rem;
+        }
+
+        .context-menu div {
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        .context-menu div:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Datasets Panel -->
+        <div class="datasets-panel panel">
+            <h2>Datasets</h2>
+            <button onclick="selectDirectory()">
+                <i class="fas fa-plus"></i> New dataset
+            </button>
+            <div id="dataset-list"></div>
+        </div>
+
+        <!-- Dashboard Panel -->
+        <div class="dashboard-panel panel">
+            <h2>Dashboard</h2>
+            <p>Welcome to the dashboard! This section will display analytics and data insights.</p>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div id="context-menu" class="context-menu">
+        <div id="remove-option">Remove</div>
+        <div id="rename-option">Rename</div>
+    </div>
+
+    <script>
+        let currentInput;
+        let selectedDatasetItem;
+
+        function selectDirectory() {
+            // Create a temporary file input element for directory selection
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.webkitdirectory = true;
+            input.style.display = 'none'; // Hide the input element
+            document.body.appendChild(input);
+
+            // Listen for the file selection
+            input.onchange = function() {
+                handleDirectorySelection(input);
+                // Remove the temporary input after selection
+                document.body.removeChild(input);
+            };
+
+            // Trigger the file input click
+            input.click();
+        }
+
+        function handleDirectorySelection(input) {
+            const files = input.files;
+            if (files.length > 0) {
+                const datasetList = document.getElementById('dataset-list');
+                const datasetItem = document.createElement('div');
+                datasetItem.className = 'dataset-item';
+                
+                // Get the directory name from the path of the first file
+                const directoryPath = files[0].webkitRelativePath;
+                const directoryName = directoryPath.split('/')[0]; // Extract directory name
+                
+                datasetItem.innerHTML = `
+                    <input type="checkbox">
+                    <span>${directoryName}</span>
+                    <button onclick="processFile(this)">Process file</button>
+                `;
+                datasetItem.addEventListener('contextmenu', function(e) {
+                    e.preventDefault(); // Prevent the default right-click menu
+                    showContextMenu(e, datasetItem);
+                });
+
+                datasetList.appendChild(datasetItem);
+            }
+        }
+
+        function showContextMenu(event, datasetItem) {
+            selectedDatasetItem = datasetItem;
+
+            const contextMenu = document.getElementById('context-menu');
+            contextMenu.style.left = `${event.pageX}px`;
+            contextMenu.style.top = `${event.pageY}px`;
+            contextMenu.style.display = 'block';
+
+            document.addEventListener('click', closeContextMenu);
+        }
+
+        function closeContextMenu() {
+            const contextMenu = document.getElementById('context-menu');
+            contextMenu.style.display = 'none';
+            document.removeEventListener('click', closeContextMenu);
+        }
+
+        // Remove dataset
+        document.getElementById('remove-option').addEventListener('click', function() {
+            const confirmRemove = confirm("Are you sure you want to remove this dataset?");
+            if (confirmRemove) {
+                selectedDatasetItem.remove();
+            }
+            closeContextMenu();
+        });
+
+        // Rename dataset
+        document.getElementById('rename-option').addEventListener('click', function() {
+            const newName = prompt("Enter new name for dataset:", selectedDatasetItem.querySelector('span').textContent);
+            if (newName && newName.trim() !== "") {
+                selectedDatasetItem.querySelector('span').textContent = newName;
+            }
+            closeContextMenu();
+        });
+
+        function removeDataset(element) {
+            element.parentElement.remove();
+        }
+
+        function processFile(button) {
+            const datasetItem = button.parentElement;
+            const fileNameSpan = datasetItem.querySelector('.file-name');
+            alert(`Processing files in directory: ${fileNameSpan.textContent}`);
+            // You can add further logic here to process the directory's contents
+        }
+    </script>
+</body>
+</html>
