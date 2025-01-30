@@ -1,0 +1,26 @@
+[
+    {"description": "Many rural communities struggle with access to affordable medical care and specialists. I really like to game, will my code stil work?", "category": "Access to Healthcare"},
+    {"description": "High prescription drug costs prevent many people from getting the medication they need.", "category": "Access to Healthcare"},
+    {"description": "Without health insurance, emergency room visits can become financially devastating.", "category": "Access to Healthcare"},
+    {"description": "Long wait times for doctor appointments make it difficult to get timely treatment.", "category": "Access to Healthcare"},
+    {"description": "Telemedicine has helped bridge the gap for those who live far from healthcare facilities.", "category": "Access to Healthcare"},
+    
+    {"description": "Many employees feel there is a stigma around seeking therapy for stress and anxiety.", "category": "Mental Health Support"},
+    {"description": "Without proper funding, mental health clinics are unable to provide sufficient support.", "category": "Mental Health Support"},
+    {"description": "Schools should offer counseling services to help students manage academic pressure.", "category": "Mental Health Support"},
+    {"description": "Depression and loneliness are rising due to the lack of community mental health programs.", "category": "Mental Health Support"},
+    {"description": "Online therapy services have made it easier for people to access mental health resources.", "category": "Mental Health Support"},
+    
+    {"description": "The rising cost of tuition prevents many students from attending college.", "category": "Barriers to Education"},
+    {"description": "Schools in low-income areas often lack basic resources like textbooks and computers.", "category": "Barriers to Education"},
+    {"description": "Language barriers make it difficult for immigrant students to succeed academically.", "category": "Barriers to Education"},
+    {"description": "Many students struggle with online learning due to limited access to reliable internet.", "category": "Barriers to Education"},
+    {"description": "Special education programs are underfunded, leaving children with disabilities without adequate support.", "category": "Barriers to Education"},
+    
+    {"description": "Discrimination in hiring practices prevents qualified candidates from securing jobs.", "category": "Employment"},
+    {"description": "Many workers face job insecurity due to the rise of automation and AI.", "category": "Employment"},
+    {"description": "Without reliable transportation, commuting to work can be a major challenge.", "category": "Employment"},
+    {"description": "Job training programs can help unemployed individuals develop new skills.", "category": "Employment"},
+    {"description": "Fair wages and benefits are essential for maintaining a stable workforce.", "category": "Employment"}
+]
+  
