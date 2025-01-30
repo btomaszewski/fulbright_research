@@ -1,23 +1,64 @@
 [
     [
-      "New York City is one of the most iconic cities in the world.",
+      "Warsaw is the capital of Poland and home to the Royal Castle.",
       {
         "entities": [
-          [0, 13, "CITY"]
+          [0, 6, "CITY"],
+          [26, 32, "COUNTRY"],
+          [47, 60, "LANDMARK"]
         ]
       }
     ],
     [
-      "The Eiffel Tower in Paris is a world-famous landmark.",
+      "Krakow is famous for Wawel Castle and the Main Market Square.",
       {
         "entities": [
-          [4, 9, "CITY"],
-          [21, 34, "LANDMARK"]
+          [0, 6, "CITY"],
+          [19, 32, "LANDMARK"],
+          [41, 60, "LANDMARK"]
         ]
       }
     ],
     [
-      "Tokyo is known for its advanced technology and bustling streets.",
+      "Gdansk is known for its historic Old Town and the Neptune Fountain.",
+      {
+        "entities": [
+          [0, 6, "CITY"],
+          [37, 45, "LANDMARK"],
+          [54, 70, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Wroclaw is home to the beautiful Centennial Hall and Ostrow Tumski.",
+      {
+        "entities": [
+          [0, 7, "CITY"],
+          [33, 48, "LANDMARK"],
+          [53, 67, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "The Bialowieza Forest is a UNESCO World Heritage site in Poland.",
+      {
+        "entities": [
+          [4, 22, "LANDMARK"],
+          [59, 65, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "Poznan is known for the Old Market Square and its colorful townhouses.",
+      {
+        "entities": [
+          [0, 6, "CITY"],
+          [20, 37, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Torun is famous for being the birthplace of Nicolaus Copernicus.",
       {
         "entities": [
           [0, 5, "CITY"]
@@ -25,79 +66,140 @@
       }
     ],
     [
-      "The Great Wall of China stretches across northern China.",
+      "The Malbork Castle is the largest brick castle in the world.",
       {
         "entities": [
-          [4, 9, "LANDMARK"],
-          [35, 40, "COUNTRY"]
+          [4, 18, "LANDMARK"]
         ]
       }
     ],
     [
-      "London is famous for landmarks such as Big Ben and Buckingham Palace.",
+      "The Wieliczka Salt Mine is one of Poland’s most famous landmarks.",
+      {
+        "entities": [
+          [4, 24, "LANDMARK"],
+          [42, 48, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "Zakopane is a popular tourist destination in the Tatra Mountains.",
+      {
+        "entities": [
+          [0, 8, "CITY"],
+          [49, 65, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "The Bieszczady Mountains are known for their breathtaking landscapes.",
+      {
+        "entities": [
+          [4, 24, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Lodz is known for Piotrkowska Street, the longest shopping street in Europe.",
+      {
+        "entities": [
+          [0, 4, "CITY"],
+          [16, 33, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Lublin is a historic city with attractions like the Lublin Castle.",
       {
         "entities": [
           [0, 6, "CITY"],
-          [29, 35, "LANDMARK"],
-          [40, 56, "LANDMARK"]
+          [49, 62, "LANDMARK"]
         ]
       }
     ],
     [
-      "The Pyramids of Giza are a testament to ancient Egyptian civilization.",
+      "Sopot is a coastal town famous for its wooden pier, the longest in Europe.",
       {
         "entities": [
-          [4, 10, "LANDMARK"],
-          [35, 40, "COUNTRY"]
+          [0, 5, "CITY"],
+          [36, 45, "LANDMARK"]
         ]
       }
     ],
     [
-      "The Colosseum in Rome is one of the greatest architectural marvels.",
+      "The Jasna Gora Monastery in Czestochowa is a sacred pilgrimage site.",
       {
         "entities": [
-          [12, 16, "CITY"],
-          [20, 29, "LANDMARK"]
+          [4, 25, "LANDMARK"],
+          [29, 41, "CITY"]
         ]
       }
     ],
     [
-      "Sydney is known for its beautiful harbor and the Sydney Opera House.",
+      "The Hel Peninsula is a unique natural wonder in northern Poland.",
       {
         "entities": [
-          [0, 6, "CITY"],
-          [37, 54, "LANDMARK"]
+          [4, 17, "LANDMARK"],
+          [52, 58, "COUNTRY"]
         ]
       }
     ],
     [
-      "Mount Everest is the tallest mountain on Earth, located in Nepal.",
+      "Auschwitz-Birkenau is a historic site near Oswiecim in southern Poland.",
       {
         "entities": [
-          [0, 12, "LANDMARK"],
-          [47, 52, "COUNTRY"]
+          [0, 18, "LANDMARK"],
+          [39, 47, "CITY"],
+          [59, 65, "COUNTRY"]
         ]
       }
     ],
     [
-      "Rio de Janeiro is famous for its carnival and stunning beaches.",
+      "The Tatra National Park is a protected area in the Carpathian Mountains.",
       {
         "entities": [
-          [0, 15, "CITY"]
+          [4, 24, "LANDMARK"],
+          [55, 74, "LANDMARK"]
         ]
       }
     ],
     [
-      "Machu Picchu in Peru is one of the most visited ancient sites.",
+      "The Crooked House in Sopot is a fascinating architectural landmark.",
       {
         "entities": [
-          [0, 12, "LANDMARK"],
-          [17, 21, "COUNTRY"]
+          [4, 17, "LANDMARK"],
+          [21, 26, "CITY"]
         ]
       }
     ],
     [
-      "Istanbul, formerly known as Byzantium, is a city bridging Europe and Asia.",
+      "The Palace of Culture and Science in Warsaw is an iconic skyscraper.",
+      {
+        "entities": [
+          [4, 37, "LANDMARK"],
+          [41, 47, "CITY"]
+        ]
+      }
+    ],
+    [
+      "I explored the Krzyztopor Castle ruins last weekend.",
+      {
+        "entities": [
+          [13, 30, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "I live on Piotrkowska Street in Lodz.",
+      {
+        "entities": [
+          [10, 28, "LANDMARK"],
+          [32, 36, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Wroclaw is a beautiful city.",
       {
         "entities": [
           [0, 7, "CITY"]
@@ -105,51 +207,65 @@
       }
     ],
     [
-      "The Acropolis in Athens is a UNESCO World Heritage Site.",
+      "I visited Wroclaw last summer.",
+      {
+        "entities": [
+          [9, 16, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Old Town in Gdansk is full of history.",
       {
         "entities": [
           [4, 12, "LANDMARK"],
-          [18, 24, "CITY"]
+          [16, 22, "CITY"]
         ]
       }
     ],
     [
-      "Cairo is home to the famous Egyptian Museum and the Great Sphinx.",
+      "Krakow’s Old Town is a must-visit.",
       {
         "entities": [
-          [0, 5, "CITY"],
-          [28, 42, "LANDMARK"]
+          [0, 6, "CITY"],
+          [9, 17, "LANDMARK"]
         ]
       }
     ],
     [
-      "Los Angeles is known for its entertainment industry, especially Hollywood.",
+      "Warszawa is the capital of Poland.",
       {
         "entities": [
-          [0, 11, "CITY"]
+          [0, 8, "CITY"]
         ]
       }
     ],
     [
-      "The Taj Mahal in Agra is an exquisite example of Mughal architecture.",
+      "I am going to Warsaw next month.",
       {
         "entities": [
-          [4, 13, "LANDMARK"],
-          [18, 23, "CITY"]
+          [13, 19, "CITY"]
         ]
       }
     ],
     [
-      "The Eiffel Tower in Paris stands as a symbol of French culture.",
+      "The Bialowieza Forest is a UNESCO World Heritage site.",
       {
         "entities": [
-          [4, 9, "CITY"],
-          [21, 34, "LANDMARK"]
+          [4, 22, "LANDMARK"]
         ]
       }
     ],
     [
-      "Berlin is a city with a rich history and numerous historical landmarks.",
+      "I am visiting Gdansk next week.",
+      {
+        "entities": [
+          [13, 19, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Gdansk is a coastal city.",
       {
         "entities": [
           [0, 6, "CITY"]
@@ -157,29 +273,188 @@
       }
     ],
     [
-      "Vatican City is the smallest country in the world, located within Rome.",
+      "The Warsaw Chopin Airport is the busiest airport in Poland.",
       {
         "entities": [
-          [0, 12, "CITY"],
-          [39, 43, "COUNTRY"]
+          [4, 10, "CITY"],
+          [11, 26, "LANDMARK"],
+          [56, 62, "COUNTRY"]
         ]
       }
     ],
     [
-      "The Golden Gate Bridge in San Francisco is an engineering marvel.",
+      "Warsaw is the capital of Poland and one of the largest cities in the country.",
       {
         "entities": [
-          [4, 19, "LANDMARK"],
-          [24, 37, "CITY"]
+          [0, 6, "CITY"],
+          [26, 32, "COUNTRY"]
         ]
       }
     ],
     [
-      "The Louvre Museum in Paris is home to the famous Mona Lisa painting.",
+      "The Royal Castle in Warsaw is one of the most important tourist attractions.",
       {
         "entities": [
-          [4, 9, "CITY"],
-          [20, 38, "LANDMARK"]
+          [4, 18, "LANDMARK"],
+          [22, 28, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Wawel in Krakow is a symbol of Poland's history.",
+      {
+        "entities": [
+          [0, 5, "LANDMARK"],
+          [9, 15, "CITY"],
+          [30, 36, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "Gdansk is known for its beautiful Old Town.",
+      {
+        "entities": [
+          [0, 6, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Gdansk Shipyard played an important role in Poland's history.",
+      {
+        "entities": [
+          [4, 20, "LANDMARK"],
+          [21, 27, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Auschwitz-Birkenau Museum is located in Oswiecim.",
+      {
+        "entities": [
+          [4, 26, "LANDMARK"],
+          [40, 48, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Morskie Oko is the most beautiful lake in the Polish Tatra Mountains.",
+      {
+        "entities": [
+          [0, 11, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Bialowieza is home to the famous Bialowieza Forest.",
+      {
+        "entities": [
+          [0, 10, "CITY"],
+          [28, 46, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Malbork is famous for the Teutonic Castle, the largest brick fortress in Europe.",
+      {
+        "entities": [
+          [0, 7, "CITY"],
+          [23, 39, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "The Cloth Hall in Krakow's Main Square is an important tourist attraction.",
+      {
+        "entities": [
+          [4, 15, "LANDMARK"],
+          [19, 25, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Torun is known as the city of Nicolaus Copernicus.",
+      {
+        "entities": [
+          [0, 5, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Royal Lazienki Park in Warsaw is an extremely popular place among tourists.",
+      {
+        "entities": [
+          [4, 24, "LANDMARK"],
+          [28, 34, "CITY"]
+        ]
+      }
+    ],
+    [
+      "In Wroclaw, you can see the famous dwarfs scattered around the city.",
+      {
+        "entities": [
+          [3, 10, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Giewont is a popular peak in the Western Tatra Mountains.",
+      {
+        "entities": [
+          [0, 7, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "The Wieliczka Salt Mine is listed as a UNESCO World Heritage Site.",
+      {
+        "entities": [
+          [4, 24, "LANDMARK"],
+          [28, 37, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Poznan hosts the famous Poznan International Fair.",
+      {
+        "entities": [
+          [0, 6, "CITY"],
+          [24, 52, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "The Slowinski National Park is famous for its moving dunes.",
+      {
+        "entities": [
+          [4, 28, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Jasna Gora in Czestochowa is one of the most important pilgrimage sites.",
+      {
+        "entities": [
+          [0, 10, "LANDMARK"],
+          [14, 26, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Ostrow Tumski in Wroclaw is one of the oldest places in Poland.",
+      {
+        "entities": [
+          [0, 13, "LANDMARK"],
+          [17, 25, "CITY"],
+          [53, 59, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "The Ksiaz Castle is one of the most beautiful castles in Poland.",
+      {
+        "entities": [
+          [4, 16, "LANDMARK"],
+          [60, 66, "COUNTRY"]
         ]
       }
     ]
