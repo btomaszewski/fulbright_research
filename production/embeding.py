@@ -17,6 +17,8 @@ categories = ["Legal Status and Documentation", "Safety and Security", "Gender-B
 
 model = SentenceTransformer('all-mpnet-base-v2')
 category_embeddings = model.encode(categories) 
+# print(category_embeddings)
+
 
 def category_sim_pairs(categories, similarities):
     output = []
@@ -26,24 +28,25 @@ def category_sim_pairs(categories, similarities):
     output = sorted(output, key=lambda x: x[1], reverse=True)
     return output
 
-with open('testembed.json', 'r', encoding='utf-8') as f:
-    data = json.load(f)
+testFile = "./processedJson/cleanJsonTestChatProcessed/result.json"
 
-for messages in data:
-    id = messages.get("id")
-    text = messages.get("TRANSLATION", '')
-    translation = messages.get("TRANSLATION", {})
-    translated_text = translation.get("Translated_Text", '')
+with open(testFile, 'r', encoding='utf-8') as f:
+    jsonData = json.load(f)
+    messageData = jsonData.get("messages", [])
+
+for message in messageData:
+    id = message.get("id")
+    translation = message.get("TRANSLATION", '')
 
     # description -> vector
-    text_embedding = model.encode(text)
+    text_embedding = model.encode(translation)
 
     # cosine sim (description, category)
     similarities = util.cos_sim(text_embedding, category_embeddings)[0].tolist()
     pairs = category_sim_pairs(categories, similarities)
 
     print(f"Title: {id}:")
-    print(f"  Description: {text}")
+    print(f"  Description: {translation}")
     print(f"  Categories (closest to furthest):")
     for category, similarity in pairs:
         print(f"{category}: {similarity:.4f}")

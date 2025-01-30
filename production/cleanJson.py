@@ -6,6 +6,8 @@ def filterMessages(jsonData):
     for message in jsonData["messages"]:
         if message.get("text") == "/n":
             message["text"] = None
+        if message.get('reactions'):
+            del message['reactions']
 
 # Step 2: Modify reply IDs
 def modifyReplies(jsonData):
@@ -48,33 +50,3 @@ def cleanJson(resultJson):
 
     with open(resultJson, 'w', encoding='utf-8') as f:
         json.dump(jsonData, f, ensure_ascii=False, indent=4)
-
-'''
-def main():
-    # File paths
-    file = "../testCode&Data/data/cleanJsonTestChat/result.json"
-    cleanFile = "../testCode&Data/data/cleanJsonTestChat/cleanResult.json"
-
-    # Copy the original file to the clean file
-    shutil.copy(file, cleanFile)
-
-    # Load the JSON data
-    with open(cleanFile, 'r', encoding='utf-8') as f:
-        jsonData = json.load(f)
-
-    # Call each function sequentially
-    filterMessages(jsonData)
-    modifyReplies(jsonData)
-    processTextEntities(jsonData)
-
-    # Write the cleaned data back to the file
-    with open(cleanFile, 'w', encoding='utf-8') as f:
-        json.dump(jsonData, f, ensure_ascii=False, indent=4)
-
-    print(f"Processed and saved the cleaned data to {cleanFile}")
-
-# Entry point
-if __name__ == "__main__":
-    main()
-'''
-

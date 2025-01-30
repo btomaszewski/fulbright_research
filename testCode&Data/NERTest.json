@@ -1,0 +1,186 @@
+[
+    [
+      "New York City is one of the most iconic cities in the world.",
+      {
+        "entities": [
+          [0, 13, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Eiffel Tower in Paris is a world-famous landmark.",
+      {
+        "entities": [
+          [4, 9, "CITY"],
+          [21, 34, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Tokyo is known for its advanced technology and bustling streets.",
+      {
+        "entities": [
+          [0, 5, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Great Wall of China stretches across northern China.",
+      {
+        "entities": [
+          [4, 9, "LANDMARK"],
+          [35, 40, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "London is famous for landmarks such as Big Ben and Buckingham Palace.",
+      {
+        "entities": [
+          [0, 6, "CITY"],
+          [29, 35, "LANDMARK"],
+          [40, 56, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "The Pyramids of Giza are a testament to ancient Egyptian civilization.",
+      {
+        "entities": [
+          [4, 10, "LANDMARK"],
+          [35, 40, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "The Colosseum in Rome is one of the greatest architectural marvels.",
+      {
+        "entities": [
+          [12, 16, "CITY"],
+          [20, 29, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Sydney is known for its beautiful harbor and the Sydney Opera House.",
+      {
+        "entities": [
+          [0, 6, "CITY"],
+          [37, 54, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Mount Everest is the tallest mountain on Earth, located in Nepal.",
+      {
+        "entities": [
+          [0, 12, "LANDMARK"],
+          [47, 52, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "Rio de Janeiro is famous for its carnival and stunning beaches.",
+      {
+        "entities": [
+          [0, 15, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Machu Picchu in Peru is one of the most visited ancient sites.",
+      {
+        "entities": [
+          [0, 12, "LANDMARK"],
+          [17, 21, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "Istanbul, formerly known as Byzantium, is a city bridging Europe and Asia.",
+      {
+        "entities": [
+          [0, 7, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Acropolis in Athens is a UNESCO World Heritage Site.",
+      {
+        "entities": [
+          [4, 12, "LANDMARK"],
+          [18, 24, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Cairo is home to the famous Egyptian Museum and the Great Sphinx.",
+      {
+        "entities": [
+          [0, 5, "CITY"],
+          [28, 42, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Los Angeles is known for its entertainment industry, especially Hollywood.",
+      {
+        "entities": [
+          [0, 11, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Taj Mahal in Agra is an exquisite example of Mughal architecture.",
+      {
+        "entities": [
+          [4, 13, "LANDMARK"],
+          [18, 23, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Eiffel Tower in Paris stands as a symbol of French culture.",
+      {
+        "entities": [
+          [4, 9, "CITY"],
+          [21, 34, "LANDMARK"]
+        ]
+      }
+    ],
+    [
+      "Berlin is a city with a rich history and numerous historical landmarks.",
+      {
+        "entities": [
+          [0, 6, "CITY"]
+        ]
+      }
+    ],
+    [
+      "Vatican City is the smallest country in the world, located within Rome.",
+      {
+        "entities": [
+          [0, 12, "CITY"],
+          [39, 43, "COUNTRY"]
+        ]
+      }
+    ],
+    [
+      "The Golden Gate Bridge in San Francisco is an engineering marvel.",
+      {
+        "entities": [
+          [4, 19, "LANDMARK"],
+          [24, 37, "CITY"]
+        ]
+      }
+    ],
+    [
+      "The Louvre Museum in Paris is home to the famous Mona Lisa painting.",
+      {
+        "entities": [
+          [4, 9, "CITY"],
+          [20, 38, "LANDMARK"]
+        ]
+      }
+    ]
+  ]

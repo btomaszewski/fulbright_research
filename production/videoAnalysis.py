@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from imageAnalysis import analyzeImage
+from imageAnalysis import analyzePhoto
 from aiLoader import loadAI
 
 client = loadAI()
@@ -32,7 +32,7 @@ def logFrames(framesDir):
 
         try:            
             # Call the API (add your OpenAI logic here)
-            responseOutput = analyzeImage(framePath)
+            responseOutput = analyzePhoto(framePath)
             responseLog += f"Frame {frameNum:04d}:\n{responseOutput}\n\n"
 
         except Exception as e:
