@@ -1,12 +1,13 @@
 {
-  "name": "my-electron-app",
+  "name": "electron",
   "version": "1.0.0",
-  "description": "test app",
-  "main": "main.js",
+  "description": "aegis analytics",
+  "main": "renderer.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
     "@electron-forge/maker-zip": "^7.6.1",
     "@electron-forge/plugin-auto-unpack-natives": "^7.6.1",
     "@electron-forge/plugin-fuses": "^7.6.1",
+    "@electron-forge/publisher-github": "^7.6.1",
     "@electron/fuses": "^1.8.0",
     "electron": "^34.0.2"
   },

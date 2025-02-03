@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis Analytics</title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>AEGIS ANALYTICS</h2>
+
+        <div class="datasets panel">
+            <h2>Datasets</h2>
+            <p id="status"></p>
+            <button id="addNew">
+                <i class="fas fa-plus"></i> New dataset
+            </button>
+            <button id="process">Process All</button>
+            <div id="datasetList"></div>
+        </div>
+
+
+        <div class="dashboard panel">
+            <h2>Dashboard</h2>
+            <p>Welcome to the dashboard! This section will display analytics and data insights.</p>
+        </div>
+    </div>
+
+    <script>
+        const path = require('path');
+        const { ipcRenderer } = require('electron');
+    
+        document.getElementById('addNew').addEventListener('click', async () => {
+            const dirPath = await ipcRenderer.invoke('select-directory');
+            if (dirPath) {
+                addDatasetToList(dirPath);
+            }
+        });
+    
+        function addDatasetToList(dirPath) {
+            const ul = document.getElementById('datasetList');
+            const li = document.createElement('li');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            
+            li.appendChild(checkbox);
+    
+            const dirName = path.basename(dirPath);
+            li.appendChild(document.createTextNode(dirName));
+            li.dataset.path = dirPath;
+            li.setAttribute('class', 'dataset-item')
+    
+            // Right-click context menu
+            li.addEventListener('contextmenu', (event) => {
+                event.preventDefault();
+                ipcRenderer.send('show-context-menu', dirPath, dirName);
+            });
+    
+            ul.appendChild(li);
+        }
+    
+        ipcRenderer.on('load-datasets', (event, datasets) => {
+            datasets.forEach(addDatasetToList);
+        });
+    
+        ipcRenderer.on('delete-dataset', (event, deletedPath) => {
+            const items = document.querySelectorAll('#datasetList li');
+            items.forEach((li) => {
+                if (li.dataset.path === deletedPath) {
+                    li.remove();
+                }
+            });
+        });
+    </script>    
+</body>
+</html>
+
+
+
