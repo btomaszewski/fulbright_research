@@ -2,7 +2,7 @@
   "name": "electron",
   "version": "1.0.0",
   "description": "aegis analytics",
-  "main": "renderer.js",
+  "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -29,5 +29,16 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1"
+  },
+  "build": {
+    "files": [
+      "assets/processJson.py"
+    ],
+    "extraResources": [
+      {
+        "from": "assets/processJson.py",
+        "to": "processJson.py"
+      }
+    ]
   }
 }

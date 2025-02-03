@@ -8,19 +8,17 @@
     <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
 </head>
 <body>
+    <h2>AEGIS ANALYTICS</h2>
     <div class="container">
-        <h2>AEGIS ANALYTICS</h2>
-
         <div class="datasets panel">
             <h2>Datasets</h2>
-            <p id="status"></p>
             <button id="addNew">
                 <i class="fas fa-plus"></i> New dataset
             </button>
             <button id="process">Process All</button>
             <div id="datasetList"></div>
+            <p id="processing-status"></p>
         </div>
-
 
         <div class="dashboard panel">
             <h2>Dashboard</h2>
@@ -38,7 +36,17 @@
                 addDatasetToList(dirPath);
             }
         });
-    
+
+        document.getElementById('process').addEventListener('click', async () => {
+            document.getElementById('processing-status').innerText = "Processing...";
+            try {
+                const result = await ipcRenderer.invoke('process-json');
+                document.getElementById('processing-status').innerText = "Processing completed: " + result;
+            } catch (error) {
+                document.getElementById('processing-status').innerText = "Error: " + error;
+            }
+        });
+
         function addDatasetToList(dirPath) {
             const ul = document.getElementById('datasetList');
             const li = document.createElement('li');
@@ -50,21 +58,21 @@
             const dirName = path.basename(dirPath);
             li.appendChild(document.createTextNode(dirName));
             li.dataset.path = dirPath;
-            li.setAttribute('class', 'dataset-item')
-    
+            li.setAttribute('class', 'dataset-item');
+
             // Right-click context menu
             li.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
                 ipcRenderer.send('show-context-menu', dirPath, dirName);
             });
-    
+
             ul.appendChild(li);
         }
-    
+
         ipcRenderer.on('load-datasets', (event, datasets) => {
             datasets.forEach(addDatasetToList);
         });
-    
+
         ipcRenderer.on('delete-dataset', (event, deletedPath) => {
             const items = document.querySelectorAll('#datasetList li');
             items.forEach((li) => {
@@ -76,6 +84,3 @@
     </script>    
 </body>
 </html>
-
-
-
