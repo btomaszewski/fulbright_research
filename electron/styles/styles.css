@@ -64,8 +64,13 @@ h2 {
     background-color: #E8F0F8;
     border-radius: 0.3125rem;
     cursor: pointer;
+    font-size: smaller;
 }
 
-.dataset-item input[type="checkbox"] {
-    margin-right: 0.625rem;
+#sendFB {
+    margin-right: 10px;
+}
+
+#processing-status {
+    max-width: 200px;
 }

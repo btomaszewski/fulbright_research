@@ -6,6 +6,8 @@
     <title>Aegis Analytics</title>
     <link rel="stylesheet" href="styles/styles.css">
     <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.0/firebase-storage.js";></script>
 </head>
 <body>
     <h2>AEGIS ANALYTICS</h2>
@@ -17,17 +19,19 @@
             </button>
             <button id="process">Process All</button>
             <div id="datasetList"></div>
-            <p id="processing-status"></p>
+            
         </div>
 
         <div class="dashboard panel">
             <h2>Dashboard</h2>
             <p>Welcome to the dashboard! This section will display analytics and data insights.</p>
+            <p id="processing-status"></p>
         </div>
     </div>
 
-    <script>
+    <script type="module">
         const path = require('path');
+        const fs = require('fs');
         const { ipcRenderer } = require('electron');
     
         document.getElementById('addNew').addEventListener('click', async () => {
@@ -48,14 +52,17 @@
         });
 
         function addDatasetToList(dirPath) {
+            const dirName = path.basename(dirPath);
             const ul = document.getElementById('datasetList');
             const li = document.createElement('li');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            
-            li.appendChild(checkbox);
+            const sendFB = document.createElement('button');
+            sendFB.setAttribute('id', "sendFB");
+            sendFB.innerHTML = "Upload";
+            sendFB.addEventListener("click", function() {
+                uploadToFB(dirPath, dirName);
+            });
+            li.appendChild(sendFB);
     
-            const dirName = path.basename(dirPath);
             li.appendChild(document.createTextNode(dirName));
             li.dataset.path = dirPath;
             li.setAttribute('class', 'dataset-item');
@@ -81,6 +88,53 @@
                 }
             });
         });
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3iJY5dmP9fTjTr_5Yntb7rHfw4doZQdI",
+            authDomain: "aegis-fedb3.firebaseapp.com",
+            projectId: "aegis-fedb3",
+            storageBucket: "aegis-fedb3.firebasestorage.app",
+            messagingSenderId: "265897521345",
+            appId: "1:265897521345:web:cda0c905300659aff06440"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+            async function uploadToFB(dirPath, dirName) {
+                let status = document.getElementById("processing-status");
+                status.innerHTML = "Initializing upload...<br>";
+
+                let normalizedPath = path.normalize(dirPath);
+                const parentDir = path.dirname(normalizedPath);
+                const grandparentDir = path.dirname(parentDir);
+                const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
+
+                try {
+                    const fileData = fs.readFileSync(filePath, "utf-8");
+                    status.innerHTML += `fileData: ${fileData}<br>`;
+
+                    if (fileData) {
+                        status.innerHTML += "File read successfully!<br>";
+
+                        // Create a reference in Firebase Storage
+                        const storageRef = ref(storage, `uploaded_files/${dirName}/result.json`);
+
+                        // Upload file
+                        await uploadBytes(storageRef, fileData);
+                        status.innerHTML += "File uploaded successfully!<br>";
+                        console.log("File uploaded successfully!");
+                    } else {
+                        status.innerHTML += "Failed to read file!<br>";
+                    }
+                } catch (error) {
+                    status.innerHTML += `Upload failed: ${error.message}<br>`;
+                    console.error("Upload failed:", error);
+                }
+            }
     </script>    
 </body>
 </html>

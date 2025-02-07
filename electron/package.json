@@ -28,7 +28,10 @@
     "electron": "^34.0.2"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1"
+    "dotenv": "^16.4.7",
+    "electron-squirrel-startup": "^1.0.1",
+    "firebase-admin": "^13.1.0",
+    "google-spreadsheet": "^4.1.4"
   },
   "build": {
     "files": [
