@@ -17,7 +17,6 @@
             <button id="addNew">
                 <i class="fas fa-plus"></i> New dataset
             </button>
-            <button id="process">Process All</button>
             <div id="datasetList"></div>
             
         </div>
@@ -25,7 +24,7 @@
         <div class="dashboard panel">
             <h2>Dashboard</h2>
             <p>Welcome to the dashboard! This section will display analytics and data insights.</p>
-            <p id="processing-status"></p>
+            <p id="status"></p>
         </div>
     </div>
 
@@ -33,6 +32,11 @@
         const path = require('path');
         const fs = require('fs');
         const { ipcRenderer } = require('electron');
+        const { GoogleSpreadsheet } = require('google-spreadsheet');
+        const { JWT } = require('google-auth-library');
+        require('dotenv').config();
+
+        const status = document.getElementById('status');
     
         document.getElementById('addNew').addEventListener('click', async () => {
             const dirPath = await ipcRenderer.invoke('select-directory');
@@ -41,27 +45,39 @@
             }
         });
 
-        document.getElementById('process').addEventListener('click', async () => {
-            document.getElementById('processing-status').innerText = "Processing...";
-            try {
-                const result = await ipcRenderer.invoke('process-json');
-                document.getElementById('processing-status').innerText = "Processing completed: " + result;
-            } catch (error) {
-                document.getElementById('processing-status').innerText = "Error: " + error;
-            }
-        });
-
         function addDatasetToList(dirPath) {
-            const dirName = path.basename(dirPath);
+            let dirName = path.basename(dirPath);
             const ul = document.getElementById('datasetList');
             const li = document.createElement('li');
-            const sendFB = document.createElement('button');
-            sendFB.setAttribute('id', "sendFB");
-            sendFB.innerHTML = "Upload";
-            sendFB.addEventListener("click", function() {
-                uploadToFB(dirPath, dirName);
+
+            const processBtn = document.createElement('button');
+            processBtn.setAttribute('id', 'process');
+            processBtn.innerHTML = "Process";
+            processBtn.addEventListener('click', async () => {
+                status.innerText = "Processing...";
+                try {
+                    const result = await ipcRenderer.invoke('process-json', dirPath);
+                    status.innerText += "Processing completed: " + result;
+                } catch (error) {
+                    status.innerText += "Error: " + error;
+                }
             });
-            li.appendChild(sendFB);
+
+            li.appendChild(processBtn);
+
+            const uploadBtn = document.createElement('button');
+            uploadBtn.setAttribute('id', "uploadBtn");
+            uploadBtn.innerHTML = "Upload";
+
+            let normalizedPath = path.normalize(dirPath);
+            const parentDir = path.dirname(normalizedPath);
+            const grandparentDir = path.dirname(parentDir);
+            dirName += "Processed";
+            const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
+            uploadBtn.addEventListener("click", function() {
+                uploadFileToSheets(filePath);
+            });
+            li.appendChild(uploadBtn);
     
             li.appendChild(document.createTextNode(dirName));
             li.dataset.path = dirPath;
@@ -89,52 +105,16 @@
             });
         });
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-storage.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyD3iJY5dmP9fTjTr_5Yntb7rHfw4doZQdI",
-            authDomain: "aegis-fedb3.firebaseapp.com",
-            projectId: "aegis-fedb3",
-            storageBucket: "aegis-fedb3.firebasestorage.app",
-            messagingSenderId: "265897521345",
-            appId: "1:265897521345:web:cda0c905300659aff06440"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const storage = getStorage(app);
-
-            async function uploadToFB(dirPath, dirName) {
-                let status = document.getElementById("processing-status");
-                status.innerHTML = "Initializing upload...<br>";
-
-                let normalizedPath = path.normalize(dirPath);
-                const parentDir = path.dirname(normalizedPath);
-                const grandparentDir = path.dirname(parentDir);
-                const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
-
-                try {
-                    const fileData = fs.readFileSync(filePath, "utf-8");
-                    status.innerHTML += `fileData: ${fileData}<br>`;
-
-                    if (fileData) {
-                        status.innerHTML += "File read successfully!<br>";
-
-                        // Create a reference in Firebase Storage
-                        const storageRef = ref(storage, `uploaded_files/${dirName}/result.json`);
-
-                        // Upload file
-                        await uploadBytes(storageRef, fileData);
-                        status.innerHTML += "File uploaded successfully!<br>";
-                        console.log("File uploaded successfully!");
-                    } else {
-                        status.innerHTML += "Failed to read file!<br>";
-                    }
-                } catch (error) {
-                    status.innerHTML += `Upload failed: ${error.message}<br>`;
-                    console.error("Upload failed:", error);
-                }
+        async function uploadFileToSheets(filePath) {
+            try {
+                const response = await ipcRenderer.invoke('upload-to-google-sheets', filePath);
+                status.innerHTML += response;
+            } catch (error) {
+                status.innerHTML = `Error: ${error}`;
             }
+        }
+
+
     </script>    
 </body>
 </html>
