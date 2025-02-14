@@ -1,7 +1,23 @@
 import json
 import numpy as np
 from sentence_transformers import SentenceTransformer
+import spacy
+import re
 from typing import List, Dict, Tuple
+
+# Load spaCy model
+nlp = spacy.load("en_core_web_sm")
+
+def clean_text(text: str) -> str:
+    """Cleans text by lowercasing, removing special characters, lemmatizing, and removing stopwords."""
+    text = text.lower()
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'[^a-zA-Z\s]', '', text)
+    
+    doc = nlp(text)
+    cleaned_text = " ".join([token.lemma_ for token in doc if not token.is_stop])
+    
+    return cleaned_text
 
 class VectorClassifier:
     def __init__(self, model_path: str, category_embeddings_path: str, threshold: float = 0.7):
@@ -25,10 +41,21 @@ class VectorClassifier:
         self.categories = list(self.category_embeddings.keys())
         self.category_vectors = np.array([self.category_embeddings[cat] for cat in self.categories])
     
-    def predict_categories(self, text: str) -> List[Tuple[str, float]]:
+    def predict_categories(self, text: str, original_text: str) -> Dict:
         """
         Predict categories for a text with confidence scores.
+        Returns results with both cleaned and original text.
         """
+        # If cleaned text is empty, return null categories
+        if not text.strip():
+            return {
+                'original_text': original_text,
+                'cleaned_text': text,
+                'categories': [],
+                'confidence_scores': {},
+                'status': 'filtered'
+            }
+        
         # Generate embedding for input text
         text_embedding = self.model.encode(text)
         
@@ -44,7 +71,15 @@ class VectorClassifier:
                 results.append((cat, float(score)))
         
         # Sort by similarity score
-        return sorted(results, key=lambda x: x[1], reverse=True)
+        results = sorted(results, key=lambda x: x[1], reverse=True)
+        
+        return {
+            'original_text': original_text,
+            'cleaned_text': text,
+            'categories': [cat for cat, _ in results],
+            'confidence_scores': {cat: score for cat, score in results},
+            'status': 'processed'
+        }
 
 def process_input_file(input_file: str, output_file: str, classifier: VectorClassifier):
     """Process input JSON and save categorized results."""
@@ -58,16 +93,17 @@ def process_input_file(input_file: str, output_file: str, classifier: VectorClas
     
     print(f"\nProcessing {total_entries} entries...")
     for i, entry in enumerate(input_data, 1):
-        text = entry['text']
-        predictions = classifier.predict_categories(text)
+        original_text = entry['text']
+        cleaned_text = clean_text(original_text)
         
-        # Create output entry
-        output_entry = {
-            'text': text,
-            'categories': [cat for cat, _ in predictions],
-            'confidence_scores': {cat: score for cat, score in predictions}
-        }
-        output_data.append(output_entry)
+        # Get predictions
+        result = classifier.predict_categories(cleaned_text, original_text)
+        
+        # If no categories were found, assign null
+        if not result['categories']:
+            result['categories'] = ['null']
+        
+        output_data.append(result)
         
         if i % 10 == 0:
             print(f"Processed {i}/{total_entries} entries...")
