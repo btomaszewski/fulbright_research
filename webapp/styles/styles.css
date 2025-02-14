@@ -12,9 +12,11 @@ body {
 }
 
 h2 {
-    margin: 1rem 0 0 1.25rem; /* Aligns title to the left with spacing */
     text-align: left;
 }
+ h1 {
+    margin-left: 1rem;
+ }
 
 .container {
     display: flex;

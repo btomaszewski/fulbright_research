@@ -1,4 +1,5 @@
 .env
+gsCredentials.json
 
 # Logs
 logs

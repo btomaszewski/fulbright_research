@@ -5,12 +5,11 @@ from aiLoader import loadAI
 
 client = loadAI()
 
-'''
 
 # Constants
 PROMPT_PART_1 = "Each of the paragraphs in this string between the <start> and <end> tags are descriptions of an image. Each image is a frame from a single video. Use the descriptions of each frame to generate a summary of what the video is depicting. <start>"
-PROMPT_PART_2 = "<end> Return back 1 item: the summary of the video in string format. Do not provide any other explanatio
-'''
+PROMPT_PART_2 = "<end> Return back 1 item: the summary of the video in string format. Do not provide any other explanations. Do not refer to the frames in your summary, treat it as a summary of the video as a whole."
+
 
 # Path to the folder containing the frames
 # frameFolder = Path("frames")  # Path to your frame folder
@@ -44,10 +43,10 @@ def logFrames(framesDir):
     if responseLog:
         return responseLog
     
-'''
 
 # Function to summarize text using OpenAI
 def summarize(framesDir):
+    responseLog = logFrames(framesDir)
     try:
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -60,5 +59,3 @@ def summarize(framesDir):
     except Exception as e:
         print(f"Error summarizing text: {e}")
         return None
-
-'''

@@ -1,177 +1,111 @@
 import os
-import sys
-import json
 import shutil
+import json
+import sys
 from pathlib import Path
 from frameExtraction import extractFrames
-from videoAnalysis import logFrames
+from videoAnalysis import summarize
 from imageAnalysis import analyzePhoto
 from aiLoader import loadAI
 from helpers import translate, transcribe
 from cleanJson import cleanJson
 
+
 client = loadAI()
 
-def processText(texts, textIds, messageData):
-    try:
-        # Define the static system prompt
-        systemPrompt = {
-            "role": "system",
-            "content": "You are a translator. Translate the given text to English. Return back two things. The first is your translation to English of text. The second is a one word description of the language of text. Put the two items you return into a JSON structure. Your translation to English of text placed inside a JSON tag named translation. Your one word description of the language of inside a JSON tag named language. Do not return any additional text, descriptions of your process or information beyond two items and output format of the tags specified. Do not encapsulate the result in ``` or any other characters. Do not include excape characters or new lines"
-        }
-        prompts = [systemPrompt]
-        responses = [None]
+# Paths
+rawJsonDir = Path("./rawJson")
+processedJsonDir = Path("./processedJson")
+processedJsonDir.mkdir(exist_ok=True)
+currentDir = os.path.dirname(os.path.abspath(__file__)) # currentDir = production
 
-        for text in texts:
-            i = texts.index(text)
-            # Add the new user query
-            userPrompt = {"role": "user", "content": f"{text}"}
-            prompts.append(userPrompt)
-            
-            # Call the OpenAI API
-            completion = client.chat.completions.create(
-                    model="gpt-4o",
-                    store=True,
-                    messages=prompts
-            )
+# Helper Functions
 
-            response = (completion.choices[0].message.content)
-            responses.append(response)
+# Takes a message Json object, loops through all text_entities for that message, calls translate() on text, and places the language/translation in processed Json file. 
+def processText(individualMessage, text):
+    result_JSON = translate(text)
+    if result_JSON:
+        individualMessage['LANGUAGE'] = result_JSON.get("language", "unknown")
+        individualMessage['TRANSLATED_TEXT'] = result_JSON.get("translation", "")
+# Takes a message Json object and the directory containing all data for the exported chat, converts file to .mp4 if necessary, returns AI generated transcription. 
+def processVideo(individualMessage, video):
+    video = os.path.join(processedJsonDir, video)
+    # Get video transcription
+    transcription = transcribe(video)
+    if transcription:
+        individualMessage['VIDEO_TRANSCRIPTION'] = transcription
+        transcriptionTranslation = translate(transcription)
+        individualMessage['TRANSCRIPTION_TRANSLATION'] = transcriptionTranslation
 
-        for message in messageData:
-            id = message.get('id')
-            if id in textIds:
-                i = textIds.index(id)
-                translation = responses[i]
+    # Extract frames
+    framesDir = video + "Frames"
+    extractFrames(video, framesDir)
 
-                message['TRANSLATION'] = json.loads(translation)
-                print(f"{message['id']} translation appended")
+    # Perform analysis of video frames
+    summary = summarize(framesDir)
+    if summary:
+        individualMessage['VIDEO_SUMMARY'] = summary
 
-        print("translations complete")
-    except Exception as e:
-        print(f"Error translating file: {e}")
+    # Delete frames dir
+    shutil.rmtree(framesDir)
 
-def processVideos(videos, videoIds, messageData, processedDirPath):
-    summaryPrompt = {
-        "role": "system",
-        "content": "You will be given a string containing paragraphs. Each paragraph is a description of an image. Each image is a frame from a single video. Use the descriptions of each frame to generate a summary of what the video is depicting. Return back 1 item: the summary of the video in string format. Do not provide any other explanations. Do not refer to the frames in your summary, treat it as a summary of the video as a whole. If there are specific quotes from the frames in the paragraphs, amke sure they are included in the summary."
-    }
-    summaryPrompts = [summaryPrompt]
-    summaryResponses = [None]
+def processImage(individualMessage, photo):
+    analysis = analyzePhoto(photo)
+    if analysis:
+        individualMessage['PHOTO_ANALYSIS'] = analysis
 
-
-    for video in videos:
-        video = os.path.join(processedDirPath, video)
-
-        # VIDEO SUMMARY LOGIC
-        framesDir = video + "Frames"
-        extractFrames(video, framesDir)
-        framesLog = logFrames(framesDir)
-        framesPrompt = {"role": "user", "content": f"{framesLog}"}
-        summaryPrompts.append(framesPrompt)
+def processJson(messageData, processedDirPath):
+    # Complete all processing on each message: translate text_entities, analyze/transcribe video, analyze images
+    for individualMessage in messageData: # Loop through messages
+        if individualMessage.get("type") == "service": # Remove "service" messages from destination file
+            messageData.remove(individualMessage)
         
-        completion = client.chat.completions.create(
-                model="gpt-4o",
-                store=True,
-                messages=summaryPrompts
-        )
-        summaryResponse = (completion.choices[0].message.content)
-        summaryResponses.append(summaryResponse)
-        print(f"{summaryResponse}")
+        text = individualMessage.get("text")
+        if text:
+            processText(individualMessage, text)
+        
+        video = individualMessage.get("file")
+        if video and video != "(File exceeds maximum size. Change data exporting settings to download.)":
+            video = (f"{processedDirPath}/{video}").replace("\\", "/")
+            processVideo(individualMessage, video)
+
+        photo = individualMessage.get("photo")
+        if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
+            photo = (f"{processedDirPath}/{photo}").replace("\\", "/")
+            processImage(individualMessage, photo)
 
 
-        for message in messageData:
-            id = message.get('id')
-            if id in videoIds:
-                i = videoIds.index(id)
-                summary = summaryResponses[i]
-
-                message['VIDEO_SUMMARY'] = summary
-                print(f"{message['id']} + video summary appended")
-
-    print("videos complete")
-
-def process_json_files(raw_json_path, processed_json_path):
-    if not os.path.exists(processed_json_path):
-        os.makedirs(processed_json_path)
-
-    for dir_name in os.listdir(raw_json_path):
-        dir_path = os.path.join(raw_json_path, dir_name)
-
-        if os.path.isdir(dir_path):  # Ensure it's a directory
-            dest_dir = os.path.join(processed_json_path, dir_name)
-
-            # Copy the directory structure first
-            shutil.copytree(dir_path, dest_dir, dirs_exist_ok=True)
-            print(f"Copied directory: {dir_name}")
-
-            # Process each JSON file inside the copied directory
-            for filename in os.listdir(dest_dir):
-                file_path = os.path.join(dest_dir, filename)
-
-                if filename.endswith('.json') and os.path.isfile(file_path):
-                    process_single_json(file_path, processed_json_path)
-
-def process_single_json(file_path, processed_json_path):
-    #Reads a JSON file, processes it, and writes back the modified data.
-    try:
+def main(rawChatPath, procJsonPath): # put all main() functionality in a while True: if we want it to automatically add new chatDirs to the set while processing
+    # Process files
+    chatDir = os.path.basename(rawChatPath)
+    chatDir = f"{chatDir}Processed"
+    processedDirPath = os.path.join(procJsonPath, chatDir)
+    shutil.copytree(rawChatPath, processedDirPath)
+    
+    resultJson = Path(processedDirPath) / "result.json"  # Construct the path
+    if resultJson.is_file():  # Check if result.json exists
         try:
-            cleanJson(file_path)
-            print(f"{file_path} cleaned successfully")
+            cleanJson(resultJson)
+            print(f"{resultJson} cleaned successfully")
         except Exception as e:
-            print(f"Could not clean {file_path}", e)
+            print(f"Could not clean {resultJson}", e)
 
-        
-        print(f"Processing file: {file_path}")
-
-        textIds = [None]
-        texts = []
-        videoIds = [None]
-        videos = []
-
-        with open(file_path, 'r', encoding='utf-8') as f:
+        print(f"Processing file: {resultJson.name}")
+        with open(resultJson, 'r', encoding='utf-8') as f:
             jsonData = json.load(f)
-            messageData = jsonData.get("messages", [])
+            messageData = jsonData.get("messages", []) # Create array of message data
 
-        for message in messageData:
-            if message.get('text'):
-                texts.append(message['text'])
-                textIds.append(message['id'])
-
-            if message.get('file'):
-                videos.append(message['file'])
-                videoIds.append(message['id'])
-
-                video = os.path.join(processed_json_path, (message['file']))
-                transcription = transcribe(video)
-                message['VIDEO_TRANSCRIPTION'] = transcription
-                transcriptionTranslation = translate(transcription)
-                message['TRANSCRIPTION_TRANSLATION'] = transcriptionTranslation
-
-            if message.get('photo'):
-                photo = os.path.join(processed_json_path, (message['photo']))
-                analysis = analyzePhoto(photo)
-                message['PHOTO_ANALYSIS'] = analysis
-
-            processText(texts, textIds, messageData)
-            processVideos(videos, videoIds, messageData, processed_json_path)
-
-        with open(file_path, 'w', encoding='utf-8') as f:
+            processJson(messageData, processedDirPath)
+                        
+        # Write messages to destination file
+        with open(resultJson, 'w', encoding='utf-8') as f:
             json.dump(jsonData, f, ensure_ascii=False, indent=4)
 
-        print(f"Processed: {file_path}")
-    
-    except Exception as e:
-        print(f"Error processing {file_path}: {e}")
-
+        print(f"Processing completed for {resultJson}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: processJson.py <input_dir> <output_dir>")
-        sys.exit(1)
-
-    raw_json_path = sys.argv[1]
-    processed_json_path = sys.argv[2]
-
-    process_json_files(raw_json_path, processed_json_path)
+    if len(sys.argv) > 1:
+        main(sys.argv[1], sys.argv[2])
+    else:
+        print("Error: No directory path provided.")

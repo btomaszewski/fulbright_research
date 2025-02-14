@@ -31,6 +31,8 @@
     "dotenv": "^16.4.7",
     "electron-squirrel-startup": "^1.0.1",
     "firebase-admin": "^13.1.0",
+    "fs": "^0.0.1-security",
+    "google-auth-library": "^9.15.1",
     "google-spreadsheet": "^4.1.4"
   },
   "build": {
@@ -43,5 +45,6 @@
         "to": "processJson.py"
       }
     ]
-  }
+  },
+  "keywords": []
 }
