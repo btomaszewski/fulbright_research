@@ -9,6 +9,7 @@ from imageAnalysis import analyzePhoto
 from aiLoader import loadAI
 from helpers import translate, transcribe
 from cleanJson import cleanJson
+from vectorimplementation import categorize
 
 
 client = loadAI()
@@ -54,6 +55,11 @@ def processImage(individualMessage, photo):
     if analysis:
         individualMessage['PHOTO_ANALYSIS'] = analysis
 
+def processCategories(individualMessage, fullText):
+    categories = categorize(fullText)
+    if categories:
+        individualMessage['CATEGORIES'] = categories
+
 def processJson(messageData, processedDirPath):
     # Complete all processing on each message: translate text_entities, analyze/transcribe video, analyze images
     for individualMessage in messageData: # Loop through messages
@@ -73,6 +79,22 @@ def processJson(messageData, processedDirPath):
         if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
             photo = (f"{processedDirPath}/{photo}").replace("\\", "/")
             processImage(individualMessage, photo)
+
+        fullText = "";
+        if individualMessage.get("TRANSLATED_TEXT"):
+            fullText += individualMessage["TRANSLATED_TEXT"]
+
+        if individualMessage.get("TRANSCRIPTION_TRANSLATION"):
+            fullText += individualMessage["TRANSCRIPTION_TRANSLATION"]
+
+        if individualMessage.get("VIDEO_SUMMARY"):
+            fullText += individualMessage["VIDEO_SUMMARY"]
+
+        if individualMessage.get("PHOTO_ANALYSIS"):
+            fullText += individualMessage["PHOTO_ANALYSIS"]
+
+        if fullText:
+            processCategories(individualMessage, fullText)
 
 
 def main(rawChatPath, procJsonPath): # put all main() functionality in a while True: if we want it to automatically add new chatDirs to the set while processing

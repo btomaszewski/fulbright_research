@@ -67,7 +67,13 @@
 
             const uploadBtn = document.createElement('button');
             uploadBtn.setAttribute('id', "uploadBtn");
-            uploadBtn.innerHTML = "Upload";
+            uploadBtn.innerHTML = `<button class="button">
+                                    <span class="shadow"></span>
+                                    <span class="edge"></span>
+                                    <div class="front">
+                                        <span>Click me</span>
+                                    </div>
+                                    </button>`;
 
             let normalizedPath = path.normalize(dirPath);
             const parentDir = path.dirname(normalizedPath);
@@ -75,8 +81,26 @@
             dirName += "Processed";
             const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
             uploadBtn.addEventListener("click", function() {
-                uploadFileToSheets(filePath);
+                if (this.classList.contains('disabled')) return; // Prevent duplicate uploads
+
+                if (!filePath) {
+                    console.error('No file path provided');
+                    return;
+                }
+
+                uploadBtn.setAttribute('class', 'disabled'); // Disable button
+                uploadBtn.querySelector('.front span').innerText = 'Uploading...'; // Show progress
+
+                try {
+                    uploadFileToSheets(filePath);
+                    uploadBtn.querySelector('.front span').innerText = 'Uploaded'; // Update text after success
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                    uploadBtn.classList.remove('disabled'); // Re-enable on failure
+                    uploadBtn.querySelector('.front span').innerText = 'Upload'; // Reset text
+                }
             });
+
             li.appendChild(uploadBtn);
     
             li.appendChild(document.createTextNode(dirName));
