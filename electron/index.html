@@ -67,13 +67,12 @@
 
             const uploadBtn = document.createElement('button');
             uploadBtn.setAttribute('id', "uploadBtn");
-            uploadBtn.innerHTML = `<button class="button">
-                                    <span class="shadow"></span>
+            uploadBtn.setAttribute('class', "button");
+            uploadBtn.innerHTML = `<span class="shadow"></span>
                                     <span class="edge"></span>
                                     <div class="front">
-                                        <span>Click me</span>
-                                    </div>
-                                    </button>`;
+                                        <span>Upload</span>
+                                    </div>`;
 
             let normalizedPath = path.normalize(dirPath);
             const parentDir = path.dirname(normalizedPath);
@@ -81,23 +80,12 @@
             dirName += "Processed";
             const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
             uploadBtn.addEventListener("click", function() {
-                if (this.classList.contains('disabled')) return; // Prevent duplicate uploads
-
-                if (!filePath) {
-                    console.error('No file path provided');
-                    return;
-                }
-
-                uploadBtn.setAttribute('class', 'disabled'); // Disable button
-                uploadBtn.querySelector('.front span').innerText = 'Uploading...'; // Show progress
-
                 try {
                     uploadFileToSheets(filePath);
-                    uploadBtn.querySelector('.front span').innerText = 'Uploaded'; // Update text after success
+                    uploadBtn.querySelector('.front span').innerText = 'Uploaded'; 
+                    uploadBtn.disabled = true;
                 } catch (error) {
-                    console.error('Upload failed:', error);
-                    uploadBtn.classList.remove('disabled'); // Re-enable on failure
-                    uploadBtn.querySelector('.front span').innerText = 'Upload'; // Reset text
+                    alert('Upload failed:', error);
                 }
             });
 

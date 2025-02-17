@@ -3,13 +3,13 @@ import shutil
 import json
 import sys
 from pathlib import Path
-from frameExtraction import extractFrames
-from videoAnalysis import summarize
-from imageAnalysis import analyzePhoto
-from aiLoader import loadAI
-from helpers import translate, transcribe
-from cleanJson import cleanJson
-from vectorimplementation import categorize
+from assets.frameExtraction import extractFrames
+from assets.videoAnalysis import summarize
+from assets.imageAnalysis import analyzePhoto
+from assets.aiLoader import loadAI
+from assets.helpers import translate, transcribe
+from assets.cleanJson import cleanJson
+from assets.vectorImplementation import categorize
 
 
 client = loadAI()

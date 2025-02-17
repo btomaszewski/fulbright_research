@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from imageAnalysis import analyzePhoto
-from aiLoader import loadAI
+from assets.imageAnalysis import analyzePhoto
+from assets.aiLoader import loadAI
 
 client = loadAI()
 

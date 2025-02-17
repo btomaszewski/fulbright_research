@@ -74,8 +74,8 @@ h2 {
 
 /* From Uiverse.io by zymantas-katinas */ 
 .button {
+  border: none;
     position: relative;
-    border: none;
     background: transparent;
     padding: 0;
     outline: none;
