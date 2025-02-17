@@ -142,15 +142,8 @@ async function uploadToGoogleSheets(filePath) {
         const doc = new GoogleSpreadsheet('14KErbuI8nk2_69MdvU0Qycdm4kuWlfsAWehyy2F3ZEw', serviceAccount);
         await doc.loadInfo();
 
-        if (doc.sheetsByIndex.length === 0) {
-            return 'No sheets found in the document.';
-        }
-
         const fileData = fs.readFileSync(filePath, 'utf-8');
-
-        if (!fileData) {
-            return '❌ Error: File is empty!';
-        }
+        if (!fileData) return '❌ Error: File is empty!';
 
         let jsonData;
         try {
@@ -159,32 +152,67 @@ async function uploadToGoogleSheets(filePath) {
             return `❌ Error: Invalid JSON format - ${parseError.message}`;
         }
 
-         // ✅ Extract "messages" array from JSON object
-         if (!jsonData.messages || !Array.isArray(jsonData.messages)) {
+        // ✅ Extract "messages" array from JSON object
+        if (!jsonData.messages || !Array.isArray(jsonData.messages)) {
             return '❌ Error: "messages" key is missing or not an array.';
         }
         const messages = jsonData.messages;
+        if (messages.length === 0) return '❌ Error: "messages" array is empty.';
 
-        if (messages.length === 0) {
-            return '❌ Error: "messages" array is empty.';
-        }
+        // ✅ Extract base sheet name from "name" key
+        if (!jsonData.name) return '❌ Error: JSON file lacks a "name" field.';
+        const baseSheetName = jsonData.name;
 
-        // ✅ Extract headers dynamically from the first message
-        const headers = Object.keys(messages[0]);
-        const rows = messages.map(msg => headers.map(header => msg[header] || ''));
-
-        // ✅ Generate sheet name: Last directory + Timestamp
-        const dirName = path.basename(path.dirname(filePath)); // Extracts the last directory name
+        // ✅ Append current datetime (YYYY-MM-DD_HH-MM)
         const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '_'); // Formats timestamp
-        const sheetName = `${dirName}_${timestamp}`.substring(0, 100); // Limit to 100 chars (Google Sheets limit)
+        let sheetName = `${baseSheetName}_${timestamp}`.substring(0, 100); // Limit to 100 chars
 
-        // ✅ Create a new sheet with the generated name
-        const sheet = await doc.addSheet({ title: sheetName, headerValues: headers });
+        // ✅ Extract headers dynamically
+        const headers = new Set([
+            "id", "date", "from", "text", "reply_id", "LANGUAGE", "TRANSLATED_TEXT"
+        ]);
 
-        // ✅ Add rows to the new sheet
-        await sheet.addRows(rows);
+        // Collect all possible category fields dynamically
+        messages.forEach(msg => {
+            if (msg.CATEGORIES) {
+                Object.keys(msg.CATEGORIES).forEach(key => headers.add(`CATEGORIES_${key}`));
+                if (msg.CATEGORIES.confidence_scores) {
+                    Object.keys(msg.CATEGORIES.confidence_scores).forEach(key => headers.add(`confidence_scores_${key}`));
+                }
+            }
+        });
 
-        return `✅ Data from ${filePath} exported to Google Sheets in a new sheet: ${sheetName}!`;
+        const headersArray = Array.from(headers);
+
+       // ✅ Convert message objects to rows (Handle Nested Objects)
+       const values = messages.map((msg) => {
+        return headersArray.map((header) => {
+            if (header.startsWith("CATEGORIES_")) {
+                const key = header.replace("CATEGORIES_", "");
+                const value = msg.CATEGORIES ? msg.CATEGORIES[key] || "" : "";
+                return Array.isArray(value) ? value.join(", ") : value; // Convert arrays to strings
+            } else if (header === "confidence_scores") {
+                // Flatten confidence_scores object into a string like "Education: 0.78, Health: 0.65"
+                /*if (msg.CATEGORIES && msg.CATEGORIES.confidence_scores) {
+                    return Object.entries(msg.CATEGORIES.confidence_scores)
+                        .map(([category, score]) => `${category}: ${score.toFixed(2)}`) // Format numbers
+                        .join(", ");
+                }*/
+                return "";
+            } else {
+                return msg[header] || "";
+            }
+        });
+    });
+
+
+        // ✅ Create a new sheet before uploading data
+        const newSheet = await doc.addSheet({ title: sheetName, headerValues: headersArray });
+
+        // ✅ Upload data to the newly created sheet
+        await newSheet.addRows(values);
+
+        return `✅ Data from ${filePath} exported to Google Sheets in a new sheet: "${sheetName}"!`;
 
     } catch (error) {
         return `Error exporting data to Google Sheets: ${error}`;
