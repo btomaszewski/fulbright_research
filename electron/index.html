@@ -8,9 +8,11 @@
     <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/11.3.0/firebase-storage.js";></script>
+    <script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
 </head>
 <body>
     <h2>AEGIS ANALYTICS</h2>
+    <p id="status"></p>
     <div class="container">
         <div class="datasets panel">
             <h2>Datasets</h2>
@@ -23,8 +25,10 @@
 
         <div class="dashboard panel">
             <h2>Dashboard</h2>
-            <p>Welcome to the dashboard! This section will display analytics and data insights.</p>
-            <p id="status"></p>
+            <button id = "exportPDF">Export to PDF</button>
+            <button id = "exportImage">Export to Image</button>
+
+            <div id="vizContainer"></div>
         </div>
     </div>
 
@@ -50,15 +54,23 @@
             const ul = document.getElementById('datasetList');
             const li = document.createElement('li');
 
-            const processBtn = document.createElement('button');
-            processBtn.setAttribute('id', 'process');
-            processBtn.setAttribute('class', 'button');
-            processBtn.innerHTML = `<span class="shadow"></span>
+            const uploadBtn = document.createElement('button');
+            uploadBtn.setAttribute('id', "uploadBtn");
+            uploadBtn.setAttribute('class', "button");
+            uploadBtn.innerHTML = `<span class="shadow"></span>
                                     <span class="edge"></span>
                                     <div class="front">
-                                        <span>Process</span>
+                                        <div class="loader"></div>
                                     </div>`;
-            processBtn.addEventListener('click', async () => {
+            uploadBtn.style.transform = "scale(0.3)";
+
+
+            let normalizedPath = path.normalize(dirPath);
+            const parentDir = path.dirname(normalizedPath);
+            const grandparentDir = path.dirname(parentDir);
+            dirName += "Processed";
+            const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
+            uploadBtn.addEventListener("click", async() => {
                 status.innerText = "Processing...";
                 try {
                     const result = await ipcRenderer.invoke('process-json', dirPath);
@@ -66,25 +78,7 @@
                 } catch (error) {
                     status.innerText += "Error: " + error;
                 }
-            });
 
-            li.appendChild(processBtn);
-
-            const uploadBtn = document.createElement('button');
-            uploadBtn.setAttribute('id', "uploadBtn");
-            uploadBtn.setAttribute('class', "button");
-            uploadBtn.innerHTML = `<span class="shadow"></span>
-                                    <span class="edge"></span>
-                                    <div class="front">
-                                        <span>Upload</span>
-                                    </div>`;
-
-            let normalizedPath = path.normalize(dirPath);
-            const parentDir = path.dirname(normalizedPath);
-            const grandparentDir = path.dirname(parentDir);
-            dirName += "Processed";
-            const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
-            uploadBtn.addEventListener("click", function() {
                 try {
                     uploadFileToSheets(filePath);
                     uploadBtn.querySelector('.front span').innerText = 'Uploaded'; 
@@ -130,8 +124,7 @@
                 status.innerHTML = `Error: ${error}`;
             }
         }
-
-
-    </script>    
+    </script> 
+    <script src="./tableau.js"></script>   
 </body>
 </html>
