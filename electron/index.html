@@ -57,13 +57,28 @@
             const uploadBtn = document.createElement('button');
             uploadBtn.setAttribute('id', "uploadBtn");
             uploadBtn.setAttribute('class', "button");
-            uploadBtn.innerHTML = `<span class="shadow"></span>
-                                    <span class="edge"></span>
-                                    <div class="front">
-                                        <div class="loader"></div>
-                                    </div>`;
-            uploadBtn.style.transform = "scale(0.3)";
 
+            uploadBtn.innerHTML = `<span class="shadow"></span>`;
+
+            const edge = document.createElement('span');
+            edge.setAttribute('class', 'edge');
+            uploadBtn.appendChild(edge);
+
+            const front = document.createElement('div');
+            front.setAttribute('class', 'front');
+            uploadBtn.appendChild(front);
+
+            const loader = document.createElement('div');
+            loader.setAttribute('class', 'loader'); 
+            front.appendChild(loader);
+
+            const loaderB = document.createElement('div');
+            loaderB.setAttribute('class', 'loaderB'); 
+            loader.appendChild(loaderB);
+            const loaderA = document.createElement('div');
+            loaderA.setAttribute('class', 'loaderA'); 
+            loader.appendChild(loaderA);           
+            
 
             let normalizedPath = path.normalize(dirPath);
             const parentDir = path.dirname(normalizedPath);
@@ -72,13 +87,18 @@
             const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
             uploadBtn.addEventListener("click", async() => {
                 status.innerText = "Processing...";
+
+                console.log(loaderB, loaderA)
+                loaderB.style.animationPlayState = 'running';
+                loaderA.style.animationPlayState = 'running';
+                
                 try {
                     const result = await ipcRenderer.invoke('process-json', dirPath);
                     status.innerText += "Processing completed: " + result;
                 } catch (error) {
                     status.innerText += "Error: " + error;
                 }
-
+                
                 try {
                     uploadFileToSheets(filePath);
                     uploadBtn.querySelector('.front span').innerText = 'Uploaded'; 
