@@ -1,0 +1,391 @@
+{"id":2853,"text":"Who will be going to Warsaw tomorrow morning?","label":[[21,27,"LOCATION"]],"Comments":[]}
+{"id":2854,"text":"Please tell me if carriers are traveling from Lviv to the Shehyni checkpoint today","label":[[46,50,"LOCATION"],[58,65,"LOCATION"]],"Comments":[]}
+{"id":2855,"text":"Is anyone by chance traveling from Przemyśl to Lviv this evening and could take one person with a child?","label":[[35,43,"LOCATION"],[47,51,"LOCATION"]],"Comments":[]}
+{"id":2856,"text":"Could you tell me how to get from Shehyni to Krakivets?","label":[[34,41,"LOCATION"],[45,54,"LOCATION"]],"Comments":[]}
+{"id":2857,"text":"Please tell me the schedule of the route from Medyka to Lviv","label":[[46,52,"LOCATION"],[56,60,"LOCATION"]],"Comments":[]}
+{"id":2858,"text":"Yes, all trains from Ukraine to Przemysl go to the same station.","label":[[21,28,"LOCATION"],[32,40,"LOCATION"]],"Comments":[]}
+{"id":2859,"text":"When I was traveling to Poland through Rava Ruska, we waited about 2.5 hours for processing.","label":[[24,30,"LOCATION"],[38,49,"LOCATION"]],"Comments":[]}
+{"id":2860,"text":"Who is going from Katowice to Lviv or to the border this evening","label":[[18,26,"LOCATION"],[30,34,"LOCATION"]],"Comments":[]}
+{"id":2861,"text":"I traveled through Krakowets three times... they didn't ask anything at all, although I did it before departure","label":[[19,28,"LOCATION"]],"Comments":[]}
+{"id":2862,"text":"I will be traveling from Rzeszow to the Medyka (Shehyni)","label":[[25,32,"LOCATION"],[40,46,"LOCATION"],[48,55,"LOCATION"]],"Comments":[]}
+{"id":2863,"text":"Is anyone coming back from Shehyni to Lviv right now?","label":[[27,34,"LOCATION"],[38,42,"LOCATION"]],"Comments":[]}
+{"id":2864,"text":"Have you ever been to Kedzierzyn-Kozle? It's right on the Oder River and has this cool mix of industry and natural beauty.","label":[[22,38,"LOCATION"],[58,68,"LOCATION"]],"Comments":[]}
+{"id":2865,"text":"By the Baltic Sea, Koszalin offers a relaxing atmosphere, perfect for a vacation.","label":[[7,17,"LOCATION"],[19,27,"LOCATION"]],"Comments":[]}
+{"id":2866,"text":"I'll be arriving in Dąbrowa Górnicza soon. How do I get to the train station from the city center?","label":[[20,36,"LOCATION"]],"Comments":[]}
+{"id":2867,"text":"Looking for a cheap way to get from Płock to Łódź. Any suggestions?","label":[[36,41,"LOCATION"],[45,49,"LOCATION"]],"Comments":[]}
+{"id":2868,"text":"Are there any buses from Elbląg to Gdańsk early in the morning?","label":[[25,31,"LOCATION"],[35,41,"LOCATION"]],"Comments":[]}
+{"id":2869,"text":"Can someone recommend a good café near the Gorzów Wielkopolski train station?","label":[[43,62,"LOCATION"]],"Comments":[]}
+{"id":2870,"text":"Is there still a train from Tychy to Gliwice late at night?","label":[[28,33,"LOCATION"],[37,44,"LOCATION"]],"Comments":[]}
+{"id":2871,"text":"I need to get to Opole by noon. Any fast trains from Wrocław?","label":[[17,22,"LOCATION"],[53,60,"LOCATION"]],"Comments":[]}
+{"id":2872,"text":"Hey, can anyone pick me up from Ruda Śląska and drop me off in Katowice?","label":[[32,43,"LOCATION"],[63,71,"LOCATION"]],"Comments":[]}
+{"id":2873,"text":"Is there a Blablacar ride from Rybnik to Opole today?","label":[[31,37,"LOCATION"],[41,46,"LOCATION"]],"Comments":[]}
+{"id":2874,"text":"Who's traveling from Zielona Góra to Wrocław this weekend?","label":[[21,33,"LOCATION"],[37,44,"LOCATION"]],"Comments":[]}
+{"id":2875,"text":"Does anyone know the bus schedule from Bytom to Sosnowiec?","label":[[39,44,"LOCATION"],[48,57,"LOCATION"]],"Comments":[]}
+{"id":2876,"text":"Need a ride from Bielsko-Biała to Kraków tomorrow morning. Who's available?","label":[[17,30,"LOCATION"],[34,40,"LOCATION"]],"Comments":[]}
+{"id":2877,"text":"Can someone confirm if the Zabrze train station is open late at night?","label":[[27,33,"LOCATION"]],"Comments":[]}
+{"id":2878,"text":"Looking for a carpool from Olsztyn to Warsaw this Friday. Anyone?","label":[[27,34,"LOCATION"],[38,44,"LOCATION"]],"Comments":[]}
+{"id":2879,"text":"I'm heading to Gliwice for work. What's the best way to get there from Katowice?","label":[[15,22,"LOCATION"],[71,79,"LOCATION"]],"Comments":[]}
+{"id":2880,"text":"Does anyone know a cheap hostel in Kielce for one night?","label":[[35,41,"LOCATION"]],"Comments":[]}
+{"id":2881,"text":"Hey, I need to get from Sosnowiec to Łódź tomorrow. Any suggestions?","label":[[24,33,"LOCATION"],[37,41,"LOCATION"]],"Comments":[]}
+{"id":2882,"text":"Are the night trains from Toruń to Gdańsk running on schedule?","label":[[26,31,"LOCATION"],[35,40,"LOCATION"]],"Comments":[]}
+{"id":2883,"text":"I'll be taking a bus from Rzeszów to Lviv. Anyone know if there are long waits at the border?","label":[[26,33,"LOCATION"],[37,41,"LOCATION"]],"Comments":[]}
+{"id":2884,"text":"Looking for a ride from Radom to Warsaw this evening. Anyone available?","label":[[24,29,"LOCATION"],[33,39,"LOCATION"]],"Comments":[]}
+{"id":2885,"text":"Does anyone know if the Częstochowa-Katowice train has free WiFi?","label":[[24,44,"LOCATION"]],"Comments":[]}
+{"id":2886,"text":"I just arrived in Gdynia. How do I get to the city center quickly?","label":[[18,24,"LOCATION"]],"Comments":[]}
+{"id":2887,"text":"If anyone is traveling from Kraków to Lublin this weekend, let me know!","label":[[28,34,"LOCATION"],[38,44,"LOCATION"]],"Comments":[]}
+{"id":2888,"text":"Who's at the Warsaw bus station right now? I need info on the next train to Rzeszów.","label":[[13,19,"LOCATION"],[76,83,"LOCATION"]],"Comments":[]}
+{"id":2889,"text":"I'm in Poznań and need a ride to Gorzów Wielkopolski tomorrow. Anyone going?","label":[[7,13,"LOCATION"],[33,52,"LOCATION"]],"Comments":[]}
+{"id":2890,"text":"Hey, are there any direct buses from Łódź to Toruń?","label":[[37,41,"LOCATION"],[45,50,"LOCATION"]],"Comments":[]}
+{"id":2891,"text":"I'm traveling from Wrocław to Berlin next week. Any tips on the best route?","label":[[19,26,"LOCATION"],[30,36,"LOCATION"]],"Comments":[]}
+{"id":2892,"text":"Does anyone know if the train from Katowice to Wrocław is delayed?","label":[[35,43,"LOCATION"],[47,54,"LOCATION"]],"Comments":[]}
+{"id":2893,"text":"I'll be in Białystok for a few days. Any recommendations for cheap hotels?","label":[[11,20,"LOCATION"]],"Comments":[]}
+{"id":2894,"text":"Can someone confirm if buses from Bydgoszcz to Gdańsk are running normally?","label":[[34,43,"LOCATION"],[47,53,"LOCATION"]],"Comments":[]}
+{"id":2895,"text":"Who's traveling from Lublin to Kraków today and has space for one more?","label":[[21,27,"LOCATION"],[31,37,"LOCATION"]],"Comments":[]}
+{"id":2896,"text":"I need to get from Szczecin to Poznań this weekend. Any ride shares available?","label":[[19,27,"LOCATION"],[31,37,"LOCATION"]],"Comments":[]}
+{"id":2897,"text":"Does anyone know if there's a direct train from Wałbrzych to Wrocław in the morning?","label":[[48,57,"LOCATION"],[61,68,"LOCATION"]],"Comments":[]}
+{"id":2898,"text":"I'll be traveling from Włocławek to Toruń tomorrow. Anyone want to share a ride?","label":[[23,32,"LOCATION"],[36,41,"LOCATION"]],"Comments":[]}
+{"id":2899,"text":"Hey, is anyone driving from Tarnów to Kraków this afternoon?","label":[[28,34,"LOCATION"],[38,44,"LOCATION"]],"Comments":[]}
+{"id":2900,"text":"I need to get from Chorzów to Katowice quickly. What's the best way?","label":[[19,26,"LOCATION"],[30,38,"LOCATION"]],"Comments":[]}
+{"id":2901,"text":"Are buses from Koszalin to Gdańsk running normally today?","label":[[15,23,"LOCATION"],[27,33,"LOCATION"]],"Comments":[]}
+{"id":2902,"text":"I'm in Kalisz for the night. Any recommendations for a good place to eat?","label":[[7,13,"LOCATION"]],"Comments":[]}
+{"id":2903,"text":"Looking for a ride from Legnica to Wrocław early in the morning. Anyone available?","label":[[24,31,"LOCATION"],[35,42,"LOCATION"]],"Comments":[]}
+{"id":2904,"text":"Can anyone confirm if the train from Grudziądz to Bydgoszcz is on time today?","label":[[37,46,"LOCATION"],[50,59,"LOCATION"]],"Comments":[]}
+{"id":2905,"text":"Who's traveling from Jaworzno to Katowice tonight?","label":[[21,29,"LOCATION"],[33,41,"LOCATION"]],"Comments":[]}
+{"id":2906,"text":"Is there a Blablacar option from Słupsk to Gdynia today?","label":[[33,39,"LOCATION"],[43,49,"LOCATION"]],"Comments":[]}
+{"id":2907,"text":"Heading to Jastrzębie-Zdrój for the weekend. Any tips on where to stay?","label":[[11,27,"LOCATION"]],"Comments":[]}
+{"id":2908,"text":"I need a ride from Nowy Sącz to Kraków on Sunday. Anyone going?","label":[[19,28,"LOCATION"],[32,38,"LOCATION"]],"Comments":[]}
+{"id":2909,"text":"Does anyone know if the bus from Jelenia Góra to Wrocław runs late at night?","label":[[33,45,"LOCATION"],[49,56,"LOCATION"]],"Comments":[]}
+{"id":2910,"text":"Who's traveling from Siedlce to Warsaw today?","label":[[21,28,"LOCATION"],[32,38,"LOCATION"]],"Comments":[]}
+{"id":2911,"text":"Is anyone heading from Mysłowice to Chorzów this evening?","label":[[23,32,"LOCATION"],[36,43,"LOCATION"]],"Comments":[]}
+{"id":2912,"text":"Looking for a train from Konin to Poznań. What's the fastest option?","label":[[25,30,"LOCATION"],[34,40,"LOCATION"]],"Comments":[]}
+{"id":2913,"text":"Are buses from Piła to Bydgoszcz still running in the evenings?","label":[[15,19,"LOCATION"],[23,32,"LOCATION"]],"Comments":[]}
+{"id":2914,"text":"Who's traveling from Piotrków Trybunalski to Łódź today?","label":[[21,41,"LOCATION"],[45,49,"LOCATION"]],"Comments":[]}
+{"id":2915,"text":"Is there a direct train from Inowrocław to Toruń, or do I need to change?","label":[[29,39,"LOCATION"],[43,48,"LOCATION"]],"Comments":[]}
+{"id":2916,"text":"I'll be driving from Lubin to Wrocław tomorrow morning. Anyone need a ride?","label":[[21,26,"LOCATION"],[30,37,"LOCATION"]],"Comments":[]}
+{"id":2917,"text":"Does anyone know if the train from Ostrów Wielkopolski to Kalisz is delayed?","label":[[35,54,"LOCATION"],[58,64,"LOCATION"]],"Comments":[]}
+{"id":2918,"text":"Heading to Suwałki for the weekend. Any recommendations on things to do?","label":[[11,18,"LOCATION"]],"Comments":[]}
+{"id":2919,"text":"Looking for a ride from Stargard to Szczecin this afternoon.","label":[[24,32,"LOCATION"],[36,44,"LOCATION"]],"Comments":[]}
+{"id":2920,"text":"I'm visiting Gniezno for the first time. Any must-see places?","label":[[13,20,"LOCATION"]],"Comments":[]}
+{"id":2921,"text":"Who's traveling from Ostrowiec Świętokrzyski to Kielce today?","label":[[21,44,"LOCATION"],[48,54,"LOCATION"]],"Comments":[]}
+{"id":2922,"text":"Need a quick way to get from Siemianowice Śląskie to Katowice. Any suggestions?","label":[[29,49,"LOCATION"],[53,61,"LOCATION"]],"Comments":[]}
+{"id":2923,"text":"Hey, does anyone know the best way to travel from Głogów to Wrocław?","label":[[50,56,"LOCATION"],[60,67,"LOCATION"]],"Comments":[]}
+{"id":2924,"text":"I need a ride from Pabianice to Łódź this evening. Anyone going?","label":[[19,28,"LOCATION"],[32,36,"LOCATION"]],"Comments":[]}
+{"id":2925,"text":"Does anyone know if the train from Leszno to Poznań is on time?","label":[[35,41,"LOCATION"],[45,51,"LOCATION"]],"Comments":[]}
+{"id":2926,"text":"Looking for a Blablacar from Żory to Rybnik. Anyone driving?","label":[[29,33,"LOCATION"],[37,43,"LOCATION"]],"Comments":[]}
+{"id":2927,"text":"Are there any buses from Zamość to Lublin late at night?","label":[[25,31,"LOCATION"],[35,41,"LOCATION"]],"Comments":[]}
+{"id":2928,"text":"Is anyone heading from Pruszków to Warsaw in the next hour?","label":[[23,31,"LOCATION"],[35,41,"LOCATION"]],"Comments":[]}
+{"id":2929,"text":"I'll be in Łomża for a few days. Any good coffee spots?","label":[[11,16,"LOCATION"]],"Comments":[]}
+{"id":2930,"text":"Need to get from Ełk to Białystok in the morning. What's the best option?","label":[[17,20,"LOCATION"],[24,33,"LOCATION"]],"Comments":[]}
+{"id":2931,"text":"Is anyone traveling from Tomaszów Mazowiecki to Piotrków Trybunalski today?","label":[[25,44,"LOCATION"],[48,68,"LOCATION"]],"Comments":[]}
+{"id":2932,"text":"Can someone confirm if the train from Chełm to Lublin is running today?","label":[[38,43,"LOCATION"],[47,53,"LOCATION"]],"Comments":[]}
+{"id":2933,"text":"Does anyone know if there's a bus from Mielec to Rzeszów in the evening?","label":[[39,45,"LOCATION"],[49,56,"LOCATION"]],"Comments":[]}
+{"id":2934,"text":"Looking for a ride from Kędzierzyn-Koźle to Opole tomorrow.","label":[[24,40,"LOCATION"],[44,49,"LOCATION"]],"Comments":[]}
+{"id":2935,"text":"Hey, is the border wait time long for those traveling from Przemyśl to Lviv?","label":[[59,67,"LOCATION"],[71,75,"LOCATION"]],"Comments":[]}
+{"id":2936,"text":"Does anyone know if the Stalowa Wola to Rzeszów train is on time?","label":[[24,36,"LOCATION"],[40,47,"LOCATION"]],"Comments":[]}
+{"id":2937,"text":"I need a ride from Tczew to Gdańsk tomorrow. Anyone available?","label":[[19,24,"LOCATION"],[28,34,"LOCATION"]],"Comments":[]}
+{"id":2938,"text":"Looking for travel options from Biała Podlaska to Lublin.","label":[[32,46,"LOCATION"],[50,56,"LOCATION"]],"Comments":[]}
+{"id":2939,"text":"Who's heading from Bełchatów to Piotrków Trybunalski today?","label":[[19,28,"LOCATION"],[32,52,"LOCATION"]],"Comments":[]}
+{"id":2940,"text":"Does anyone know a cheap hostel in Świdnica for one night?","label":[[35,43,"LOCATION"]],"Comments":[]}
+{"id":2941,"text":"Need a quick way to get from Będzin to Sosnowiec. Any ideas?","label":[[29,35,"LOCATION"],[39,48,"LOCATION"]],"Comments":[]}
+{"id":2942,"text":"Hey, is there a direct train from Zgierz to Łódź?","label":[[34,40,"LOCATION"],[44,48,"LOCATION"]],"Comments":[]}
+{"id":2943,"text":"Who's traveling from Piekary Śląskie to Katowice this afternoon?","label":[[21,36,"LOCATION"],[40,48,"LOCATION"]],"Comments":[]}
+{"id":2944,"text":"I'll be heading from Racibórz to Opole. Anyone want to share a ride?","label":[[21,29,"LOCATION"],[33,38,"LOCATION"]],"Comments":[]}
+{"id":2945,"text":"Hey, does anyone know if there's a decent gym in Legionowo? I'm moving there next month.","label":[[49,58,"LOCATION"]],"Comments":[]}
+{"id":2946,"text":"I'll be driving from Ostrołęka to Warsaw tomorrow morning. Anyone need a lift?","label":[[21,30,"LOCATION"],[34,40,"LOCATION"]],"Comments":[]}
+{"id":2947,"text":"Are the buses in Świętochłowice usually on time, or should I expect delays?","label":[[17,31,"LOCATION"]],"Comments":[]}
+{"id":2948,"text":"Thinking of visiting Wejherowo this weekend—any cool places to check out?","label":[[21,30,"LOCATION"]],"Comments":[]}
+{"id":2949,"text":"Does anyone have info on train schedules from Zawiercie to Katowice?","label":[[46,55,"LOCATION"],[59,67,"LOCATION"]],"Comments":[]}
+{"id":2950,"text":"I just moved to Skierniewice. Where's the best spot for coffee around here?","label":[[16,28,"LOCATION"]],"Comments":[]}
+{"id":2951,"text":"Planning a road trip through Kujawsko-Pomorskie—any must-visit spots?","label":[[29,47,"LOCATION"]],"Comments":[]}
+{"id":2952,"text":"I heard Małopolskie has some amazing hiking trails. Any recommendations?","label":[[8,19,"LOCATION"]],"Comments":[]}
+{"id":2953,"text":"Anyone here from Łódzkie? I need recommendations for good restaurants in the area.","label":[[17,24,"LOCATION"]],"Comments":[]}
+{"id":2954,"text":"Is public transport reliable in Dolnośląskie, or should I rent a car?","label":[[32,44,"LOCATION"]],"Comments":[]}
+{"id":2955,"text":"Does anyone know if there are direct buses from Lubelskie to Warsaw on Sundays?","label":[[48,57,"LOCATION"],[61,67,"LOCATION"]],"Comments":[]}
+{"id":2956,"text":"Looking for a cozy Airbnb in Lubuskie for a weekend getaway. Any suggestions?","label":[[29,37,"LOCATION"]],"Comments":[]}
+{"id":2957,"text":"Heading to Mazowieckie next week. What's the best way to get around without a car?","label":[[11,22,"LOCATION"]],"Comments":[]}
+{"id":2958,"text":"I have a work meeting in Opolskie next month. What's the best hotel to stay in?","label":[[25,33,"LOCATION"]],"Comments":[]}
+{"id":2959,"text":"Podlaskie looks beautiful in the fall! Has anyone been to Białowieża Forest?","label":[[0,9,"LOCATION"],[58,75,"LOCATION"]],"Comments":[]}
+{"id":2960,"text":"I'm flying into Pomeranian for a wedding. Are taxis expensive there?","label":[[16,26,"LOCATION"]],"Comments":[]}
+{"id":2961,"text":"Thinking of moving to Śląskie—how's the cost of living compared to other regions?","label":[[22,29,"LOCATION"]],"Comments":[]}
+{"id":2962,"text":"Podkarpackie is known for its stunning landscapes. Anyone done any hiking there?","label":[[0,12,"LOCATION"]],"Comments":[]}
+{"id":2963,"text":"Is the train from Świętokrzyskie to Warsaw usually crowded on weekdays?","label":[[18,32,"LOCATION"],[36,42,"LOCATION"]],"Comments":[]}
+{"id":2964,"text":"I'd love to visit the Masurian Lake District. What's the best time of year to go?","label":[[22,44,"LOCATION"]],"Comments":[]}
+{"id":2965,"text":"I need to get from Zachodniopomorskie to Poznań. What's the fastest route?","label":[[19,37,"LOCATION"],[41,47,"LOCATION"]],"Comments":[]}
+{"id":2966,"text":"We're planning a kayaking trip on Śniardwy this weekend—anyone want to join?","label":[[34,42,"LOCATION"]],"Comments":[]}
+{"id":2967,"text":"Is Mamry usually crowded in the summer, or is it still peaceful for fishing?","label":[[3,8,"LOCATION"]],"Comments":[]}
+{"id":2968,"text":"Does anyone know if you can rent a boat on Łebsko, or do I need to bring my own?","label":[[43,49,"LOCATION"]],"Comments":[]}
+{"id":2969,"text":"Thinking of hiking to Morskie Oko this weekend. What's the best time to go to avoid the crowds?","label":[[22,33,"LOCATION"]],"Comments":[]}
+{"id":2970,"text":"I heard the water in the Baltic Sea is freezing even in summer! Is that true?","label":[[25,35,"LOCATION"]],"Comments":[]}
+{"id":2971,"text":"Anyone been to Hel Peninsula recently? I’m wondering if it’s good for windsurfing.","label":[[15,28,"LOCATION"]],"Comments":[]}
+{"id":2972,"text":"What’s the best way to get to the Vistula Spit? Thinking of a day trip from Gdańsk.","label":[[34,46,"LOCATION"],[76,82,"LOCATION"]],"Comments":[]}
+{"id":2973,"text":"Are the sand dunes in Słowiński National Park as massive as they look in photos?","label":[[22,45,"LOCATION"]],"Comments":[]}
+{"id":2974,"text":"I’d love to see the bison in Białowieża Forest! What’s the best time of year to spot them?","label":[[29,46,"LOCATION"]],"Comments":[]}
+{"id":2975,"text":"Is there good camping in Bory Tucholskie, or should I book a cabin?","label":[[25,40,"LOCATION"]],"Comments":[]}
+{"id":2976,"text":"Looking for a quiet hiking trail in Puszcza Kampinoska. Any recommendations?","label":[[36,54,"LOCATION"]],"Comments":[]}
+{"id":2977,"text":"Driving through the Mazovian Lowland next week—any cool hidden spots to check out?","label":[[20,36,"LOCATION"]],"Comments":[]}
+{"id":2978,"text":"How’s the weather in Nizina Śląska in early spring? I’m thinking of doing some cycling there.","label":[[21,34,"LOCATION"]],"Comments":[]}
+{"id":2979,"text":"Is Wyżyna Lubelska good for hiking, or is it mostly farmland?","label":[[3,18,"LOCATION"]],"Comments":[]}
+{"id":2980,"text":"Has anyone done a guided tour of Wierzchowska Górna Cave? Is it worth it?","label":[[33,56,"LOCATION"]],"Comments":[]}
+{"id":2981,"text":"I heard Raj Cave has some amazing rock formations! Are photos allowed inside?","label":[[8,16,"LOCATION"]],"Comments":[]}
+{"id":2982,"text":"Is Mroźna Cave a difficult hike? I want to go but don’t want anything too extreme.","label":[[3,14,"LOCATION"]],"Comments":[]}
+{"id":2983,"text":"I’ve been to Wawel Castle before, but I never took the underground tour. Is it worth it?","label":[[13,25,"LOCATION"]],"Comments":[]}
+{"id":2984,"text":"Are the exhibitions at the Royal Castle in Warsaw free on certain days, or do you always need a ticket?","label":[[27,39,"LOCATION"],[43,49,"LOCATION"]],"Comments":[]}
+{"id":2985,"text":"Malbork Castle looks huge! How much time should I set aside to see everything?","label":[[0,14,"LOCATION"]],"Comments":[]}
+{"id":2986,"text":"Does anyone know if there are still peacocks wandering around Łazienki Palace?","label":[[62,77,"LOCATION"]],"Comments":[]}
+{"id":2987,"text":"Thinking of visiting Wilanów Palace this weekend. Are the gardens open year-round?","label":[[21,35,"LOCATION"]],"Comments":[]}
+{"id":2988,"text":"Książ Castle at night looks stunning! Do they still offer the nighttime tours?","label":[[0,12,"LOCATION"]],"Comments":[]}
+{"id":2989,"text":"Is Księży Młyn in Łódź a good place for photography? I love industrial architecture!","label":[[3,14,"LOCATION"],[18,22,"LOCATION"]],"Comments":[]}
+{"id":2990,"text":"Gdańsk Old Town is beautiful, but is it super crowded in the summer?","label":[[0,15,"LOCATION"]],"Comments":[]}
+{"id":2991,"text":"I heard the gingerbread from Toruń Old Town is amazing. Where’s the best place to buy some?","label":[[29,43,"LOCATION"]],"Comments":[]}
+{"id":2992,"text":"Are the Christmas markets in Wrocław Market Square really as magical as people say?","label":[[29,50,"LOCATION"]],"Comments":[]}
+{"id":2993,"text":"Anyone know what time the goats appear on the clock tower in Poznań Old Market Square?","label":[[61,85,"LOCATION"]],"Comments":[]}
+{"id":2994,"text":"I’m planning to visit Lublin Castle. How far is it from the train station?","label":[[22,35,"LOCATION"]],"Comments":[]}
+{"id":2995,"text":"Is it possible to see the Black Madonna at Jasna Góra Monastery without waiting in a huge line?","label":[[43,63,"LOCATION"]],"Comments":[]}
+{"id":2996,"text":"Does anyone know if you need a separate ticket to go up the tower at St. Mary's Basilica?","label":[[69,88,"LOCATION"]],"Comments":[]}
+{"id":2997,"text":"I heard there’s an underground crypt at Warsaw Cathedral. Can you visit it?","label":[[40,56,"LOCATION"]],"Comments":[]}
+{"id":2998,"text":"Gniezno Cathedral is one of Poland’s oldest churches, right? Is it open for tourists?","label":[[0,17,"LOCATION"]],"Comments":[]}
+{"id":2999,"text":"I really want to hear the organ concert at Oliwa Cathedral. Do they happen every day?","label":[[43,58,"LOCATION"]],"Comments":[]}
+{"id":3000,"text":"Does anyone know if the pilgrimage routes at Kalwaria Zebrzydowska are difficult to walk?","label":[[45,66,"LOCATION"]],"Comments":[]}
+{"id":3001,"text":"Is there a direct tram to the Sanctuary of Divine Mercy from Kraków’s Old Town?","label":[[30,55,"LOCATION"],[61,78,"LOCATION"]],"Comments":[]}
+{"id":3002,"text":"I’ve never been to Święta Lipka Sanctuary. Is it more of a pilgrimage site or just a tourist spot?","label":[[19,41,"LOCATION"]],"Comments":[]}
+{"id":3003,"text":"If I’m in Zamość, is the cathedral worth visiting, or are there better historical sites?","label":[[10,16,"LOCATION"]],"Comments":[]}
+{"id":3004,"text":"If I visit Treblinka, is there an audio guide available, or do I need to arrange a tour guide?","label":[[11,20,"LOCATION"]],"Comments":[]}
+{"id":3005,"text":"Does anyone know how long the guided tour at Auschwitz-Birkenau lasts? I want to make sure I have enough time.","label":[[45,63,"LOCATION"]],"Comments":[]}
+{"id":3006,"text":"Is the POLIN Museum interactive? I heard they have some great multimedia exhibits.","label":[[7,19,"LOCATION"]],"Comments":[]}
+{"id":3007,"text":"The Mausoleum of Struggle and Martyrdom is such a powerful place. Do they offer guided tours, or is it self-guided only?","label":[[4,39,"LOCATION"]],"Comments":[]}
+{"id":3008,"text":"Is there public transport to Westerplatte, or do you need to take a taxi from Gdańsk?","label":[[29,41,"LOCATION"],[78,84,"LOCATION"]],"Comments":[]}
+{"id":3009,"text":"Has anyone been to the Copernicus Science Centre recently? I heard they have some crazy hands-on exhibits!","label":[[23,48,"LOCATION"]],"Comments":[]}
+{"id":3010,"text":"Thinking of visiting Wieliczka Salt Mine next weekend. Is the underground lake as stunning in real life as in pictures?","label":[[21,40,"LOCATION"]],"Comments":[]}
+{"id":3011,"text":"Bochnia Salt Mine is older than Wieliczka, right? Does it have those underground chapels too?","label":[[0,17,"LOCATION"],[32,41,"LOCATION"]],"Comments":[]}
+{"id":3012,"text":"Is Centennial Hall worth a visit if I’m in Wrocław for just a day, or should I focus on the old town instead?","label":[[3,18,"LOCATION"],[43,50,"LOCATION"]],"Comments":[]}
+{"id":3013,"text":"I love art, but I can only visit one National Museum—should I pick the one in Kraków or Warsaw?","label":[[78,84,"LOCATION"],[88,94,"LOCATION"]],"Comments":[]}
+{"id":3014,"text":"If I’m not an experienced hiker, are there any easy trails in the Tatra Mountains with great views?","label":[[66,81,"LOCATION"]],"Comments":[]}
+{"id":3015,"text":"What’s the best way to get to Morskie Oko without the crazy crowds? Early morning, maybe?","label":[[30,41,"LOCATION"]],"Comments":[]}
+{"id":3016,"text":"Does anyone know if the raft tours through Dunajec River Gorge are still running this season?","label":[[43,62,"LOCATION"]],"Comments":[]}
+{"id":3017,"text":"I’ve always wanted to see bison in the wild! Are they easy to spot in Białowieża Forest, or is it just luck?","label":[[70,87,"LOCATION"]],"Comments":[]}
+{"id":3018,"text":"The shifting dunes in Słowiński National Park look unreal. Is it a tough hike to reach them?","label":[[22,45,"LOCATION"]],"Comments":[]}
+{"id":3019,"text":"A desert in Poland? That’s wild! Is Błędów Desert actually sandy, or is it more like rocky terrain?","label":[[36,49,"LOCATION"]],"Comments":[]}
+{"id":3020,"text":"Between the Tatra Mountains and Karkonosze, which one has better trails for a beginner?","label":[[12,27,"LOCATION"],[32,42,"LOCATION"]],"Comments":[]}
+{"id":3021,"text":"Is the Masurian Lake District better for kayaking or sailing? I can’t decide what to rent!","label":[[7,29,"LOCATION"]],"Comments":[]}
+{"id":3022,"text":"I heard Ojców National Park has some cool caves. Are they open year-round?","label":[[8,27,"LOCATION"]],"Comments":[]}
+{"id":3023,"text":"Planning a weekend hike in the Świętokrzyskie Mountains. Any hidden spots worth checking out?","label":[[31,55,"LOCATION"]],"Comments":[]}
+{"id":3024,"text":"Is it worth going up to the viewing terrace at the Palace of Culture and Science, or is the skyline better from somewhere else?","label":[[51,80,"LOCATION"]],"Comments":[]}
+{"id":3025,"text":"Does anyone know if there are any concerts at Spodek Arena this month? I’d love to check out a show there!","label":[[46,58,"LOCATION"]],"Comments":[]}
+{"id":3026,"text":"I’ve always wanted to visit the Solidarity Museum. How much time should I set aside to really see everything?","label":[[32,49,"LOCATION"]],"Comments":[]}
+{"id":3027,"text":"Is the Sky Tower in Wrocław the tallest building in Poland? I heard the view from the top is amazing!","label":[[7,27,"LOCATION"]],"Comments":[]}
+{"id":3028,"text":"I love vintage signs! Does the Neon Museum in Warsaw have interactive exhibits, or is it just a display collection?","label":[[31,52,"LOCATION"]],"Comments":[]}
+{"id":3029,"text":"The Gdańsk Crane looks so cool at night. Is it just a historical monument, or can you go inside?","label":[[4,16,"LOCATION"]],"Comments":[]}
+{"id":3030,"text":"Are people still attaching love locks to Tumski Bridge, or have they stopped that?","label":[[41,54,"LOCATION"]],"Comments":[]}
+{"id":3031,"text":"Is Łazienkowski Bridge mostly for cars, or is there a safe way to walk across it?","label":[[3,22,"LOCATION"]],"Comments":[]}
+{"id":3032,"text":"I heard the Maria Skłodowska-Curie Bridge is one of the newest in Warsaw. Does it have good cycling paths?","label":[[12,41,"LOCATION"],[66,72,"LOCATION"]],"Comments":[]}
+{"id":3033,"text":"The Świętokrzyski Bridge looks stunning at night! Are there any good spots nearby to take photos of it?","label":[[4,24,"LOCATION"]],"Comments":[]}
+{"id":3034,"text":"I really want to hike in the Tatra Mountains, but I’m not sure where to start. Any beginner-friendly trails with great views?","label":[[29,44,"LOCATION"]],"Comments":[]}
+{"id":3035,"text":"Is it true that the Beskidy Mountains are less crowded than the Tatras? I’m looking for a peaceful hiking spot.","label":[[20,37,"LOCATION"],[64,70,"LOCATION"]],"Comments":[]}
+{"id":3036,"text":"I heard that Śnieżka in the Karkonosze Mountains can be super windy at the top. Is it worth the climb?","label":[[13,20,"LOCATION"],[28,48,"LOCATION"]],"Comments":[]}
+{"id":3037,"text":"Does anyone know if the Dunajec River rafting trips in the Pieniny Mountains are still running this season?","label":[[24,37,"LOCATION"],[59,76,"LOCATION"]],"Comments":[]}
+{"id":3038,"text":"Are there any good cycling routes in the Świętokrzyskie Mountains, or is it mostly hiking trails?","label":[[41,65,"LOCATION"]],"Comments":[]}
+{"id":3039,"text":"Is the Vistula River cruise in Warsaw worth it, or is it better to just walk along the banks?","label":[[7,20,"LOCATION"],[31,37,"LOCATION"]],"Comments":[]}
+{"id":3040,"text":"Does anyone know a good riverside café along the Oder River in Wrocław? I’d love to watch the sunset there.","label":[[49,59,"LOCATION"],[63,70,"LOCATION"]],"Comments":[]}
+{"id":3041,"text":"I’ve heard you can kayak on the Warta River—any recommendations for where to start?","label":[[32,43,"LOCATION"]],"Comments":[]}
+{"id":3042,"text":"Is the Bug River a good spot for fishing, or is it more of a sightseeing river?","label":[[7,16,"LOCATION"]],"Comments":[]}
+{"id":3043,"text":"I saw a picture of the Narew River’s wetlands, and it looked unreal. Are there boardwalks for exploring the area?","label":[[23,34,"LOCATION"]],"Comments":[]}
+{"id":3044,"text":"Can you send the package to ul. Marszałkowska 126, 00-008 Warszawa, Poland?","label":[[28,74,"LOCATION"]],"Comments":[]}
+{"id":3045,"text":"I’m meeting you at Plac Solny 2\/3, 50-060 Wrocław—let me know if you’re running late!","label":[[19,49,"LOCATION"]],"Comments":[]}
+{"id":3046,"text":"Does anyone know a good café near al. Jerozolimskie 179, 02-222 Warszawa?","label":[[34,72,"LOCATION"]],"Comments":[]}
+{"id":3047,"text":"I just moved to ul. Długa 5A, 31-146 Kraków—any good restaurants around here?","label":[[16,43,"LOCATION"]],"Comments":[]}
+{"id":3048,"text":"The visa center in Gdańsk is at ul. Wały Piastowskie 1, 80-855 Gdańsk. Are they open today?","label":[[19,25,"LOCATION"],[32,69,"LOCATION"]],"Comments":[]}
+{"id":3049,"text":"I ordered food to ul. Kościuszki 38\/7, 40-048 Katowice, but it’s taking forever!","label":[[18,54,"LOCATION"]],"Comments":[]}
+{"id":3050,"text":"If you’re picking me up, I’m at ul. Piotrkowska 120, 90-006 Łódź.","label":[[32,64,"LOCATION"]],"Comments":[]}
+{"id":3051,"text":"Does anyone know if there's a parking spot near vul. Khreshchatyk 22, Kyiv, 01001, Ukraine?","label":[[48,90,"LOCATION"]],"Comments":[]}
+{"id":3052,"text":"I need directions to prospekt Svobody 15, Lviv, 79000, Ukraine—is it close to the city center?","label":[[21,62,"LOCATION"]],"Comments":[]}
+{"id":3053,"text":"The embassy is at vul. Velyka Vasylkivska 44, Kyiv, 03150. How do I get there from Maidan?","label":[[18,57,"LOCATION"],[83,89,"LOCATION"]],"Comments":[]}
+{"id":3054,"text":"My Airbnb is at vul. Derybasivska 12, Odesa, 65026—is there a good café nearby?","label":[[16,50,"LOCATION"]],"Comments":[]}
+{"id":3055,"text":"Can someone check if my package arrived at vul. Sumska 67, Kharkiv, 61000?","label":[[43,73,"LOCATION"]],"Comments":[]}
+{"id":3056,"text":"I’ll be waiting outside vul. Hrushevskoho 5, Ivano-Frankivsk, 76000 at 7 PM!","label":[[24,67,"LOCATION"]],"Comments":[]}
+{"id":3057,"text":"Do you know if the train station is close to vul. Soborna 45, Vinnytsia, 21000?","label":[[45,78,"LOCATION"]],"Comments":[]}
+{"id":3058,"text":"Hey, I’m running late! Can you wait for me at ul. Nowy Świat 33, 00-029 Warszawa?","label":[[46,80,"LOCATION"]],"Comments":[]}
+{"id":3059,"text":"Does anyone know if there’s a pharmacy near al. Jana Pawła II 82, 00-175 Warsaw?","label":[[44,79,"LOCATION"]],"Comments":[]}
+{"id":3060,"text":"I need to pick up my order from ul. Świętego Ducha 5, 80-834 Gdańsk. What’s the fastest way to get there?","label":[[32,67,"LOCATION"]],"Comments":[]}
+{"id":3061,"text":"Can someone send me the exact location for ul. Karmelicka 12, 31-128 Kraków?","label":[[43,75,"LOCATION"]],"Comments":[]}
+{"id":3062,"text":"I’ll be staying at ul. Grodzka 9, 31-006 Kraków next weekend. Any restaurant recommendations nearby?","label":[[19,47,"LOCATION"]],"Comments":[]}
+{"id":3063,"text":"Is there a bus stop close to ul. Stawki 2, 00-193 Warszawa?","label":[[29,58,"LOCATION"]],"Comments":[]}
+{"id":3064,"text":"Hey, I left my jacket at ul. Wita Stwosza 20, 50-148 Wrocław. Can you grab it for me?","label":[[25,60,"LOCATION"]],"Comments":[]}
+{"id":3065,"text":"Let’s meet at ul. Wrocławska 18, 61-838 Poznań before heading to the train station.","label":[[14,46,"LOCATION"]],"Comments":[]}
+{"id":3066,"text":"The company’s office is at ul. Jasna 7, 00-950 Warsaw. Are you coming for the interview?","label":[[27,53,"LOCATION"]],"Comments":[]}
+{"id":3067,"text":"We’re moving to ul. Armii Krajowej 21, 80-462 Gdańsk next month. Can’t wait!","label":[[16,52,"LOCATION"]],"Comments":[]}
+{"id":3068,"text":"Does Uber operate near ul. Mickiewicza 4, 85-071 Bydgoszcz?","label":[[23,58,"LOCATION"]],"Comments":[]}
+{"id":3069,"text":"If you’re sending mail, use al. Niepodległości 208, 02-086 Warszawa.","label":[[28,67,"LOCATION"]],"Comments":[]}
+{"id":3070,"text":"I’m picking up a package from ul. Królowej Jadwigi 7, 87-100 Toruń this afternoon.","label":[[30,66,"LOCATION"]],"Comments":[]}
+{"id":3071,"text":"Do you know how long it takes to get to ul. Ratajczaka 44, 61-816 Poznań by tram?","label":[[40,72,"LOCATION"]],"Comments":[]}
+{"id":3072,"text":"Hey, can you meet me at vul. Khreshchatyk 22, Kyiv, 01001, Ukraine in an hour?","label":[[24,66,"LOCATION"]],"Comments":[]}
+{"id":3073,"text":"I just moved to vul. Lychakivska 15, Lviv, 79008. Any good coffee spots nearby?","label":[[16,48,"LOCATION"]],"Comments":[]}
+{"id":3074,"text":"Does anyone know the best way to get to prospekt Peremohy 67, Kyiv, 03062 by metro?","label":[[40,73,"LOCATION"]],"Comments":[]}
+{"id":3075,"text":"I left my backpack at vul. Akademika Pavlova 144, Kharkiv, 61168. Can someone bring it to me?","label":[[22,64,"LOCATION"]],"Comments":[]}
+{"id":3076,"text":"Can you confirm if my parcel has arrived at vul. Pushkinska 12, Odesa, 65026?","label":[[44,76,"LOCATION"]],"Comments":[]}
+{"id":3077,"text":"The Airbnb is at vul. Soborna 9, Vinnytsia, 21000. What’s the easiest way to get there from the bus station?","label":[[17,49,"LOCATION"]],"Comments":[]}
+{"id":3078,"text":"I heard that the best dumplings in town are near vul. Shevchenka 25, Ivano-Frankivsk, 76018. Is that true?","label":[[49,91,"LOCATION"]],"Comments":[]}
+{"id":3079,"text":"How far is vul. Heroiv UPA 73, Lviv, 79018 from the train station?","label":[[11,42,"LOCATION"]],"Comments":[]}
+{"id":3080,"text":"Let’s grab a coffee at vul. Derzhavina 4, Dnipro, 49000 before our meeting.","label":[[23,55,"LOCATION"]],"Comments":[]}
+{"id":3081,"text":"The bank’s office is at vul. Holosiivska 17, Kyiv, 03039. Are they open on Sundays?","label":[[24,56,"LOCATION"]],"Comments":[]}
+{"id":3082,"text":"Can anyone tell me the fastest way to get from vul. Zaliznychna 5, Lviv, 79039 to the main square?","label":[[47,78,"LOCATION"]],"Comments":[]}
+{"id":3083,"text":"I’m picking up some documents from vul. Velyka Zhytomyrska 20, Kyiv, 01001 later today.","label":[[35,74,"LOCATION"]],"Comments":[]}
+{"id":3084,"text":"My hotel is on vul. Saksaganskogo 37, Kyiv, 01033. What’s the best way to reach Boryspil Airport?","label":[[15,49,"LOCATION"],[80,96,"LOCATION"]],"Comments":[]}
+{"id":3085,"text":"The embassy is at vul. Honcharna 3, Odesa, 65014. Do I need an appointment to visit?","label":[[18,48,"LOCATION"]],"Comments":[]}
+{"id":3086,"text":"I’m thinking of stopping by Białogard on my way to Kołobrzeg. Is it worth a visit?","label":[[28,37,"LOCATION"],[51,60,"LOCATION"]],"Comments":[]}
+{"id":3087,"text":"I have to pick up a package from Choszczno tomorrow. Does anyone need a ride there?","label":[[33,42,"LOCATION"]],"Comments":[]}
+{"id":3088,"text":"Does anyone know if there’s a direct bus from Szczecin to Drawsko Pomorskie?","label":[[46,54,"LOCATION"],[58,75,"LOCATION"]],"Comments":[]}
+{"id":3089,"text":"I need a hotel near Goleniów for one night. Any suggestions?","label":[[20,28,"LOCATION"]],"Comments":[]}
+{"id":3090,"text":"Can someone recommend a nice walking route near Gryfice?","label":[[48,55,"LOCATION"]],"Comments":[]}
+{"id":3091,"text":"Does anyone know if the border crossing near Gryfino is busy today?","label":[[45,52,"LOCATION"]],"Comments":[]}
+{"id":3092,"text":"Looking for a place to stay in Kamień Pomorski for one night. Any recommendations?","label":[[31,46,"LOCATION"]],"Comments":[]}
+{"id":3093,"text":"The beach in Kołobrzeg is amazing! Who wants to plan a trip?","label":[[13,22,"LOCATION"]],"Comments":[]}
+{"id":3094,"text":"I need to be in Koszalin by 10 AM tomorrow. Does anyone know the fastest route?","label":[[16,24,"LOCATION"]],"Comments":[]}
+{"id":3095,"text":"I might be moving to Łobez for work. What’s the cost of living like there?","label":[[21,26,"LOCATION"]],"Comments":[]}
+{"id":3096,"text":"Anyone driving from Myślibórz to Stargard tomorrow? I need a ride!","label":[[20,29,"LOCATION"],[33,41,"LOCATION"]],"Comments":[]}
+{"id":3097,"text":"I have a meeting in Polanów at 3 PM. Is the traffic bad around that time?","label":[[20,27,"LOCATION"]],"Comments":[]}
+{"id":3098,"text":"I heard there’s a great farmers' market in Pyrzyce on Saturdays. Anyone been?","label":[[43,50,"LOCATION"]],"Comments":[]}
+{"id":3099,"text":"Are there any historical sites in Sławno worth visiting?","label":[[34,40,"LOCATION"]],"Comments":[]}
+{"id":3100,"text":"Does anyone have a bus schedule from Szczecin to Stargard?","label":[[37,45,"LOCATION"],[49,57,"LOCATION"]],"Comments":[]}
+{"id":3101,"text":"Does anyone know a good car repair shop in Świdwin?","label":[[43,50,"LOCATION"]],"Comments":[]}
+{"id":3102,"text":"Is the ferry in Świnoujście running on schedule today?","label":[[16,27,"LOCATION"]],"Comments":[]}
+{"id":3103,"text":"Does anyone know a nice hiking trail near Wałcz?","label":[[42,47,"LOCATION"]],"Comments":[]}
+{"id":3104,"text":"I’m heading to Chodzież for the weekend—anyone know if the lake there is good for swimming?","label":[[15,23,"LOCATION"]],"Comments":[]}
+{"id":3105,"text":"Does anyone know if there’s a direct bus from Czarnków-Trzcianka to Poznań?","label":[[46,64,"LOCATION"],[68,74,"LOCATION"]],"Comments":[]}
+{"id":3106,"text":"I’ve always wanted to visit Gniezno Cathedral. Is it worth a day trip from Poznań?","label":[[28,45,"LOCATION"],[75,81,"LOCATION"]],"Comments":[]}
+{"id":3107,"text":"The best pierogi I ever had were in Gostyń! I wish I remembered the name of the place.","label":[[36,42,"LOCATION"]],"Comments":[]}
+{"id":3108,"text":"Is the train from Grodzisk Wielkopolski to Leszno running on time today?","label":[[18,39,"LOCATION"],[43,49,"LOCATION"]],"Comments":[]}
+{"id":3109,"text":"Anyone going to the music festival in Jarocin this summer? We should carpool!","label":[[38,45,"LOCATION"]],"Comments":[]}
+{"id":3110,"text":"I might have to move to Kalisz for work—what’s the cost of living like there?","label":[[24,30,"LOCATION"]],"Comments":[]}
+{"id":3111,"text":"I left my backpack in a café in Koło… does anyone know a good way to get it back?","label":[[32,36,"LOCATION"]],"Comments":[]}
+{"id":3112,"text":"Is there a cheap place to stay in Konin? I have a meeting there tomorrow.","label":[[34,39,"LOCATION"]],"Comments":[]}
+{"id":3113,"text":"Does anyone know a good gym in Kościan? I’ll be staying there for a few months.","label":[[31,38,"LOCATION"]],"Comments":[]}
+{"id":3114,"text":"Is there a flea market in Krotoszyn this weekend? I’m looking for some antiques.","label":[[26,35,"LOCATION"]],"Comments":[]}
+{"id":3115,"text":"Hey, does anyone know if the hot air balloon event in Leszno is happening this year?","label":[[54,60,"LOCATION"]],"Comments":[]}
+{"id":3116,"text":"I heard Międzychód has some great lakes. Anyone been there recently?","label":[[8,18,"LOCATION"]],"Comments":[]}
+{"id":3117,"text":"Is the wicker festival in Nowy Tomyśl worth visiting? I’ve never been.","label":[[26,37,"LOCATION"]],"Comments":[]}
+{"id":3118,"text":"Does anyone know a good hiking spot near Oborniki?","label":[[41,49,"LOCATION"]],"Comments":[]}
+{"id":3119,"text":"I’ll be in Ostrów Wielkopolski next week. Any recommendations for local food?","label":[[11,30,"LOCATION"]],"Comments":[]}
+{"id":3120,"text":"The drive from Ostrzeszów to Wrocław is beautiful! I love those countryside views.","label":[[15,25,"LOCATION"],[29,36,"LOCATION"]],"Comments":[]}
+{"id":3121,"text":"I might have to spend a night in Piła. Any good hotel recommendations?","label":[[33,37,"LOCATION"]],"Comments":[]}
+{"id":3122,"text":"Is there a good bookstore in Pleszew? I need something to read for my trip.","label":[[29,36,"LOCATION"]],"Comments":[]}
+{"id":3123,"text":"Who wants to meet up at the Christmas market in Poznań next weekend?","label":[[48,54,"LOCATION"]],"Comments":[]}
+{"id":3124,"text":"I need to send a package to Rawicz—what’s the fastest courier service?","label":[[28,34,"LOCATION"]],"Comments":[]}
+{"id":3125,"text":"Is there a direct train from Słupca to Warsaw, or do I need to change somewhere?","label":[[29,35,"LOCATION"],[39,45,"LOCATION"]],"Comments":[]}
+{"id":3126,"text":"I heard there’s a great bakery in Śrem—anyone know what it’s called?","label":[[34,38,"LOCATION"]],"Comments":[]}
+{"id":3127,"text":"Is it easy to commute from Środa Wielkopolska to Poznań every day?","label":[[27,45,"LOCATION"],[49,55,"LOCATION"]],"Comments":[]}
+{"id":3128,"text":"Does anyone know if there are any good bike trails near Turek?","label":[[56,61,"LOCATION"]],"Comments":[]}
+{"id":3129,"text":"Is the famous moving lake near Wągrowiec real, or is that just a myth?","label":[[31,40,"LOCATION"]],"Comments":[]}
+{"id":3130,"text":"I’ve always wanted to see the steam locomotives in Wolsztyn! Who’s been?","label":[[51,59,"LOCATION"]],"Comments":[]}
+{"id":3131,"text":"Anyone driving from Września to Gniezno tomorrow? I could use a ride.","label":[[20,28,"LOCATION"],[32,39,"LOCATION"]],"Comments":[]}
+{"id":3132,"text":"What’s the best way to get from Złotów to Piła without a car?","label":[[32,38,"LOCATION"],[42,46,"LOCATION"]],"Comments":[]}
+{"id":3133,"text":"I’m planning to visit Bartoszyce next weekend, do you know any good places to eat there?","label":[[22,32,"LOCATION"]],"Comments":[]}
+{"id":3134,"text":"Braniewo is such a quiet town, I always enjoy the peaceful atmosphere when I visit.","label":[[0,8,"LOCATION"]],"Comments":[]}
+{"id":3135,"text":"I’ve never been to Działdowo before, but I heard there are some nice parks to check out.","label":[[19,28,"LOCATION"]],"Comments":[]}
+{"id":3136,"text":"Do you think Elbląg would be a good place for a weekend getaway?","label":[[13,19,"LOCATION"]],"Comments":[]}
+{"id":3137,"text":"I’m thinking of moving to Ełk. Have you been there? How’s the city?","label":[[26,29,"LOCATION"]],"Comments":[]}
+{"id":3138,"text":"Giżycko is so beautiful in the summer, the lakes look amazing.","label":[[0,7,"LOCATION"]],"Comments":[]}
+{"id":3139,"text":"Gołdap is a hidden gem in Masuria; it’s so peaceful and scenic.","label":[[0,6,"LOCATION"]],"Comments":[]}
+{"id":3140,"text":"I’ve been meaning to visit Iława for a while now. How’s the food there?","label":[[27,32,"LOCATION"]],"Comments":[]}
+{"id":3141,"text":"I was in Kętrzyn last month, and the historic sites were fascinating.","label":[[9,16,"LOCATION"]],"Comments":[]}
+{"id":3142,"text":"Have you ever been to Lidzbark Warmiński? It has some of the oldest buildings I’ve ever seen.","label":[[22,40,"LOCATION"]],"Comments":[]}
+{"id":3143,"text":"Mrągowo is a nice place for hiking, especially with all the forests around.","label":[[0,7,"LOCATION"]],"Comments":[]}
+{"id":3144,"text":"I’m taking a trip to Nidzica next month, do you think I should go sightseeing?","label":[[21,28,"LOCATION"]],"Comments":[]}
+{"id":3145,"text":"Nowe Miasto Lubawskie has such a quaint little town center. I loved the local shops there.","label":[[0,21,"LOCATION"]],"Comments":[]}
+{"id":3146,"text":"Olecko is known for its beautiful lakes, I’d love to visit in the summer.","label":[[0,6,"LOCATION"]],"Comments":[]}
+{"id":3147,"text":"Olsztyn is always so lively, especially around the university area.","label":[[0,7,"LOCATION"]],"Comments":[]}
+{"id":3148,"text":"I recently drove through Ostróda, the views from the road were breathtaking.","label":[[25,32,"LOCATION"]],"Comments":[]}
+{"id":3149,"text":"Pisz is on my list of places to visit this year, I heard there are great camping spots nearby.","label":[[0,4,"LOCATION"]],"Comments":[]}
+{"id":3150,"text":"Szczytno might be small, but it has such a cozy feel to it when you walk through the streets.","label":[[0,8,"LOCATION"]],"Comments":[]}
+{"id":3151,"text":"Węgorzewo has such a great vibe in the evenings, especially by the lakeside.","label":[[0,9,"LOCATION"]],"Comments":[]}
+{"id":3152,"text":"I’m heading to Kielce this weekend, any recommendations for good restaurants?","label":[[15,21,"LOCATION"]],"Comments":[]}
+{"id":3153,"text":"Sandomierz looks amazing in the fall, have you ever taken a walk through the old town?","label":[[0,10,"LOCATION"]],"Comments":[]}
+{"id":3154,"text":"I used to live in Starachowice, but I haven’t been back in years. I wonder how much it has changed.","label":[[18,30,"LOCATION"]],"Comments":[]}
+{"id":3155,"text":"Bielsko-Biała has such a cool mix of architecture, I love strolling through the city center.","label":[[0,13,"LOCATION"]],"Comments":[]}
+{"id":3156,"text":"Bytom has some interesting history, did you know about its old coal mines?","label":[[0,5,"LOCATION"]],"Comments":[]}
+{"id":3157,"text":"Częstochowa is famous for Jasna Góra, but I also found some great little cafes when I visited.","label":[[0,11,"LOCATION"],[26,36,"LOCATION"]],"Comments":[]}
+{"id":3158,"text":"Dąbrowa Górnicza has a nice lake area, perfect for summer weekends.","label":[[0,16,"LOCATION"]],"Comments":[]}
+{"id":3159,"text":"Gliwice has such a vibrant nightlife, I always have fun when I visit.","label":[[0,7,"LOCATION"]],"Comments":[]}
+{"id":3160,"text":"Katowice has really transformed over the years, it’s becoming such a modern city.","label":[[0,8,"LOCATION"]],"Comments":[]}
+{"id":3161,"text":"Rybnik is quite underrated, but I always enjoy the calm atmosphere there.","label":[[0,6,"LOCATION"]],"Comments":[]}
+{"id":3162,"text":"Sosnowiec is not far from Katowice, do you think it’s a good place to live?","label":[[0,9,"LOCATION"],[26,34,"LOCATION"]],"Comments":[]}
+{"id":3163,"text":"Zabrze has a cool industrial vibe, I love how they’ve preserved some of the old factories.","label":[[0,6,"LOCATION"]],"Comments":[]}
+{"id":3164,"text":"Żywiec is a must-visit if you love beer! Their brewery tour is amazing.","label":[[0,6,"LOCATION"]],"Comments":[]}
+{"id":3165,"text":"I spent a few years of my childhood in Zambrów before we moved to Warsaw.","label":[[39,46,"LOCATION"],[66,72,"LOCATION"]],"Comments":[]}
+{"id":3166,"text":"Wysokie Mazowieckie may not be big, but it has an interesting history.","label":[[0,19,"LOCATION"]],"Comments":[]}
+{"id":3167,"text":"I spent the whole day in Bytów yesterday, exploring the castle and walking around the market square.","label":[[25,30,"LOCATION"]],"Comments":[]}
+{"id":3168,"text":"Did you know that Chojnice hosts an annual Christmas fair?","label":[[18,26,"LOCATION"]],"Comments":[]}
+{"id":3169,"text":"We need to stop in Człuchów for lunch; I heard they have great pierogi.","label":[[19,27,"LOCATION"]],"Comments":[]}
+{"id":3170,"text":"My uncle lives in Kościerzyna and often sends us homemade preserves.","label":[[18,29,"LOCATION"]],"Comments":[]}
+{"id":3171,"text":"The castle in Kwidzyn is one of the most impressive in this part of Poland.","label":[[14,21,"LOCATION"],[68,74,"LOCATION"]],"Comments":[]}
+{"id":3172,"text":"I’m planning to move to Lębork because I found an interesting job opportunity there.","label":[[24,30,"LOCATION"]],"Comments":[]}
+{"id":3173,"text":"When was the last time you visited Malbork? Their museum is absolutely amazing!","label":[[35,42,"LOCATION"]],"Comments":[]}
+{"id":3174,"text":"The weather in Nowy Dwór Gdański is perfect today for a walk along the Nogat River.","label":[[15,32,"LOCATION"],[71,82,"LOCATION"]],"Comments":[]}
+{"id":3175,"text":"In Puck, you can try some of the best fresh fish straight from the Baltic Sea.","label":[[3,7,"LOCATION"],[67,77,"LOCATION"]],"Comments":[]}
+{"id":3176,"text":"Starogard Gdański is the town where my grandfather grew up.","label":[[0,17,"LOCATION"]],"Comments":[]}
+{"id":3177,"text":"Tczew is home to the oldest iron bridge in Poland!","label":[[0,5,"LOCATION"],[43,49,"LOCATION"]],"Comments":[]}
+{"id":3178,"text":"I’ve always wanted to see the Wejherowo Calvary; maybe we can go there this weekend?","label":[[30,47,"LOCATION"]],"Comments":[]}
+{"id":3179,"text":"Hajnówka is famous for its festival of Orthodox church music, which attracts tourists from all over the world.","label":[[0,8,"LOCATION"]],"Comments":[]}
+{"id":3180,"text":"On our way to the Masurian Lakes, we stopped in Kolno for a quick lunch.","label":[[18,32,"LOCATION"],[48,53,"LOCATION"]],"Comments":[]}
+{"id":3181,"text":"Łomża is known not only for its beer but also for its beautiful landscapes along the Narew River.","label":[[0,5,"LOCATION"],[85,96,"LOCATION"]],"Comments":[]}
+{"id":3182,"text":"My friend is from Mońki and always talks about the local traditions there.","label":[[18,23,"LOCATION"]],"Comments":[]}
+{"id":3183,"text":"In Sejny, there is a well-known synagogue that is worth visiting.","label":[[3,8,"LOCATION"]],"Comments":[]}
+{"id":3184,"text":"Siemiatycze is a quiet town, perfect for a weekend getaway.","label":[[0,11,"LOCATION"]],"Comments":[]}
+{"id":3185,"text":"In Sokółka, I saw an amazing sunset over the reservoir.","label":[[3,10,"LOCATION"]],"Comments":[]}
+{"id":3186,"text":"Suwałki is one of the coldest cities in Poland, but in summer, it’s beautiful.","label":[[0,7,"LOCATION"],[40,46,"LOCATION"]],"Comments":[]}
+{"id":3187,"text":"Brzozów – I stopped by Brzozów for a quick coffee on my way out of town.","label":[[0,7,"LOCATION"],[23,30,"LOCATION"]],"Comments":[]}
+{"id":3188,"text":"Dębica – Dębica's known for the tire factory, but the town itself is pretty charming, don't you think?","label":[[0,6,"LOCATION"],[9,15,"LOCATION"]],"Comments":[]}
+{"id":3189,"text":"My cousin's studying in Jarosław and always raves about how cute the old town is.","label":[[24,32,"LOCATION"]],"Comments":[]}
+{"id":3190,"text":"You should check out the vineyards in Jasło; they’re amazing for wine tasting!","label":[[38,43,"LOCATION"]],"Comments":[]}
+{"id":3191,"text":"Have you been to Krosno? It's famous for its glass industry, and the museum there is awesome.","label":[[17,23,"LOCATION"]],"Comments":[]}
+{"id":3192,"text":"The castle in Łańcut is seriously one of the most beautiful places I’ve ever visited!","label":[[14,20,"LOCATION"]],"Comments":[]}
+{"id":3193,"text":"Before heading to the Bieszczady, we stopped in Lesko to grab a few things for the trip.","label":[[22,32,"LOCATION"],[48,53,"LOCATION"]],"Comments":[]}
+{"id":3194,"text":"Did you know Mielec has a big aviation industry? It’s kind of a cool fact about the town.","label":[[13,19,"LOCATION"]],"Comments":[]}
+{"id":3195,"text":"I’ll never forget fishing with my grandpa near Nisko when I was younger.","label":[[47,52,"LOCATION"]],"Comments":[]}
+{"id":3196,"text":"Przemyśl is such a hidden gem! The architecture there is so beautiful.","label":[[0,8,"LOCATION"]],"Comments":[]}
+{"id":3197,"text":"Rzeszów has really exploded lately; it’s becoming such a tech hub.","label":[[0,7,"LOCATION"]],"Comments":[]}
+{"id":3198,"text":"The open-air museum in Sanok is a must-see if you’re into Polish culture.","label":[[23,28,"LOCATION"]],"Comments":[]}
+{"id":3199,"text":"A buddy of mine just moved to Stalowa Wola, and he says it’s got a really nice community vibe.","label":[[30,42,"LOCATION"]],"Comments":[]}
+{"id":3200,"text":"We spent an amazing weekend by the lake in Tarnobrzeg last summer.","label":[[43,53,"LOCATION"]],"Comments":[]}
+{"id":3201,"text":"Ustrzyki Dolne is perfect if you love hiking; it’s the gateway to Bieszczady!","label":[[0,14,"LOCATION"],[66,76,"LOCATION"]],"Comments":[]}
+{"id":3202,"text":"That castle in Brzeg was such a surprise – it’s way more impressive than I thought it’d be.","label":[[15,20,"LOCATION"]],"Comments":[]}
+{"id":3203,"text":"Głubczyce may be small, but it’s got a ton of history behind it.","label":[[0,9,"LOCATION"]],"Comments":[]}
+{"id":3204,"text":"Kędzierzyn-Koźle’s got one of the busiest inland ports in Poland!","label":[[0,16,"LOCATION"],[58,64,"LOCATION"]],"Comments":[]}
+{"id":3205,"text":"I passed through Kluczbork on my way to Wrocław – it’s a cute little stop for a quick break.","label":[[17,26,"LOCATION"],[40,47,"LOCATION"]],"Comments":[]}
+{"id":3206,"text":"Namysłów’s brewery makes some seriously good beer – you should try it!","label":[[0,8,"LOCATION"]],"Comments":[]}
+{"id":3207,"text":"If you like sailing, Nysa’s lake is the perfect place to spend a summer day.","label":[[21,25,"LOCATION"]],"Comments":[]}
+{"id":3208,"text":"I went to a wedding in Olesno, and the church there was just stunning.","label":[[23,29,"LOCATION"]],"Comments":[]}
+{"id":3209,"text":"Prudnik’s surrounded by forests, so it’s perfect if you’re into nature and hiking.","label":[[0,7,"LOCATION"]],"Comments":[]}
+{"id":3210,"text":"Strzelce Opolskie has this cool mix of Polish and German architecture – it’s really unique.","label":[[0,17,"LOCATION"]],"Comments":[]}
+{"id":3211,"text":"Hey, have you heard about the new power plant they're building in Bełchatów? It's massive!","label":[[66,75,"LOCATION"]],"Comments":[]}
+{"id":3212,"text":"My grandma's pierogies recipe comes from Brzeziny, they're the best I've ever had.","label":[[41,49,"LOCATION"]],"Comments":[]}
+{"id":3213,"text":"Just passed through Kutno on my way to Warsaw, the train station there is under renovation.","label":[[20,25,"LOCATION"],[39,45,"LOCATION"]],"Comments":[]}
+{"id":3214,"text":"The weather in Łask is perfect for our weekend hiking trip.","label":[[15,19,"LOCATION"]],"Comments":[]}
+{"id":3215,"text":"Did you know Łęczyca has this amazing medieval castle? We should visit sometime.","label":[[13,20,"LOCATION"]],"Comments":[]}
+{"id":3216,"text":"I'm meeting some friends in Łowicz for their annual folk art festival.","label":[[28,34,"LOCATION"]],"Comments":[]}
+{"id":3217,"text":"My cousin just moved to Opoczno for work at the ceramic factory.","label":[[24,31,"LOCATION"]],"Comments":[]}
+{"id":3218,"text":"The industrial park in Pabianice is expanding rapidly these days.","label":[[23,32,"LOCATION"]],"Comments":[]}
+{"id":3219,"text":"I have a conference next week in Piotrków Trybunalski, want to join?","label":[[33,53,"LOCATION"]],"Comments":[]}
+{"id":3220,"text":"The farmers' market in Poddębice had the freshest strawberries this morning.","label":[[23,32,"LOCATION"]],"Comments":[]}
+{"id":3221,"text":"My sister teaches at a high school in Radomsko, she loves it there.","label":[[38,46,"LOCATION"]],"Comments":[]}
+{"id":3222,"text":"Just drove through Rawa Mazowiecka, the autumn colors are stunning!","label":[[19,34,"LOCATION"]],"Comments":[]}
+{"id":3223,"text":"The jazz festival in Sieradz was incredible this year.","label":[[21,28,"LOCATION"]],"Comments":[]}
+{"id":3224,"text":"I'm heading to Skierniewice tomorrow for a job interview.","label":[[15,27,"LOCATION"]],"Comments":[]}
+{"id":3225,"text":"The shopping center in Tomaszów Mazowiecki has finally opened.","label":[[23,42,"LOCATION"]],"Comments":[]}
+{"id":3226,"text":"Have you tried that new restaurant in Wieluń? The reviews are amazing.","label":[[38,44,"LOCATION"]],"Comments":[]}
+{"id":3227,"text":"My brother just bought a house in Zduńska Wola, it's really affordable there.","label":[[34,46,"LOCATION"]],"Comments":[]}
+{"id":3228,"text":"The traffic in Zgierz was terrible this morning, took me an hour to get through.","label":[[15,21,"LOCATION"]],"Comments":[]}
+{"id":3229,"text":"I studied architecture at the university in Bochnia last semester.","label":[[44,51,"LOCATION"]],"Comments":[]}
+{"id":3230,"text":"The brewery tour in Brzesko was fascinating, you should try it!","label":[[20,27,"LOCATION"]],"Comments":[]}
+{"id":3231,"text":"My company just opened a new office in Chrzanów last month.","label":[[39,47,"LOCATION"]],"Comments":[]}
+{"id":3232,"text":"The sunflower fields near Dąbrowa Tarnowska are beautiful right now.","label":[[26,43,"LOCATION"]],"Comments":[]}
+{"id":3233,"text":"We're planning a weekend trip to Gorlice to visit the oil industry museum.","label":[[33,40,"LOCATION"]],"Comments":[]}
+{"id":3234,"text":"The startup scene in Kraków is really booming these days.","label":[[21,27,"LOCATION"]],"Comments":[]}
+{"id":3235,"text":"The mountain views from Limanowa are absolutely breathtaking.","label":[[24,32,"LOCATION"]],"Comments":[]}
+{"id":3236,"text":"Just passed through Miechów on my way to the agricultural fair.","label":[[20,27,"LOCATION"]],"Comments":[]}
+{"id":3237,"text":"The apple orchards in Myślenice are perfect for picking this weekend.","label":[[22,31,"LOCATION"]],"Comments":[]}
+{"id":3238,"text":"I'm presenting at a tech conference in Nowy Sącz next month.","label":[[39,48,"LOCATION"]],"Comments":[]}
+{"id":3239,"text":"The ski conditions in Nowy Targ are perfect right now!","label":[[22,31,"LOCATION"]],"Comments":[]}
+{"id":3240,"text":"Going to visit the memorial museum in Oświęcim with my history class.","label":[[38,46,"LOCATION"]],"Comments":[]}
+{"id":3241,"text":"The farmer's market in Proszowice had amazing local honey today.","label":[[23,33,"LOCATION"]],"Comments":[]}
+{"id":3242,"text":"There's a great antique market in Maków Mazowiecki every Sunday.","label":[[34,50,"LOCATION"]],"Comments":[]}
+{"id":3243,"text":"The ceramic factory in Żary has been operating since the 19th century.","label":[[23,27,"LOCATION"]],"Comments":[]}
