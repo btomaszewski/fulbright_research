@@ -97,7 +97,7 @@ def processJson(messageData, processedDirPath):
         if fullText:
             processCategories(individualMessage, fullText)
 
-
+'''
 def main(rawChatPath, procJsonPath): # put all main() functionality in a while True: if we want it to automatically add new chatDirs to the set while processing
     # Process files
     chatDir = os.path.basename(rawChatPath)
@@ -202,6 +202,12 @@ def main(rawChatPath, procJsonPath):
         # Write final result to the destination file
         with open(resultJson, 'w', encoding='utf-8') as f:
             json.dump(jsonData, f, ensure_ascii=False, indent=4)
-
+    
         print(f"Processing completed for {resultJson}")
-''' 
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        main(sys.argv[1], sys.argv[2])
+    else:
+        print("Error: No directory path provided.") 
