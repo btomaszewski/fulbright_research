@@ -173,37 +173,38 @@ async function uploadToGoogleSheets(filePath) {
         ]);
 
         // Collect all possible category fields dynamically
-        messages.forEach(msg => {
-            if (msg.CATEGORIES) {
-                Object.keys(msg.CATEGORIES).forEach(key => headers.add(`CATEGORIES_${key}`));
-                if (msg.CATEGORIES.confidence_scores) {
-                    Object.keys(msg.CATEGORIES.confidence_scores).forEach(key => headers.add(`confidence_scores_${key}`));
+        messages.forEach(message => {
+            cats = message.CATEGORIES;
+            cats.forEach(cat => {
+                if (!headers.has(cat)) {
+                    headers.add(`CAT_${cat}`)
                 }
             }
+            )
         });
 
         const headersArray = Array.from(headers);
 
-       // ✅ Convert message objects to rows (Handle Nested Objects)
-       const values = messages.map((msg) => {
-        return headersArray.map((header) => {
-            if (header.startsWith("CATEGORIES_")) {
-                const key = header.replace("CATEGORIES_", "");
-                const value = msg.CATEGORIES ? msg.CATEGORIES[key] || "" : "";
-                return Array.isArray(value) ? value.join(", ") : value; // Convert arrays to strings
-            } else if (header === "confidence_scores") {
-                // Flatten confidence_scores object into a string like "Education: 0.78, Health: 0.65"
-                /*if (msg.CATEGORIES && msg.CATEGORIES.confidence_scores) {
-                    return Object.entries(msg.CATEGORIES.confidence_scores)
-                        .map(([category, score]) => `${category}: ${score.toFixed(2)}`) // Format numbers
-                        .join(", ");
-                }*/
-                return "";
-            } else {
-                return msg[header] || "";
-            }
+        // ✅ Convert message objects to rows
+        const values = messages.map(message => {
+            return headersArray.map(header => {
+                if (header.startsWith("CAT_")) {
+                    // Extract category name from header (remove "CAT_" prefix)
+                    const category = header.replace("CAT_", "");
+                    
+                    // Find the index of this category in the message's CATEGORIES array
+                    const index = message.CATEGORIES ? message.CATEGORIES.indexOf(category) : -1;
+                    
+                    // If category exists, get the corresponding confidence score
+                    return index !== -1 && message.CONFIDENCE && message.CONFIDENCE[index] !== undefined
+                        ? message.CONFIDENCE[index].toFixed(2)  // Format to 2 decimal places
+                        : "";
+                } else {
+                    // Default case: return message field if it exists, otherwise empty string
+                    return message[header] || "";
+                }
+            });
         });
-    });
 
 
         // ✅ Create a new sheet before uploading data

@@ -52,7 +52,12 @@
 
             const processBtn = document.createElement('button');
             processBtn.setAttribute('id', 'process');
-            processBtn.innerHTML = "Process";
+            processBtn.setAttribute('class', 'button');
+            processBtn.innerHTML = `<span class="shadow"></span>
+                                    <span class="edge"></span>
+                                    <div class="front">
+                                        <span>Process</span>
+                                    </div>`;
             processBtn.addEventListener('click', async () => {
                 status.innerText = "Processing...";
                 try {
