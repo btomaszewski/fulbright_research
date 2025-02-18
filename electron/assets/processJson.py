@@ -131,4 +131,50 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         main(sys.argv[1], sys.argv[2])
     else:
-        print("Error: No directory path provided.")
+        print("Error: No directory path provided.") 
+
+'''
+def main(rawChatPath, procJsonPath):
+    # Configure batch size
+    BATCH_SIZE = 50  # Adjust this number based on your needs
+    
+    # Process files
+    chatDir = os.path.basename(rawChatPath)
+    chatDir = f"{chatDir}Processed"
+    processedDirPath = os.path.join(procJsonPath, chatDir)
+    shutil.copytree(rawChatPath, processedDirPath)
+    
+    resultJson = Path(processedDirPath) / "result.json"
+    if resultJson.is_file():
+        try:
+            cleanJson(resultJson)
+            print(f"{resultJson} cleaned successfully")
+        except Exception as e:
+            print(f"Could not clean {resultJson}", e)
+
+        print(f"Processing file: {resultJson.name}")
+        with open(resultJson, 'r', encoding='utf-8') as f:
+            jsonData = json.load(f)
+            messageData = jsonData.get("messages", [])
+            
+            # Process messages in batches
+            for i in range(0, len(messageData), BATCH_SIZE):
+                batch = messageData[i:i + BATCH_SIZE]
+                print(f"Processing batch {i//BATCH_SIZE + 1} of {(len(messageData) + BATCH_SIZE - 1)//BATCH_SIZE}")
+                
+                # Process the batch
+                processJson(batch, processedDirPath)
+                
+                # Update the original messageData with processed batch
+                messageData[i:i + BATCH_SIZE] = batch
+                
+                # Optionally save intermediate results
+                with open(resultJson, 'w', encoding='utf-8') as f:
+                    json.dump(jsonData, f, ensure_ascii=False, indent=4)
+                    
+        # Final save after all batches are processed
+        with open(resultJson, 'w', encoding='utf-8') as f:
+            json.dump(jsonData, f, ensure_ascii=False, indent=4)
+
+        print(f"Processing completed for {resultJson}")
+'''
