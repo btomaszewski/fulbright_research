@@ -157,24 +157,51 @@ def main(rawChatPath, procJsonPath):
             jsonData = json.load(f)
             messageData = jsonData.get("messages", [])
             
+            # Remove service messages first (as in your original code)
+            messageData = [msg for msg in messageData if msg.get("type") != "service"]
+            
             # Process messages in batches
             for i in range(0, len(messageData), BATCH_SIZE):
                 batch = messageData[i:i + BATCH_SIZE]
                 print(f"Processing batch {i//BATCH_SIZE + 1} of {(len(messageData) + BATCH_SIZE - 1)//BATCH_SIZE}")
                 
-                # Process the batch
-                processJson(batch, processedDirPath)
-                
-                # Update the original messageData with processed batch
-                messageData[i:i + BATCH_SIZE] = batch
-                
-                # Optionally save intermediate results
-                with open(resultJson, 'w', encoding='utf-8') as f:
-                    json.dump(jsonData, f, ensure_ascii=False, indent=4)
+                for individualMessage in batch:
+                    text = individualMessage.get("text")
+                    if text:
+                        processText(individualMessage, text)
                     
-        # Final save after all batches are processed
+                    video = individualMessage.get("file")
+                    if video and video != "(File exceeds maximum size. Change data exporting settings to download.)":
+                        video = (f"{processedDirPath}/{video}").replace("\\", "/")
+                        processVideo(individualMessage, video)
+
+                    photo = individualMessage.get("photo")
+                    if photo and photo != "(File exceeds maximum size. Change data exporting settings to download.)":
+                        photo = (f"{processedDirPath}/{photo}").replace("\\", "/")
+                        processImage(individualMessage, photo)
+
+                    fullText = ""
+                    if individualMessage.get("TRANSLATED_TEXT"):
+                        fullText += individualMessage["TRANSLATED_TEXT"]
+
+                    if individualMessage.get("TRANSCRIPTION_TRANSLATION"):
+                        fullText += individualMessage["TRANSCRIPTION_TRANSLATION"]
+
+                    if individualMessage.get("VIDEO_SUMMARY"):
+                        fullText += individualMessage["VIDEO_SUMMARY"]
+
+                    if individualMessage.get("PHOTO_ANALYSIS"):
+                        fullText += individualMessage["PHOTO_ANALYSIS"]
+
+                    if fullText:
+                        processCategories(individualMessage, fullText)
+            
+            # Update the messages in the original JSON
+            jsonData["messages"] = messageData
+                        
+        # Write final result to the destination file
         with open(resultJson, 'w', encoding='utf-8') as f:
             json.dump(jsonData, f, ensure_ascii=False, indent=4)
 
         print(f"Processing completed for {resultJson}")
-'''
+''' 
