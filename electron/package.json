@@ -37,11 +37,11 @@
   },
   "build": {
     "files": [
-      "assets/processJson.py"
+      "assets/python/processJson.py"
     ],
     "extraResources": [
       {
-        "from": "assets/processJson.py",
+        "from": "assets/python/processJson.py",
         "to": "processJson.py"
       }
     ]

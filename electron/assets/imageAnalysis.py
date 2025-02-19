@@ -1,5 +1,5 @@
 import base64
-from assets.aiLoader import loadAI
+from .aiLoader import loadAI
 
 client = loadAI()
 

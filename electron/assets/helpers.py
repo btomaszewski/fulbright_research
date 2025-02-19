@@ -1,7 +1,7 @@
 import json
 import os
 import ffmpeg
-from assets.aiLoader import loadAI
+from .aiLoader import loadAI
 
 client = loadAI()
 
