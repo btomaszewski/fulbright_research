@@ -135,6 +135,9 @@ if __name__ == "__main__":
 
 '''
 def main(rawChatPath, procJsonPath):
+    print("procesing complete")
+
+    '''
     # Configure batch size
     BATCH_SIZE = 50  # Adjust this number based on your needs
     
@@ -204,7 +207,7 @@ def main(rawChatPath, procJsonPath):
             json.dump(jsonData, f, ensure_ascii=False, indent=4)
     
         print(f"Processing completed for {resultJson}")
-
+'''
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

@@ -198,24 +198,24 @@ h2 {
 }
 
 .loaderB {
-  left: 15px;
-  bottom: 4.5px;
+  left: 13.5px; /* 15 * 1.25 */
+  bottom: 4.5px; /* 4.5 * 1.25 */
   position: absolute;
-  width: 9px;
-  height: 9px;
+  width: 11.25px; /* 9 * 1.25 */
+  height: 11.25px; /* 9 * 1.25 */
   border-radius: 50%;
   background-color: hsl(217, 33%, 17%);
   background-image: 
-    radial-gradient(circle 2px at 4.5px 4.5px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 4.5px 0px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 0px 4.5px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 9px 4.5px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 4.5px 9px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 7.5px 1.25px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 7.5px 1.25px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 7.5px 7.5px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 1.25px 7.5px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 1px at 1.25px 1.25px, #FFF 100%, transparent 0);
+    radial-gradient(circle 2.5px at 5.625px 5.625px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 5.625px 0px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 0px 5.625px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 11.25px 5.625px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 5.625px 11.25px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 9.375px 1.5625px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 9.375px 1.5625px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 9.375px 9.375px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 1.5625px 9.375px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 1.25px at 1.5625px 1.5625px, #FFF 100%, transparent 0);
   background-repeat: no-repeat;
   box-sizing: border-box;
   animation: rotationBack 3s linear infinite;
@@ -223,29 +223,30 @@ h2 {
 }
 
 .loaderA {
-  left: 23.5px;
-  bottom: 3.75px;
+  left: 25px; /* 23.5 * 1.25 */
+  bottom: 3.75px; /* 3.75 * 1.25 */
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 7.5px; /* 6 * 1.25 */
+  height: 7.5px; /* 6 * 1.25 */
   border-radius: 50%;
   background-color: hsl(217, 33%, 17%);
   background-image: 
-    radial-gradient(circle 1.25px at 3px 3px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 3px 0px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 0px 3px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 6px 3px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 3px 6px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 5px 0.75px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 5px 0.75px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 5px 5px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 0.75px 5px, #FFF 100%, transparent 0), 
-    radial-gradient(circle 0.625px at 0.75px 0.75px, #FFF 100%, transparent 0);
+    radial-gradient(circle 1.5625px at 3.75px 3.75px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 3.75px 0px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 0px 3.75px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 7.5px 3.75px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 3.75px 7.5px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 6.25px 0.9375px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 6.25px 0.9375px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 6.25px 6.25px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 0.9375px 6.25px, #FFF 100%, transparent 0), 
+    radial-gradient(circle 0.78125px at 0.9375px 0.9375px, #FFF 100%, transparent 0);
   background-repeat: no-repeat;
   box-sizing: border-box;
   animation: rotationBack 4s linear infinite reverse;
   animation-play-state: paused; /* Initially paused */
 }
+
 
 @keyframes rotationBack {
   0% {

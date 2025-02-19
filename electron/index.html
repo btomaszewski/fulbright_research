@@ -95,8 +95,12 @@
                 try {
                     const result = await ipcRenderer.invoke('process-json', dirPath);
                     status.innerText += "Processing completed: " + result;
+                    loaderB.style.animationPlayState = 'paused';
+                    loaderA.style.animationPlayState = 'paused';
                 } catch (error) {
-                    status.innerText += "Error: " + error;
+                    alert("Error: " + error);
+                    loaderB.style.animationPlayState = 'paused';
+                    loaderA.style.animationPlayState = 'paused';
                 }
                 
                 try {
@@ -141,7 +145,7 @@
                 const response = await ipcRenderer.invoke('upload-to-google-sheets', filePath);
                 status.innerHTML += response;
             } catch (error) {
-                status.innerHTML = `Error: ${error}`;
+                alert(`Error: ${error}`);
             }
         }
     </script> 
