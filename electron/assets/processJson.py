@@ -97,47 +97,8 @@ def processJson(messageData, processedDirPath):
         if fullText:
             processCategories(individualMessage, fullText)
 
-'''
-def main(rawChatPath, procJsonPath): # put all main() functionality in a while True: if we want it to automatically add new chatDirs to the set while processing
-    # Process files
-    chatDir = os.path.basename(rawChatPath)
-    chatDir = f"{chatDir}Processed"
-    processedDirPath = os.path.join(procJsonPath, chatDir)
-    shutil.copytree(rawChatPath, processedDirPath)
-    
-    resultJson = Path(processedDirPath) / "result.json"  # Construct the path
-    if resultJson.is_file():  # Check if result.json exists
-        try:
-            cleanJson(resultJson)
-            print(f"{resultJson} cleaned successfully")
-        except Exception as e:
-            print(f"Could not clean {resultJson}", e)
-
-        print(f"Processing file: {resultJson.name}")
-        with open(resultJson, 'r', encoding='utf-8') as f:
-            jsonData = json.load(f)
-            messageData = jsonData.get("messages", []) # Create array of message data
-
-            processJson(messageData, processedDirPath)
-                        
-        # Write messages to destination file
-        with open(resultJson, 'w', encoding='utf-8') as f:
-            json.dump(jsonData, f, ensure_ascii=False, indent=4)
-
-        print(f"Processing completed for {resultJson}")
-
-
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        main(sys.argv[1], sys.argv[2])
-    else:
-        print("Error: No directory path provided.") 
-
-'''
 def main(rawChatPath, procJsonPath):
-    print("procesing complete")
 
-    '''
     # Configure batch size
     BATCH_SIZE = 50  # Adjust this number based on your needs
     
@@ -207,7 +168,7 @@ def main(rawChatPath, procJsonPath):
             json.dump(jsonData, f, ensure_ascii=False, indent=4)
     
         print(f"Processing completed for {resultJson}")
-'''
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
