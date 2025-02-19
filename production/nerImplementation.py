@@ -11,24 +11,24 @@ from spacy.language import Language
 
 warnings.filterwarnings("ignore", message="torch.utils._pytree._register_pytree_node is deprecated")
 
+warnings.filterwarnings("ignore", message="torch.utils._pytree._register_pytree_node is deprecated")
+
 def clean_text(text):
     """Clean text using the same preprocessing steps as training data"""
     
     # Remove URLs
-    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    text = re.sub(r'https?:\/\/(?:www\.)?[^\s]+', '', text)
     
     # Remove email addresses
-    text = re.sub(r'\S+@\S+', '', text)
+    text = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '', text)
     
+    # Remove multiple periods and commas
+    text = re.sub(r'([.,])\1+', r'\1', text)
     
     # Remove extra whitespace
-    text = ' '.join(text.split())
+    text = re.sub(r'\s+', ' ', text).strip()
     
-    # Remove multiple periods/commas
-    text = re.sub(r'\.+', '.', text)
-    text = re.sub(r',+', ',', text)
-    
-    return text.strip()
+    return text 
 
 # Load custom model
 current_dir = Path.cwd()

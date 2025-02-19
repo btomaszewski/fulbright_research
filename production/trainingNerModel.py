@@ -3,28 +3,26 @@ from spacy.tokens import DocBin
 from spacy.training import Example
 import json
 import random
-import re
 from tqdm import tqdm
+import re
 
 def clean_text(text):
-    """
-    Clean text while preserving important location context
-    """
+    """Clean text using the same preprocessing steps as training data"""
+    
     # Remove URLs
-    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    text = re.sub(r'https?:\/\/(?:www\.)?[^\s]+', '', text)
     
     # Remove email addresses
-    text = re.sub(r'\S+@\S+', '', text)
-
+    text = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', '', text)
+    
+    # Remove multiple periods and commas
+    text = re.sub(r'([.,])\1+', r'\1', text)
     
     # Remove extra whitespace
-    text = ' '.join(text.split())
+    text = re.sub(r'\s+', ' ', text).strip()
     
-    # Remove multiple periods/commas
-    text = re.sub(r'\.+', '.', text)
-    text = re.sub(r',+', ',', text)
     
-    return text.strip()
+    return text 
 
 def validate_entity(nlp, text, entities):
     """
@@ -57,79 +55,33 @@ def validate_entity(nlp, text, entities):
 
     return aligned_entities
 
-def adjust_entity_spans(original_text, cleaned_text, entities):
-    """
-    Adjust entity spans to match cleaned text positions
-    """
-    char_mapping = {}
-    cleaned_pos = 0
-    
-    # Create mapping between original and cleaned text positions
-    for orig_pos, char in enumerate(original_text):
-        if cleaned_pos < len(cleaned_text) and char == cleaned_text[cleaned_pos]:
-            char_mapping[orig_pos] = cleaned_pos
-            cleaned_pos += 1
-    
-    # Adjust entity spans based on cleaning
-    adjusted_entities = []
-    for start, end, label in entities:
-        # Find nearest mapped positions
-        while start not in char_mapping and start > 0:
-            start -= 1
-        while (end-1) not in char_mapping and end > start:
-            end -= 1
-            
-        if start in char_mapping and (end-1) in char_mapping:
-            new_start = char_mapping[start]
-            new_end = char_mapping[end-1] + 1
-            adjusted_entities.append([new_start, new_end, label])
-    
-    return adjusted_entities
-
 def load_and_validate_jsonl_data(file_path, nlp):
     """
-    Loads JSONL data, cleans text, and validates entity alignments.
+    Loads JSONL data and validates entity alignments with improved error handling.
+    Processes the file in chunks to handle large datasets efficiently.
     """
     validated_data = []
     skipped = 0
     processed = 0
     
+    # Process the file in batches to handle large files
     with open(file_path, "r", encoding="utf-8") as f:
         line_number = 0
-        batch_size = 1000
+        batch_size = 100  # Process 1000 lines at a time
         batch = []
         
         for line in f:
             line_number += 1
-            if not line.strip():
+            if not line.strip():  # Skip empty lines
                 continue
                 
             try:
                 data = json.loads(line)
-                text = data.get("text", "")
-                label_data = data.get("label", [])
-                
-                if not text or not label_data:
-                    skipped += 1
-                    continue
-                
-                # Clean the text
-                cleaned_text = clean_text(text)
-                
-                # Adjust entity spans for cleaned text
-                adjusted_entities = adjust_entity_spans(text, cleaned_text, label_data)
-                
-                # Validate adjusted entity spans
-                valid_entities = validate_entity(nlp, cleaned_text, adjusted_entities)
-                
-                if valid_entities:
-                    batch.append([cleaned_text, {"entities": valid_entities}])
-                else:
-                    skipped += 1
+                batch.append(data)
                 
                 # Process in batches
                 if len(batch) >= batch_size:
-                    validated_data.extend(batch)
+                    process_batch(batch, validated_data, skipped, processed, nlp)
                     processed += len(batch)
                     batch = []
                     print(f"Processed {processed} examples...")
@@ -143,17 +95,38 @@ def load_and_validate_jsonl_data(file_path, nlp):
         
         # Process any remaining examples
         if batch:
-            validated_data.extend(batch)
+            process_batch(batch, validated_data, skipped, processed, nlp)
             processed += len(batch)
     
     print(f"Loaded {len(validated_data)} valid training examples")
-    print(f"Skipped {skipped} examples due to errors or invalid entities")
+    print(f"Skipped {skipped} examples due to missing or invalid entities")
     return validated_data
+
+def process_batch(batch, validated_data, skipped, processed, nlp):
+    """
+    Process a batch of examples, validating entities and adding to training data.
+    """
+    for data in batch:
+        text = data.get("text", "")
+        label_data = data.get("label", [])
+        
+        if not text or not label_data:
+            skipped += 1
+            continue
+        
+        # Validate entity spans
+        valid_entities = validate_entity(nlp, text, label_data)
+        
+        if valid_entities:
+            validated_data.append([text, {"entities": valid_entities}])
+        else:
+            skipped += 1
 
 def train_spacy(data, iterations, model_name=None):
     """
     Train the NER model with improved parameters and monitoring.
     """
+    # Load a base model if provided, otherwise use blank model
     if model_name:
         print(f"Loading base model: {model_name}")
         nlp = spacy.load(model_name)
@@ -161,25 +134,31 @@ def train_spacy(data, iterations, model_name=None):
         print("Initializing blank English model")
         nlp = spacy.blank("en")
     
+    # Add NER pipe if not present
     if "ner" not in nlp.pipe_names:
         ner = nlp.add_pipe("ner", last=True)
     else:
         ner = nlp.get_pipe("ner")
     
+    # Collect all unique labels
     labels = set()
     for text, annotations in data:
         for _, _, label in annotations.get("entities", []):
             labels.add(label)
     
+    # Add labels to the NER pipe
     for label in labels:
         ner.add_label(label)
     
     print(f"Training with labels: {', '.join(labels)}")
     
+    # Configure training
     other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "ner"]
-    batch_size = 16
+    batch_size = 16  # Optimal for most systems
     
+    # Training loop with progress bar
     with nlp.disable_pipes(*other_pipes):
+        # Initialize optimizer for blank model or resume training for pre-loaded model
         if model_name:
             optimizer = nlp.resume_training()
         else:
@@ -199,14 +178,16 @@ def train_spacy(data, iterations, model_name=None):
                         example = Example.from_dict(doc, annotations)
                         examples.append(example)
                     
+                    # Accumulate losses
                     nlp.update(
                         examples,
-                        drop=0.3,
+                        drop=0.3,  # Dropout for better generalization
                         losses=losses
                     )
                     pbar.update(1)
                     pbar.set_postfix(losses=losses)
             
+            # Print the losses for this iteration
             print(f"\nLosses at iteration {itn+1}: {losses}")
     
     return nlp
@@ -215,13 +196,9 @@ def test_model(nlp, text, verbose=True):
     """
     Test the model with detailed output.
     """
-    # Clean the test text the same way as training data
-    cleaned_text = clean_text(text)
-    doc = nlp(cleaned_text)
-    
+    doc = nlp(text)
     if verbose:
-        print("\nOriginal text:", text)
-        print("Cleaned text:", cleaned_text)
+        print("\nText:", text)
         print("\nEntities found:")
         if not doc.ents:
             print("No entities detected")
@@ -230,32 +207,38 @@ def test_model(nlp, text, verbose=True):
     return doc.ents
 
 if __name__ == "__main__":
-    use_pretrained = True
-    model_name = "en_core_web_sm" if use_pretrained else None
+    # Choose whether to use a pre-trained model for tokenization
+    use_pretrained = True  # Set to False for blank model
+    model_name = "en_core_web_sm" if use_pretrained else None  # Using smaller model for efficiency
     
+    # Initialize the tokenizer
     if use_pretrained:
         print(f"Loading base spaCy model for tokenization: {model_name}")
-        base_nlp = spacy.load(model_name, disable=["ner", "parser", "attribute_ruler"])
+        base_nlp = spacy.load(model_name, disable=["ner", "parser", "attribute_ruler"])  # Minimal loading
     else:
         print("Using blank model for tokenization")
         base_nlp = spacy.blank("en")
     
+    # Load and validate the training data
     print("Loading training data...")
-    jsonl_file_path = "nataliecrowell.jsonl"
+    jsonl_file_path = "nataliecrowell.jsonl"  # Replace with your JSONL file path
     validated_data = load_and_validate_jsonl_data(jsonl_file_path, base_nlp)
     
     if not validated_data:
         print("Error: No valid training data found!")
         exit(1)
     
+    # Train the model
     print("\nStarting training...")
-    iterations = 100
+    iterations = 100  # Adjust based on dataset size and available time
     nlp = train_spacy(validated_data, iterations, model_name if use_pretrained else None)
     
+    # Save the model
     print("\nSaving model...")
-    output_dir = "ner_model_optimized"
+    output_dir = "ner_model_optimized2"
     nlp.to_disk(output_dir)
     
+    # Test cases - using examples from your provided JSONL data
     test_cases = [
         "Who will be going to Warsaw tomorrow morning?",
         "Please tell me if carriers are traveling from Lviv to the Shehyni checkpoint today",
@@ -267,6 +250,7 @@ if __name__ == "__main__":
     for test_text in test_cases:
         test_model(nlp, test_text)
 
+    # Print training summary
     print("\nModel training completed!")
     print(f"Number of training examples: {len(validated_data)}")
     print(f"Model saved to: {output_dir}")
