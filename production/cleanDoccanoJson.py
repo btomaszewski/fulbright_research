@@ -1,77 +1,24 @@
 import json
 
-def clean_and_format_doccano_json(input_text):
-    """
-    Format and clean unformatted Doccano JSON export.
-    - Removes 'Comments' field
-    - Ensures labels are in list format
-    - Properly formats JSON with indentation
-    
-    Args:
-        input_text (str): The unformatted JSON string from Doccano
-        
-    Returns:
-        str: Properly formatted and cleaned JSON string
-    """
-    # Check if the input starts with '[' and ends with ']'
-    if not input_text.startswith('['):
-        input_text = '[' + input_text
-    if not input_text.endswith(']'):
-        # Remove trailing comma if it exists
-        input_text = input_text.rstrip(',') + ']'
-    
+def pretty_print_json(input_file, output_file):
+    """Reads a minified JSON file and outputs a properly formatted JSON file."""
     try:
-        # Parse the JSON string into a Python object
-        data = json.loads(input_text)
+        # Read raw JSON data
+        with open(input_file, "r", encoding="utf-8") as f:
+            data = json.load(f)  # Load JSON properly
         
-        # Clean each entry
-        cleaned_data = []
-        for entry in data:
-            cleaned_entry = {
-                'id': entry['id'],
-                'text': entry['text'],
-                'label': entry['label'] if isinstance(entry['label'], list) else [entry['label']]
-            }
-            cleaned_data.append(cleaned_entry)
+        # Write formatted JSON to a new file
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
         
-        # Format it with proper indentation
-        formatted_json = json.dumps(cleaned_data, indent=4)
-        return formatted_json
-    
+        print(f"Formatted JSON saved to {output_file}")
+
     except json.JSONDecodeError as e:
-        print(f"Error parsing JSON: {str(e)}")
-        return None
-
-def main():
-    # Input and output file names
-    input_file = "nataliecrowell.json"  # Change this to your input file name
-    output_file = "formatted_clean_export.json"
-    
-    try:
-        # Read the unformatted JSON file
-        with open(input_file, 'r', encoding='utf-8') as f:
-            unformatted_json = f.read()
-        
-        # Format and clean the JSON
-        formatted_json = clean_and_format_doccano_json(unformatted_json)
-        
-        if formatted_json:
-            # Write the formatted JSON to a new file
-            with open(output_file, 'w', encoding='utf-8') as f:
-                f.write(formatted_json)
-            print(f"Successfully formatted and cleaned JSON. Saved to {output_file}")
-            
-            # Print sample of the changes
-            cleaned_data = json.loads(formatted_json)
-            print("\nFirst entry in cleaned data:")
-            print(json.dumps(cleaned_data[0], indent=2))
-        else:
-            print("Failed to format JSON")
-            
+        print(f"JSON Decode Error: {e}")
     except FileNotFoundError:
-        print(f"Could not find input file: {input_file}")
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        print(f"Error: File {input_file} not found.")
 
-if __name__ == "__main__":
-    main()
+# Example usage
+input_file = "nataliecrowell.json"  # Your raw JSON file
+output_file = "formatted_nataliecrowell.json"  # Output file with proper indentation
+pretty_print_json(input_file, output_file)
