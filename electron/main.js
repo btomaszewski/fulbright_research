@@ -88,7 +88,7 @@ ipcMain.handle('select-directory', async () => {
     return null;
 });
 
-pythonScriptPath = 'assets/processJson.py'
+pythonScriptPath = 'assets/python/processJson.py'
 
 // Handle processing datasets with processJson.py
 ipcMain.handle('process-json', async (event, chatDir) => {
