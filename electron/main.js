@@ -69,6 +69,33 @@ ipcMain.on('show-context-menu', (event, datasetPath, datasetName) => {
     menu.popup({ window: mainWindow });
 });
 
+require("dotenv").config();  // Load .env file
+const { execFile } = require("child_process");
+const path = require("path");
+const os = require("os");
+
+const API_KEY = process.env.OPENAI_API_KEY;  // Load API key securely
+
+let scriptPath;
+if (os.platform() === "win32") {
+  scriptPath = path.join(__dirname, "python-scripts", "main-win.exe");
+} else if (os.platform() === "darwin") {
+  scriptPath = path.join(__dirname, "python-scripts", "main-mac");
+} else {
+  scriptPath = path.join(__dirname, "python-scripts", "main-linux");
+}
+
+// Run Python script and inject API key securely
+const processEnv = { API_KEY };
+
+const child = execFile(scriptPath, [], { env: processEnv }, (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error: ${error.message}`);
+    return;
+  }
+  console.log(`Python Output: ${stdout}`);
+});
+
 ipcMain.handle('select-directory', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
         properties: ['openDirectory']
