@@ -121,7 +121,6 @@
                                                 </div>`
                         loaderB.style.animationPlayState = 'paused';
                         loaderA.style.animationPlayState = 'paused';
-                        alert(`Upload successful ${filePath}`);
                     } catch (error) {
                         alert('Upload failed:', error);
                 }
@@ -163,7 +162,6 @@
         async function uploadFileToSheets(filePath) {
             try {
                 const response = await ipcRenderer.invoke('upload-to-google-sheets', filePath);
-                alert(response)
             } catch (error) {
                 alert(`Error: ${error}`);
             }
