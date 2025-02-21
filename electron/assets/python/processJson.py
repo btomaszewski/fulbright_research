@@ -135,8 +135,6 @@ def main(rawChatPath, procJsonPath): # put all main() functionality in a while T
         with open(resultJson, 'w', encoding='utf-8') as f:
             json.dump(jsonData, f, ensure_ascii=False, indent=4)
 
-        print(f"Processing completed for {resultJson}")
-
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
