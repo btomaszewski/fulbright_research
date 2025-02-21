@@ -209,6 +209,9 @@ h2 {
   position: relative;
   box-sizing: border-box;
   animation-play-state: paused; /* Initially paused */
+
+  justify-content: center;
+  align-content: center;
 }
 
 .loaderB {
@@ -272,5 +275,8 @@ h2 {
 }
 
 #check {
-  border: hotpink solid 5px;
+  /*border: hotpink solid 5px;*/
+  font-size: large;
+  margin-top: 3px;
+  color: green;
 }

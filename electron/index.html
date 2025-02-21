@@ -108,9 +108,9 @@
                 loaderA.style.animationPlayState = 'running';
                 
                 try {
-                    //const result = await ipcRenderer.invoke('process-json', dirPath);
+                    const result = await ipcRenderer.invoke('process-json', dirPath);
                     try {
-                        //uploadFileToSheets(filePath);
+                        uploadFileToSheets(filePath);
                         uploadBtn.disabled = true;
                         uploadBtn.innerHTML = `<span class="shadow"></span>
                                                 <span class="edge"></span>
@@ -121,6 +121,7 @@
                                                 </div>`
                         loaderB.style.animationPlayState = 'paused';
                         loaderA.style.animationPlayState = 'paused';
+                        alert(`Upload successful ${filePath}`);
                     } catch (error) {
                         alert('Upload failed:', error);
                 }
@@ -162,7 +163,7 @@
         async function uploadFileToSheets(filePath) {
             try {
                 const response = await ipcRenderer.invoke('upload-to-google-sheets', filePath);
-                status.innerHTML += response;
+                alert(response)
             } catch (error) {
                 alert(`Error: ${error}`);
             }
