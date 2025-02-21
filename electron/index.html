@@ -16,8 +16,12 @@
     <div class="container">
         <div class="datasets panel">
             <h2>Datasets</h2>
-            <button id="addNew">
-                <i class="fas fa-plus"></i> New dataset
+            <button id="addNew" class="button">
+                <span class="shadow"></span>
+                <span class="edge"></span>
+                <div class="front">
+                  <span><i class="fas fa-plus"></i> New dataset</span>
+                </div>
             </button>
             <div id="datasetList"></div>
             
@@ -25,8 +29,22 @@
 
         <div class="dashboard panel">
             <h2>Dashboard</h2>
-            <button id = "exportPDF">Export to PDF</button>
-            <button id = "exportImage">Export to Image</button>
+            <div i="exportBtns">
+                <button id = "exportPDF" class="button">
+                    <span class="shadow"></span>
+                    <span class="edge"></span>
+                    <div class="front">
+                      <span>Export to PDF</span>
+                    </div>
+                </button>
+                <button id = "exportImage" class="button">
+                    <span class="shadow"></span>
+                    <span class="edge"></span>
+                    <div class="front">
+                      <span>Export to Image</span>
+                    </div>
+                </button>
+            </div>
 
             <div id="vizContainer"></div>
         </div>
@@ -88,7 +106,6 @@
             uploadBtn.addEventListener("click", async() => {
                 status.innerText = "Processing...";
 
-                console.log(loaderB, loaderA)
                 loaderB.style.animationPlayState = 'running';
                 loaderA.style.animationPlayState = 'running';
                 

@@ -212,8 +212,6 @@ async function uploadToGoogleSheets(filePath) {
         // ✅ Upload data to the newly created sheet
         await newSheet.addRows(values);
 
-        return `✅ Data from ${filePath} exported to Google Sheets in a new sheet: "${sheetName}"!`;
-
     } catch (error) {
         return `Error exporting data to Google Sheets: ${error}`;
     }

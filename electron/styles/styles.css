@@ -12,7 +12,7 @@ body {
 }
 
 h2 {
-    margin: 1rem 0 0 1.25rem; /* Aligns title to the left with spacing */
+    margin: 1rem 0 0 5px; /* Aligns title to the left with spacing */
     text-align: left;
 }
 
@@ -50,6 +50,7 @@ h2 {
 .dashboard {
     flex: 0 0 70%;
     display: flex;
+    gap: 0.625rem;
     flex-direction: column;
     height: 100%; /* Make the panel fill the height of the container */
     align-self: flex-start;
@@ -66,12 +67,25 @@ h2 {
     cursor: pointer;
     font-size: smaller;
     margin: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 #sendFB {
     margin-right: 10px;
 }
 
+#exportBtns {
+  display: flex;
+  flex-direction: row;
+}
+
+#exportPDF, #exportImage {
+  max-width: 15%;
+}
+
+#addNew {
+  max-width: 40%;
+}
 
 /* From Uiverse.io by zymantas-katinas */ 
 .button {
