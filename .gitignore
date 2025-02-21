@@ -2,6 +2,8 @@
 gsCredentials.json
 electron/Lib
 
+.venv 
+
 # Logs
 logs
 *.log
