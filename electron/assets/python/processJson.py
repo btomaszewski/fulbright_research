@@ -112,17 +112,19 @@ def main(rawChatPath, procJsonPath): # put all main() functionality in a while T
     chatDir = os.path.basename(rawChatPath)
     chatDir = f"{chatDir}Processed"
     processedDirPath = os.path.join(procJsonPath, chatDir)
+
+    if os.path.exists(processedDirPath):
+        shutil.rmtree(processedDirPath)
+
     shutil.copytree(rawChatPath, processedDirPath)
     
     resultJson = Path(processedDirPath) / "result.json"  # Construct the path
     if resultJson.is_file():  # Check if result.json exists
         try:
             cleanJson(resultJson)
-            print(f"{resultJson} cleaned successfully")
         except Exception as e:
             print(f"Could not clean {resultJson}", e)
 
-        print(f"Processing file: {resultJson.name}")
         with open(resultJson, 'r', encoding='utf-8') as f:
             jsonData = json.load(f)
             messageData = jsonData.get("messages", []) # Create array of message data

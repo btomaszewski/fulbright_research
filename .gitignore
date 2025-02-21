@@ -1,5 +1,6 @@
 .env
 gsCredentials.json
+electron/Lib
 
 # Logs
 logs
