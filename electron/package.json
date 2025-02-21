@@ -18,19 +18,19 @@
   },
   "build": {
     "appId": "com.yourcompany.yourapp",
-    "productName": "YourApp",
+    "productName": "App",
     "directories": {
       "output": "dist"
     },
     "files": [
       "main.js",
       "frontend/**/*",
-      "python-scripts/**/*"
+      "assets/python-scripts/**/*"
     ],
     "extraResources": [
       {
-        "from": "python-scripts/",
-        "to": "python-scripts/",
+        "from": "assets/python-scripts/",
+        "to": "assets/python-scripts/",
         "filter": ["**/*"]
       }
     ],
@@ -49,8 +49,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "your-github-username",
-        "repo": "your-repo"
+        "owner": "nataliecrowell",
+        "repo": "FULLBRIGHT"
       }
     ]
   }

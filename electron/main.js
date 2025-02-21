@@ -23,7 +23,7 @@ app.whenReady().then(() => {
             contextIsolation: false,
         }
     });
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile('frontend/index.html');
     createAppDirectories();
 
     mainWindow.webContents.once('did-finish-load', () => {
@@ -78,12 +78,14 @@ const API_KEY = process.env.OPENAI_API_KEY;  // Load API key securely
 
 let scriptPath;
 if (os.platform() === "win32") {
-  scriptPath = path.join(__dirname, "python-scripts", "main-win.exe");
+  scriptPath = path.join(__dirname, "assets", "python-scripts", "main-win.exe");
 } else if (os.platform() === "darwin") {
-  scriptPath = path.join(__dirname, "python-scripts", "main-mac");
+  scriptPath = path.join(__dirname, "assets", "python-scripts", "main-mac");
 } else {
-  scriptPath = path.join(__dirname, "python-scripts", "main-linux");
+  scriptPath = path.join(__dirname, "assets", "python-scripts", "main-linux");
 }
+
+console.log(scriptPath);
 
 // Run Python script and inject API key securely
 const processEnv = { API_KEY };
@@ -116,6 +118,7 @@ ipcMain.handle('select-directory', async () => {
 });
 
 pythonScriptPath = 'assets/python/processJson.py'
+
 
 // Handle processing datasets with processJson.py
 ipcMain.handle('process-json', async (event, chatDir) => {
