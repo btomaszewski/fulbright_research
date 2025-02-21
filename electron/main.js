@@ -174,13 +174,12 @@ async function uploadToGoogleSheets(filePath) {
 
         // Collect all possible category fields dynamically
         messages.forEach(message => {
-            cats = message.CATEGORIES;
+            let cats = message.CATEGORIES.categories;
             cats.forEach(cat => {
                 if (!headers.has(cat)) {
                     headers.add(`CAT_${cat}`)
                 }
-            }
-            )
+            })
         });
 
         const headersArray = Array.from(headers);
@@ -193,7 +192,7 @@ async function uploadToGoogleSheets(filePath) {
                     const category = header.replace("CAT_", "");
                     
                     // Find the index of this category in the message's CATEGORIES array
-                    const index = message.CATEGORIES ? message.CATEGORIES.indexOf(category) : -1;
+                    const index = message.CATEGORIES ? message.CATEGORIES.categories.indexOf(category) : -1;
                     
                     // If category exists, get the corresponding confidence score
                     return index !== -1 && message.CONFIDENCE && message.CONFIDENCE[index] !== undefined

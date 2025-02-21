@@ -105,7 +105,6 @@
                 
                 try {
                     uploadFileToSheets(filePath);
-                    uploadBtn.querySelector('.front span').innerText = 'Uploaded'; 
                     uploadBtn.disabled = true;
                 } catch (error) {
                     alert('Upload failed:', error);

@@ -67,7 +67,6 @@ def processCategories(individualMessage, fullText):
 def processLocations(individualMessage, fullText):
     locations = getLocations(fullText)
     if locations:
-        print(locations)
         individualMessage['LOCATIONS'] = locations
 
 def processJson(messageData, processedDirPath):
