@@ -2,6 +2,9 @@ const { app, BrowserWindow, dialog, ipcMain, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { spawn } = require('child_process');
+require("dotenv").config();  // Load .env file
+const { execFile } = require("child_process");
+const os = require("os");
 
 
 const userDataPath = app.getPath('userData');
@@ -68,11 +71,6 @@ ipcMain.on('show-context-menu', (event, datasetPath, datasetName) => {
     const menu = Menu.buildFromTemplate(template);
     menu.popup({ window: mainWindow });
 });
-
-require("dotenv").config();  // Load .env file
-const { execFile } = require("child_process");
-const path = require("path");
-const os = require("os");
 
 const API_KEY = process.env.OPENAI_API_KEY;  // Load API key securely
 
