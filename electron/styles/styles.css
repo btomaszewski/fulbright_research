@@ -183,7 +183,7 @@ h2 {
 
 /* Grey out the button */
 .button:disabled .front {
-  background: #555;
+  background: green;
   color: #aaa;
 }
 
@@ -269,4 +269,8 @@ h2 {
   100% {
     transform: rotate(-360deg);
   }
+}
+
+#check {
+  border: hotpink solid 5px;
 }

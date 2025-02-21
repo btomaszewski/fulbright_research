@@ -104,27 +104,30 @@
             dirName += "Processed";
             const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
             uploadBtn.addEventListener("click", async() => {
-                status.innerText = "Processing...";
-
                 loaderB.style.animationPlayState = 'running';
                 loaderA.style.animationPlayState = 'running';
                 
                 try {
-                    const result = await ipcRenderer.invoke('process-json', dirPath);
-                    status.innerText += "Processing completed: " + result;
-                    loaderB.style.animationPlayState = 'paused';
-                    loaderA.style.animationPlayState = 'paused';
+                    //const result = await ipcRenderer.invoke('process-json', dirPath);
+                    try {
+                        //uploadFileToSheets(filePath);
+                        uploadBtn.disabled = true;
+                        uploadBtn.innerHTML = `<span class="shadow"></span>
+                                                <span class="edge"></span>
+                                                <div class="front">
+                                                    <div class="loader">
+                                                        <span id="check"><i class="fa-solid fa-check"></i></span>
+                                                    </div>
+                                                </div>`
+                        loaderB.style.animationPlayState = 'paused';
+                        loaderA.style.animationPlayState = 'paused';
+                    } catch (error) {
+                        alert('Upload failed:', error);
+                }
                 } catch (error) {
                     alert("Error: " + error);
                     loaderB.style.animationPlayState = 'paused';
                     loaderA.style.animationPlayState = 'paused';
-                }
-                
-                try {
-                    uploadFileToSheets(filePath);
-                    uploadBtn.disabled = true;
-                } catch (error) {
-                    alert('Upload failed:', error);
                 }
             });
 
