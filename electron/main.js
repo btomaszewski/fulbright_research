@@ -189,13 +189,9 @@ async function uploadToGoogleSheets(filePath) {
         const messages = jsonData.messages;
         if (messages.length === 0) return '❌ Error: "messages" array is empty.';
 
-        // ✅ Extract base sheet name from "name" key
-        if (!jsonData.name) return '❌ Error: JSON file lacks a "name" field.';
-        const baseSheetName = jsonData.name;
-
-        // ✅ Append current datetime (YYYY-MM-DD_HH-MM)
-        const timestamp = new Date().toISOString().replace(/[-T:.Z]/g, '_'); // Formats timestamp
-        let sheetName = `${baseSheetName}_${timestamp}`.substring(0, 100); // Limit to 100 chars
+        // ✅ Extract base sheet id from "id" key
+        if (!jsonData.id) return '❌ Error: JSON file lacks a "name" field.';
+        const sheetName = String(jsonData.id);
 
         // ✅ Extract headers dynamically
         const headers = new Set([
@@ -237,6 +233,10 @@ async function uploadToGoogleSheets(filePath) {
 
 
         // ✅ Create a new sheet before uploading data
+        const existingSheet = doc.sheetsByTitle[sheetName];
+        if (existingSheet) {
+            await existingSheet.delete(); // ✅ Delete existing sheet
+        }
         const newSheet = await doc.addSheet({ title: sheetName, headerValues: headersArray });
 
         // ✅ Upload data to the newly created sheet
