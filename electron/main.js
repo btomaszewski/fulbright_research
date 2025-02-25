@@ -1,7 +1,7 @@
 const { app, BrowserWindow, dialog, ipcMain, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { execFile, spawn } = require("child_process");
+const { spawn } = require("child_process");
 const os = require("os");
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
@@ -35,60 +35,15 @@ const userDataPath = app.getPath('userData');
 const rawJsonPath = path.join(userDataPath, 'processing', 'rawJson');
 const procJsonPath = path.join(userDataPath, 'processing', 'processedJson');
 
+// Path to Python script in assets/python directory
+const pythonScriptPath = path.join(app.getAppPath(), 'assets', 'python', 'processJson.py');
+
 // Helper function to show errors to users
 function showErrorToUser(title, message) {
     if (mainWindow && !mainWindow.isDestroyed()) {
         dialog.showErrorBox(title, message);
     }
     console.error(`${title}: ${message}`);
-}
-
-// Get platform-specific executable path
-function getPythonExecutablePath() {
-    const isPackaged = app.isPackaged;
-    let platformDir;
-    let executableName = 'processJson';
-    
-    if (process.platform === 'darwin') {
-        platformDir = 'dist-darwin';
-        // Keep as is for macOS
-    } else if (process.platform === 'win32') {
-        platformDir = 'dist-win32';
-        executableName = 'processJson.exe';
-    } else {
-        platformDir = 'dist-linux';
-    }
-    
-    let basePath;
-    if (isPackaged) {
-        // In packaged app, use resources path
-        basePath = path.join(process.resourcesPath, 'assets', platformDir);
-    } else {
-        // In development, use app directory
-        basePath = path.join(app.getAppPath(), 'assets', platformDir);
-    }
-    
-    const executablePath = path.join(basePath, executableName);
-    console.log(`Using Python executable path: ${executablePath}`);
-    
-    // Check if executable exists
-    if (!fs.existsSync(executablePath)) {
-        const errorMsg = `Python executable not found at: ${executablePath}`;
-        console.error(errorMsg);
-        throw new Error(errorMsg);
-    }
-    
-    // Set executable permissions on Unix-like systems
-    if (process.platform !== 'win32') {
-        try {
-            fs.chmodSync(executablePath, '755');
-            console.log(`Set executable permissions on ${executablePath}`);
-        } catch (err) {
-            console.error(`Error setting permissions: ${err.message}`);
-        }
-    }
-    
-    return executablePath;
 }
 
 let mainWindow;
@@ -138,10 +93,8 @@ function createMainWindow() {
             }
         });
         
-        // Enable developer tools in development mode
-        if (!app.isPackaged) {
-            mainWindow.webContents.openDevTools();
-        }
+        // Always open DevTools for local development
+        mainWindow.webContents.openDevTools();
 
         mainWindow.on('closed', () => {
             mainWindow = null;
@@ -151,33 +104,21 @@ function createMainWindow() {
     }
 }
 
-// Initialize Python process with environment variables
-function initializePythonProcess() {
-    try {
-        const executablePath = getPythonExecutablePath();
-        console.log(`Initializing Python process with executable: ${executablePath}`);
-
-        const child = execFile(executablePath, [], { 
-            env: {...process.env, ...envVars},
-            cwd: path.dirname(executablePath) // Set working directory to executable's directory
-        }, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Python process error: ${error.message}`);
-                return;
-            }
-            console.log(`Python Output: ${stdout}`);
-        });
-
-        pythonProcesses.push(child);
-
-        child.on('error', (error) => {
-            console.error(`Failed to start Python process: ${error.message}`);
-            showErrorToUser('Python Process Error', `Failed to start Python process: ${error.message}`);
-        });
-    } catch (error) {
-        console.error(`Error in initializePythonProcess: ${error.message}`);
-        showErrorToUser('Python Initialization Error', error.message);
+// Check if Python script exists
+function checkPythonScript() {
+    if (!fs.existsSync(pythonScriptPath)) {
+        const errorMsg = `Python script not found at: ${pythonScriptPath}`;
+        console.error(errorMsg);
+        
+        // For local development, it's helpful to show more information
+        console.log('Make sure to create an "assets/python" folder in your project root');
+        console.log('and place processJson.py inside it.');
+        
+        return false;
     }
+    
+    console.log(`Python script found at: ${pythonScriptPath}`);
+    return true;
 }
 
 // Google Sheets upload functionality
@@ -326,18 +267,28 @@ ipcMain.handle('select-directory', async () => {
     }
 });
 
-// IPC Handlers
+// Handler for processing JSON
 ipcMain.handle('process-json', async (event, chatDir) => {
     return new Promise((resolve, reject) => {
         try {
-            const executablePath = getPythonExecutablePath();
-            console.log(`Running Python process with executable: ${executablePath}`);
+            // Verify Python script exists
+            if (!fs.existsSync(pythonScriptPath)) {
+                reject(`Python script not found at: ${pythonScriptPath}`);
+                return;
+            }
+            
+            console.log(`Running Python script: ${pythonScriptPath}`);
             console.log(`Input directory: ${chatDir}`);
             console.log(`Output directory: ${procJsonPath}`);
             
-            const pythonProcess = spawn(executablePath, [chatDir, procJsonPath], {
-                env: {...process.env, ...envVars},
-                cwd: path.dirname(executablePath)
+            // Use 'python' for Windows, 'python3' for macOS/Linux
+            const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+            
+            const pythonProcess = spawn(pythonCommand, [pythonScriptPath, chatDir, procJsonPath], {
+                env: {
+                    ...process.env, 
+                    ...envVars
+                }
             });
 
             pythonProcesses.push(pythonProcess);
@@ -399,7 +350,7 @@ app.on('before-quit', () => {
 app.whenReady().then(() => {
     try {
         const envValid = validateEnvironmentVars();
-        if (!envValid && !app.isPackaged) {
+        if (!envValid) {
             dialog.showMessageBox({
                 type: 'warning',
                 title: 'Environment Variables Missing',
@@ -410,7 +361,16 @@ app.whenReady().then(() => {
         
         createAppDirectories();
         createMainWindow();
-        initializePythonProcess();
+        
+        // Check if Python script exists at startup
+        if (!checkPythonScript()) {
+            dialog.showMessageBox({
+                type: 'warning',
+                title: 'Python Script Missing',
+                message: `Python script not found at: ${pythonScriptPath}\n\nMake sure to create an "assets/python" folder in your project root and place processJson.py inside it.`,
+                buttons: ['OK']
+            });
+        }
     } catch (error) {
         console.error(`Error during app initialization: ${error.message}`);
         showErrorToUser('Initialization Error', `Failed to initialize app: ${error.message}`);
@@ -428,4 +388,3 @@ app.on('activate', () => {
         createMainWindow();
     }
 });
-
