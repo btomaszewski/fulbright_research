@@ -52,11 +52,15 @@ if %ERRORLEVEL% neq 0 (
 )
 
 REM Create temp directory for build
-mkdir temp_build\src
+mkdir temp_build\python
 
-REM Copy all Python scripts to temp_build/src
-copy "%SRC_DIR%\*.py" temp_build\src\
+REM Copy all Python scripts to the correct location
+echo Copying Python files from %SRC_DIR% to temp_build\python...
+copy "%SRC_DIR%\*.py" temp_build\python\
 copy copy_spacy_model.py temp_build\
+
+REM Create an __init__.py file in the python directory to make it a proper package
+echo. > temp_build\python\__init__.py
 
 REM Add dotenv file if it exists
 if exist ".env" (
@@ -86,10 +90,11 @@ echo logger.info(f"Starting application from {os.path.abspath(__file__)}") >> cr
 echo logger.info(f"Working directory: {os.getcwd()}") >> create_files.py
 echo logger.info(f"Arguments: {sys.argv}") >> create_files.py
 echo. >> create_files.py
-echo # Add src directory to path >> create_files.py
-echo src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src") >> create_files.py
-echo sys.path.insert(0, src_dir) >> create_files.py
-echo logger.info(f"Added to path: {src_dir}") >> create_files.py
+echo # Add python directory to path >> create_files.py
+echo python_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "python") >> create_files.py
+echo sys.path.insert(0, python_dir) >> create_files.py
+echo sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))) >> create_files.py
+echo logger.info(f"Added to path: {python_dir}") >> create_files.py
 echo. >> create_files.py
 echo # Try to load environment variables >> create_files.py
 echo try: >> create_files.py
@@ -105,8 +110,18 @@ echo     logger.warning("python-dotenv not available, skipping .env loading") >>
 echo. >> create_files.py
 echo # Import and run the main function >> create_files.py
 echo try: >> create_files.py
-echo     from src.processJson import main >> create_files.py
-echo     logger.info("Successfully imported processJson module") >> create_files.py
+echo     # First try direct import >> create_files.py
+echo     try: >> create_files.py
+echo         from processJson import main >> create_files.py
+echo         logger.info("Successfully imported processJson module directly") >> create_files.py
+echo     except ImportError: >> create_files.py
+echo         # Next try from python package >> create_files.py
+echo         try: >> create_files.py
+echo             from python.processJson import main >> create_files.py
+echo             logger.info("Successfully imported processJson module from python package") >> create_files.py
+echo         except ImportError as e: >> create_files.py
+echo             logger.error(f"Failed to import processJson: {e}") >> create_files.py
+echo             sys.exit(1) >> create_files.py
 echo     sys.exit(main()) >> create_files.py
 echo except Exception as e: >> create_files.py
 echo     logger.error(f"Error in main application: {e}", exc_info=True) >> create_files.py
@@ -132,13 +147,16 @@ echo. >> create_files.py
 echo # Add more specific hidden imports >> create_files.py
 echo hiddenimports.extend([ >> create_files.py
 echo     'en_core_web_sm', >> create_files.py
-echo     'src.frameExtraction', >> create_files.py
-echo     'src.videoAnalysis', >> create_files.py
-echo     'src.imageAnalysis', >> create_files.py
-echo     'src.aiLoader', >> create_files.py
-echo     'src.helpers', >> create_files.py
-echo     'src.cleanJson', >> create_files.py
-echo     'src.vectorImplementation', >> create_files.py
+echo     'processJson', >> create_files.py
+echo     'python', >> create_files.py
+echo     'python.processJson', >> create_files.py
+echo     'python.frameExtraction', >> create_files.py
+echo     'python.videoAnalysis', >> create_files.py
+echo     'python.imageAnalysis', >> create_files.py
+echo     'python.aiLoader', >> create_files.py
+echo     'python.helpers', >> create_files.py
+echo     'python.cleanJson', >> create_files.py
+echo     'python.vectorImplementation', >> create_files.py
 echo     'dotenv', >> create_files.py
 echo     'numpy', >> create_files.py
 echo     'pandas', >> create_files.py
@@ -171,14 +189,21 @@ if %ERRORLEVEL% neq 0 (
 
 cd temp_build
 
+REM Create hook-python.py file for Python directory imports
+echo from PyInstaller.utils.hooks import collect_submodules > hook-python.py
+echo hiddenimports = collect_submodules('python') >> hook-python.py
+
 REM Modify your PyInstaller command
 pyinstaller --onefile --clean ^
     --name "%OUTPUT_NAME%" ^
-    --paths=src ^
+    --paths=. ^
+    --paths=python ^
     --additional-hooks-dir=. ^
     --add-data "..\spacy_model\en_core_web_sm;en_core_web_sm" ^
     --add-data "..\vector_model_package;vector_model_package" ^
     --add-data ".env;.env" ^
+    --hidden-import=python ^
+    --hidden-import=python.processJson ^
     --collect-all openai ^
     --collect-all spacy ^
     --collect-all sentence_transformers ^
