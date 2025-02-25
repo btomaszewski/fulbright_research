@@ -64,7 +64,7 @@ if exist ".env" (
     copy .env temp_build\
 )
 
-REM Create a single entry-point script
+REM Create a single entry-point script - FIX: properly escape log format string
 echo Creating merged entry script...
 (
 echo #!/usr/bin/env python
@@ -73,43 +73,43 @@ echo import sys
 echo import logging
 echo.
 echo # Configure basic logging
-echo logging.basicConfig^(
-echo     level=logging.INFO^,
-echo     format='%%(asctime)s - %%^(name)s - %%^(levelname)s - %%^(message)s'^,
-echo     handlers=[logging.StreamHandler()]^
-echo ^)
-echo logger = logging.getLogger("main")^
+echo logging.basicConfig(
+echo     level=logging.INFO,
+echo     format='%%(asctime)s - %%(name)s - %%(levelname)s - %%(message)s',
+echo     handlers=[logging.StreamHandler()]
+echo )
+echo logger = logging.getLogger("main")
 echo.
 echo # Log startup info
-echo logger.info(f"Starting application from {os.path.abspath(__file__)}")^
-echo logger.info(f"Working directory: {os.getcwd()}")^
-echo logger.info(f"Arguments: {sys.argv}")^
+echo logger.info(f"Starting application from {os.path.abspath(__file__)}")
+echo logger.info(f"Working directory: {os.getcwd()}")
+echo logger.info(f"Arguments: {sys.argv}")
 echo.
 echo # Add src directory to path
-echo src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")^
-echo sys.path.insert(0, src_dir)^
-echo logger.info(f"Added to path: {src_dir}")^
+echo src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")
+echo sys.path.insert(0, src_dir)
+echo logger.info(f"Added to path: {src_dir}")
 echo.
 echo # Try to load environment variables
-echo try:^
-echo     from dotenv import load_dotenv^
-echo     env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")^
-echo     if os.path.exists(env_file):^
-echo         load_dotenv(env_file)^
-echo         logger.info(f"Loaded environment from {env_file}")^
-echo     else:^
-echo         logger.warning(".env file not found")^
-echo except ImportError:^
-echo     logger.warning("python-dotenv not available, skipping .env loading")^
+echo try:
+echo     from dotenv import load_dotenv
+echo     env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+echo     if os.path.exists(env_file):
+echo         load_dotenv(env_file)
+echo         logger.info(f"Loaded environment from {env_file}")
+echo     else:
+echo         logger.warning(".env file not found")
+echo except ImportError:
+echo     logger.warning("python-dotenv not available, skipping .env loading")
 echo.
 echo # Import and run the main function
-echo try:^
-echo     from src.processJson import main^
-echo     logger.info("Successfully imported processJson module")^
-echo     sys.exit(main())^
-echo except Exception as e:^
-echo     logger.error(f"Error in main application: {e}", exc_info=True)^
-echo     sys.exit(1)^
+echo try:
+echo     from src.processJson import main
+echo     logger.info("Successfully imported processJson module")
+echo     sys.exit(main())
+echo except Exception as e:
+echo     logger.error(f"Error in main application: {e}", exc_info=True)
+echo     sys.exit(1)
 ) > temp_build\main.py
 
 REM Run PyInstaller
@@ -123,39 +123,39 @@ REM Create a custom hook file for your module dependencies
 echo from PyInstaller.utils.hooks import collect_all, collect_submodules
 echo.
 echo # Collect all for important packages
-echo datas, binaries, hiddenimports = collect_all('spacy')^
-echo datas2, binaries2, hiddenimports2 = collect_all('openai')^
-echo datas3, binaries3, hiddenimports3 = collect_all('sentence_transformers')^
+echo datas, binaries, hiddenimports = collect_all('spacy')
+echo datas2, binaries2, hiddenimports2 = collect_all('openai')
+echo datas3, binaries3, hiddenimports3 = collect_all('sentence_transformers')
 echo.
 echo # Combine all collected items
-echo datas.extend(datas2)^
-echo datas.extend(datas3)^
-echo binaries.extend(binaries2)^
-echo binaries.extend(binaries3)^
-echo hiddenimports.extend(hiddenimports2)^
-echo hiddenimports.extend(hiddenimports3)^
+echo datas.extend(datas2)
+echo datas.extend(datas3)
+echo binaries.extend(binaries2)
+echo binaries.extend(binaries3)
+echo hiddenimports.extend(hiddenimports2)
+echo hiddenimports.extend(hiddenimports3)
 echo.
 echo # Add more specific hidden imports
-echo hiddenimports.extend([^
-echo     'en_core_web_sm',^
-echo     'src.frameExtraction',^
-echo     'src.videoAnalysis',^
-echo     'src.imageAnalysis',^
-echo     'src.aiLoader',^
-echo     'src.helpers',^
-echo     'src.cleanJson',^
-echo     'src.vectorImplementation',^
-echo     'dotenv',^
-echo     'numpy',^
-echo     'pandas',^
-echo     'json',^
-echo     'pathlib',^
-echo     'shutil',^
-echo     'torch',^
-echo     'transformers',^
-echo     'PIL',^
-echo     'cv2',^
-echo ])^
+echo hiddenimports.extend([
+echo     'en_core_web_sm',
+echo     'src.frameExtraction',
+echo     'src.videoAnalysis',
+echo     'src.imageAnalysis',
+echo     'src.aiLoader',
+echo     'src.helpers',
+echo     'src.cleanJson',
+echo     'src.vectorImplementation',
+echo     'dotenv',
+echo     'numpy',
+echo     'pandas',
+echo     'json',
+echo     'pathlib',
+echo     'shutil',
+echo     'torch',
+echo     'transformers',
+echo     'PIL',
+echo     'cv2',
+echo ])
 ) > hook-src.py
 
 REM Modify your PyInstaller command
