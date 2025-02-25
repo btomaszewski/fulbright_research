@@ -12,6 +12,11 @@ set VENV_DIR=.venv
 set PLATFORM_ID=windows
 set TARGET_DIR=dist-%PLATFORM_ID%
 
+REM Default arguments for the script
+set DEFAULT_PROC_JSON=processJson
+set DEFAULT_RAW_CHAT_PATH=input
+set DEFAULT_PROC_JSON_PATH=output
+
 echo Starting build process from %cd%
 
 REM Clean previous builds
@@ -70,6 +75,7 @@ if exist ".env" (
 
 REM Create a Python script that will create our required files
 echo import os > create_files.py
+echo import sys >> create_files.py
 echo. >> create_files.py
 echo # Main script content >> create_files.py
 echo main_content = """#!/usr/bin/env python >> create_files.py
@@ -88,13 +94,24 @@ echo. >> create_files.py
 echo # Log startup info >> create_files.py
 echo logger.info(f"Starting application from {os.path.abspath(__file__)}") >> create_files.py
 echo logger.info(f"Working directory: {os.getcwd()}") >> create_files.py
-echo logger.info(f"Arguments: {sys.argv}") >> create_files.py
 echo. >> create_files.py
 echo # Add python directory to path >> create_files.py
 echo python_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "python") >> create_files.py
 echo sys.path.insert(0, python_dir) >> create_files.py
 echo sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))) >> create_files.py
 echo logger.info(f"Added to path: {python_dir}") >> create_files.py
+echo. >> create_files.py
+echo # Hardcode arguments >> create_files.py
+echo PROC_JSON = "%DEFAULT_PROC_JSON%" >> create_files.py
+echo RAW_CHAT_PATH = "%DEFAULT_RAW_CHAT_PATH%" >> create_files.py
+echo PROC_JSON_PATH = "%DEFAULT_PROC_JSON_PATH%" >> create_files.py
+echo. >> create_files.py
+echo # Override sys.argv with the hardcoded paths >> create_files.py
+echo if len(sys.argv) <= 1: >> create_files.py
+echo     # No arguments provided, use defaults >> create_files.py
+echo     logger.info(f"Using default arguments: {PROC_JSON}, {RAW_CHAT_PATH}, {PROC_JSON_PATH}") >> create_files.py
+echo     sys.argv = [sys.argv[0], PROC_JSON, RAW_CHAT_PATH, PROC_JSON_PATH] >> create_files.py
+echo     logger.info(f"Updated arguments: {sys.argv}") >> create_files.py
 echo. >> create_files.py
 echo # Try to load environment variables >> create_files.py
 echo try: >> create_files.py
@@ -107,6 +124,10 @@ echo     else: >> create_files.py
 echo         logger.warning(".env file not found") >> create_files.py
 echo except ImportError: >> create_files.py
 echo     logger.warning("python-dotenv not available, skipping .env loading") >> create_files.py
+echo. >> create_files.py
+echo # Create directory for output if it doesn't exist >> create_files.py
+echo os.makedirs(PROC_JSON_PATH, exist_ok=True) >> create_files.py
+echo os.makedirs(RAW_CHAT_PATH, exist_ok=True) >> create_files.py
 echo. >> create_files.py
 echo # Import and run the main function >> create_files.py
 echo try: >> create_files.py
@@ -193,6 +214,29 @@ REM Create hook-python.py file for Python directory imports
 echo from PyInstaller.utils.hooks import collect_submodules > hook-python.py
 echo hiddenimports = collect_submodules('python') >> hook-python.py
 
+REM Create directories in the target folder
+mkdir ..\%TARGET_DIR%\input
+mkdir ..\%TARGET_DIR%\output
+
+REM Create a README file for the executable
+echo # %OUTPUT_NAME% Executable > ..\%TARGET_DIR%\README.txt
+echo. >> ..\%TARGET_DIR%\README.txt
+echo This executable is configured with the following default arguments: >> ..\%TARGET_DIR%\README.txt
+echo. >> ..\%TARGET_DIR%\README.txt
+echo - processJson: %DEFAULT_PROC_JSON% >> ..\%TARGET_DIR%\README.txt
+echo - rawchatpath: %DEFAULT_RAW_CHAT_PATH% >> ..\%TARGET_DIR%\README.txt
+echo - procJsonPath: %DEFAULT_PROC_JSON_PATH% >> ..\%TARGET_DIR%\README.txt
+echo. >> ..\%TARGET_DIR%\README.txt
+echo The program will automatically create the input and output directories if they don't exist. >> ..\%TARGET_DIR%\README.txt
+echo. >> ..\%TARGET_DIR%\README.txt
+echo ## Advanced Usage >> ..\%TARGET_DIR%\README.txt
+echo. >> ..\%TARGET_DIR%\README.txt
+echo You can also override these defaults by providing command-line arguments: >> ..\%TARGET_DIR%\README.txt
+echo. >> ..\%TARGET_DIR%\README.txt
+echo ```>> ..\%TARGET_DIR%\README.txt
+echo %OUTPUT_NAME%.exe [processJson] [rawchatpath] [procJsonPath] >> ..\%TARGET_DIR%\README.txt
+echo ``` >> ..\%TARGET_DIR%\README.txt
+
 REM Modify your PyInstaller command
 pyinstaller --onefile --clean ^
     --name "%OUTPUT_NAME%" ^
@@ -218,6 +262,7 @@ if exist "dist\%OUTPUT_NAME%.exe" (
     move "dist\%OUTPUT_NAME%.exe" "..\%TARGET_DIR%\" 
     
     echo Final executable: %TARGET_DIR%\%OUTPUT_NAME%.exe
+    echo Created README file with usage instructions: %TARGET_DIR%\README.txt
 ) else (
     echo Build failed! Check the logs above.
     exit /b 1
@@ -229,4 +274,11 @@ rmdir /s /q temp_build
 del create_files.py
 
 echo Build process completed.
+echo.
+echo NOTE: The executable is configured with the following default arguments:
+echo   - processJson: %DEFAULT_PROC_JSON%
+echo   - rawchatpath: %DEFAULT_RAW_CHAT_PATH%
+echo   - procJsonPath: %DEFAULT_PROC_JSON_PATH%
+echo.
+echo The program will automatically create the input and output directories.
 
