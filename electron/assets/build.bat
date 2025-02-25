@@ -1,284 +1,242 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Set working directory to script location
+REM Set working directory to where the script is located (assets folder)
 cd /d "%~dp0"
 
 REM Configuration
-set SRC_DIR=python
-set MAIN_SCRIPT=%SRC_DIR%\processJson.py
+set PYTHON_DIR=python
+set MAIN_SCRIPT=%PYTHON_DIR%\processJson.py
 set OUTPUT_NAME=processJson
 set VENV_DIR=.venv
-set PLATFORM_ID=windows
-set TARGET_DIR=dist-%PLATFORM_ID%
-
-REM Default arguments for the script
-set DEFAULT_PROC_JSON=processJson
-set DEFAULT_RAW_CHAT_PATH=input
-set DEFAULT_PROC_JSON_PATH=output
 
 echo Starting build process from %cd%
 
-REM Clean previous builds
+REM Clean up any previous builds
 echo Cleaning up previous builds...
 if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
-if exist temp_build rmdir /s /q temp_build
-if exist %TARGET_DIR% rmdir /s /q %TARGET_DIR%
-if exist spacy_model rmdir /s /q spacy_model
+if exist *.spec del /f /q *.spec
 
-REM Ensure the target directory exists
-mkdir %TARGET_DIR%
+REM Clean up any previous python-scripts output
+echo Cleaning up previous python-scripts output...
+if exist python-scripts rmdir /s /q python-scripts
 
-REM Activate virtual environment if available
-if exist "%VENV_DIR%\Scripts\activate.bat" (
-    echo Activating virtual environment...
-    call "%VENV_DIR%\Scripts\activate.bat"
-) else (
-    echo No virtual environment found. Using system Python.
+REM Verify directory structure
+if not exist "%PYTHON_DIR%" (
+    echo Error: Python directory not found at: %PYTHON_DIR%
+    exit /b 1
 )
 
-REM Verify Python and dependencies
-echo Python environment information:
-python --version
-pip list
+if not exist "%MAIN_SCRIPT%" (
+    echo Error: Main script not found at: %MAIN_SCRIPT%
+    exit /b 1
+)
 
-REM Verify spaCy and model are installed
-echo Verifying spaCy installation...
-python -c "import spacy; print(f'spaCy version: {spacy.__version__}')"
-python -c "import en_core_web_sm; print(f'Model path: {en_core_web_sm.__path__[0]}')"
+REM Activate virtual environment
+if not exist "%VENV_DIR%" (
+    echo Error: Virtual environment not found at: %VENV_DIR%
+    exit /b 1
+)
+call "%VENV_DIR%\Scripts\activate.bat"
 
-REM Prepare spaCy model files
-echo Preparing spaCy model files...
+REM Find all Python files in the python directory
+echo Scanning for Python modules in %PYTHON_DIR%...
+set MODULE_NAMES=
+for /r "%PYTHON_DIR%" %%F in (*.py) do (
+    set "filepath=%%F"
+    set "filename=%%~nxF"
+    if not "!filename!"=="processJson.py" (
+        REM Convert file path to module name
+        set "module=!filepath:%CD%\%PYTHON_DIR%\=!"
+        set "module=!module:.py=!"
+        set "module=!module:\=.!"
+        echo Found module: !module!
+        set "MODULE_NAMES=!MODULE_NAMES!        '!module!',!CR!"
+    )
+)
+
+REM Remove trailing comma
+set "MODULE_NAMES=!MODULE_NAMES:~0,-2!"
+
+REM Set platform-specific identifier
+set PLATFORM_NAME=processJson-win
+
+REM Get spaCy model path and ensure it's installed
+echo Checking spaCy model...
+python -c "import spacy; spacy.cli.download('en_core_web_sm') if not spacy.util.is_package('en_core_web_sm') else print('SpaCy model already installed')"
+for /f "delims=" %%i in ('python -c "import spacy; print(spacy.util.get_package_path('en_core_web_sm'))"') do set SPACY_MODEL_PATH=%%i
+echo Using spaCy model path: %SPACY_MODEL_PATH%
+
+REM Create spacy_model directory
+echo Creating spaCy model directory...
+if not exist "assets\spacy_model" mkdir "assets\spacy_model"
+
+REM Copy spaCy model using the Python script
+echo Copying spaCy model to project directory...
 python copy_spacy_model.py
 if %ERRORLEVEL% neq 0 (
-    echo Failed to prepare spaCy model files
+    echo Failed to copy spaCy model
     exit /b 1
 )
 
-REM Create temp directory for build
-mkdir temp_build\python
+REM Create spec file with discovered modules and include spaCy model
+echo Creating PyInstaller spec file...
+(
+echo # -*- mode: python ; coding: utf-8 -*-
+echo import os
+echo import sys
+echo from PyInstaller.utils.hooks import collect_data_files, collect_submodules
+echo.
+echo # Get all spaCy language modules
+echo spacy_imports = collect_submodules('spacy'^)
+echo spacy_data = collect_data_files('spacy'^)
+echo.
+echo # Add specific model
+echo model_name = 'en_core_web_sm'
+echo model_imports = []
+echo try:
+echo     # Try to collect model submodules
+echo     model_imports = collect_submodules(model_name^)
+echo except ImportError:
+echo     print(f"Warning: Could not collect submodules for {model_name}"^)
+echo.
+echo # Define main analysis
+echo a = Analysis(
+echo     ['%MAIN_SCRIPT:\=/%'],
+echo     pathex=['%PYTHON_DIR:\=/%'],
+echo     binaries=[],
+echo     datas=[
+echo         ('%PYTHON_DIR:\=/%/*', '.'^),
+echo         ('assets/spacy_model/en_core_web_sm', 'en_core_web_sm'^),
+echo         ('vector_model_package/sentence_transformer', 'vector_model_package/sentence_transformer'^),
+echo         ('vector_model_package/category_embeddings.json', 'vector_model_package/category_embeddings.json'^),
+echo     ] + spacy_data,
+echo     hiddenimports=[
+echo         'numpy',
+echo         'numpy.core.multiarray',
+echo         'numpy.core.numeric',
+echo         'numpy.core.umath',
+echo         'sklearn',
+echo         'pandas',
+echo         'spacy',
+echo         'spacy.language',
+echo         'spacy.lang.en',
+echo         'spacy.pipeline',
+echo         'spacy.tokens',
+echo         'spacy.tokens.underscore',
+echo         'spacy.lexeme',
+echo         'spacy.util',
+echo         'spacy.displacy',
+echo         'spacy.scorer',
+echo         'spacy.gold',
+echo         'spacy.kb',
+echo         'spacy.matcher',
+echo         'spacy.tokenizer',
+echo         'thinc',
+echo         'cymem',
+echo         'preshed',
+echo         'blis',
+echo         'murmurhash',
+echo         'wasabi',
+echo         'srsly',
+echo         'catalogue',
+echo         'thinc.layers',
+echo         'thinc.loss',
+echo         'thinc.optimizers',
+echo         'thinc.model',
+echo         'thinc.config',
+echo         'transformers',
+echo         'sentence_transformers',
+echo         'en_core_web_sm',
+echo         # Local module imports
+echo %MODULE_NAMES%
+echo     ] + spacy_imports + model_imports,
+echo     hookspath=[],
+echo     hooksconfig={},
+echo     runtime_hooks=[],
+echo     excludes=[],
+echo     noarchive=False,
+echo ^)
+echo.
+echo pyz = PYZ(a.pure^)
+echo.
+echo exe = EXE(
+echo     pyz,
+echo     a.scripts,
+echo     [],
+echo     exclude_binaries=True,
+echo     name='%OUTPUT_NAME%',
+echo     debug=False,
+echo     bootloader_ignore_signals=False,
+echo     strip=False,
+echo     upx=True,
+echo     console=True,
+echo     disable_windowed_traceback=False,
+echo     argv_emulation=False,
+echo     target_arch=None,
+echo     codesign_identity=None,
+echo     entitlements_file=None,
+echo ^)
+echo.
+echo coll = COLLECT(
+echo     exe,
+echo     a.binaries,
+echo     a.datas,
+echo     strip=False,
+echo     upx=True,
+echo     upx_exclude=[],
+echo     name='%OUTPUT_NAME%',
+echo ^)
+) > "%OUTPUT_NAME%.spec"
 
-REM Copy all Python scripts to the correct location
-echo Copying Python files from %SRC_DIR% to temp_build\python...
-copy "%SRC_DIR%\*.py" temp_build\python\
-copy copy_spacy_model.py temp_build\
+REM Run PyInstaller with the spec file
+echo Starting PyInstaller build...
+pyinstaller "%OUTPUT_NAME%.spec" --noconfirm
 
-REM Create an __init__.py file in the python directory to make it a proper package
-echo. > temp_build\python\__init__.py
-
-REM Add dotenv file if it exists
-if exist ".env" (
-    echo Copying .env file to build directory
-    copy .env temp_build\
-)
-
-REM Create a Python script that will create our required files
-echo import os > create_files.py
-echo import sys >> create_files.py
-echo. >> create_files.py
-echo # Main script content >> create_files.py
-echo main_content = """#!/usr/bin/env python >> create_files.py
-echo import os >> create_files.py
-echo import sys >> create_files.py
-echo import logging >> create_files.py
-echo. >> create_files.py
-echo # Configure basic logging >> create_files.py
-echo logging.basicConfig( >> create_files.py
-echo     level=logging.INFO, >> create_files.py
-echo     format='%%(asctime)s - %%(name)s - %%(levelname)s - %%(message)s', >> create_files.py
-echo     handlers=[logging.StreamHandler()] >> create_files.py
-echo ) >> create_files.py
-echo logger = logging.getLogger("main") >> create_files.py
-echo. >> create_files.py
-echo # Log startup info >> create_files.py
-echo logger.info(f"Starting application from {os.path.abspath(__file__)}") >> create_files.py
-echo logger.info(f"Working directory: {os.getcwd()}") >> create_files.py
-echo. >> create_files.py
-echo # Add python directory to path >> create_files.py
-echo python_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "python") >> create_files.py
-echo sys.path.insert(0, python_dir) >> create_files.py
-echo sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))) >> create_files.py
-echo logger.info(f"Added to path: {python_dir}") >> create_files.py
-echo. >> create_files.py
-echo # Hardcode arguments >> create_files.py
-echo PROC_JSON = "%DEFAULT_PROC_JSON%" >> create_files.py
-echo RAW_CHAT_PATH = "%DEFAULT_RAW_CHAT_PATH%" >> create_files.py
-echo PROC_JSON_PATH = "%DEFAULT_PROC_JSON_PATH%" >> create_files.py
-echo. >> create_files.py
-echo # Override sys.argv with the hardcoded paths >> create_files.py
-echo if len(sys.argv) <= 1: >> create_files.py
-echo     # No arguments provided, use defaults >> create_files.py
-echo     logger.info(f"Using default arguments: {PROC_JSON}, {RAW_CHAT_PATH}, {PROC_JSON_PATH}") >> create_files.py
-echo     sys.argv = [sys.argv[0], PROC_JSON, RAW_CHAT_PATH, PROC_JSON_PATH] >> create_files.py
-echo     logger.info(f"Updated arguments: {sys.argv}") >> create_files.py
-echo. >> create_files.py
-echo # Try to load environment variables >> create_files.py
-echo try: >> create_files.py
-echo     from dotenv import load_dotenv >> create_files.py
-echo     env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env") >> create_files.py
-echo     if os.path.exists(env_file): >> create_files.py
-echo         load_dotenv(env_file) >> create_files.py
-echo         logger.info(f"Loaded environment from {env_file}") >> create_files.py
-echo     else: >> create_files.py
-echo         logger.warning(".env file not found") >> create_files.py
-echo except ImportError: >> create_files.py
-echo     logger.warning("python-dotenv not available, skipping .env loading") >> create_files.py
-echo. >> create_files.py
-echo # Create directory for output if it doesn't exist >> create_files.py
-echo os.makedirs(PROC_JSON_PATH, exist_ok=True) >> create_files.py
-echo os.makedirs(RAW_CHAT_PATH, exist_ok=True) >> create_files.py
-echo. >> create_files.py
-echo # Import and run the main function >> create_files.py
-echo try: >> create_files.py
-echo     # First try direct import >> create_files.py
-echo     try: >> create_files.py
-echo         from processJson import main >> create_files.py
-echo         logger.info("Successfully imported processJson module directly") >> create_files.py
-echo     except ImportError: >> create_files.py
-echo         # Next try from python package >> create_files.py
-echo         try: >> create_files.py
-echo             from python.processJson import main >> create_files.py
-echo             logger.info("Successfully imported processJson module from python package") >> create_files.py
-echo         except ImportError as e: >> create_files.py
-echo             logger.error(f"Failed to import processJson: {e}") >> create_files.py
-echo             sys.exit(1) >> create_files.py
-echo     sys.exit(main()) >> create_files.py
-echo except Exception as e: >> create_files.py
-echo     logger.error(f"Error in main application: {e}", exc_info=True) >> create_files.py
-echo     sys.exit(1) >> create_files.py
-echo """ >> create_files.py
-echo. >> create_files.py
-echo # Hook script content >> create_files.py
-echo hook_content = """from PyInstaller.utils.hooks import collect_all, collect_submodules >> create_files.py
-echo. >> create_files.py
-echo # Collect all for important packages >> create_files.py
-echo datas, binaries, hiddenimports = collect_all('spacy') >> create_files.py
-echo datas2, binaries2, hiddenimports2 = collect_all('openai') >> create_files.py
-echo datas3, binaries3, hiddenimports3 = collect_all('sentence_transformers') >> create_files.py
-echo. >> create_files.py
-echo # Combine all collected items >> create_files.py
-echo datas.extend(datas2) >> create_files.py
-echo datas.extend(datas3) >> create_files.py
-echo binaries.extend(binaries2) >> create_files.py
-echo binaries.extend(binaries3) >> create_files.py
-echo hiddenimports.extend(hiddenimports2) >> create_files.py
-echo hiddenimports.extend(hiddenimports3) >> create_files.py
-echo. >> create_files.py
-echo # Add more specific hidden imports >> create_files.py
-echo hiddenimports.extend([ >> create_files.py
-echo     'en_core_web_sm', >> create_files.py
-echo     'processJson', >> create_files.py
-echo     'python', >> create_files.py
-echo     'python.processJson', >> create_files.py
-echo     'python.frameExtraction', >> create_files.py
-echo     'python.videoAnalysis', >> create_files.py
-echo     'python.imageAnalysis', >> create_files.py
-echo     'python.aiLoader', >> create_files.py
-echo     'python.helpers', >> create_files.py
-echo     'python.cleanJson', >> create_files.py
-echo     'python.vectorImplementation', >> create_files.py
-echo     'dotenv', >> create_files.py
-echo     'numpy', >> create_files.py
-echo     'pandas', >> create_files.py
-echo     'json', >> create_files.py
-echo     'pathlib', >> create_files.py
-echo     'shutil', >> create_files.py
-echo     'torch', >> create_files.py
-echo     'transformers', >> create_files.py
-echo     'PIL', >> create_files.py
-echo     'cv2', >> create_files.py
-echo ]) >> create_files.py
-echo """ >> create_files.py
-echo. >> create_files.py
-echo # Write files >> create_files.py
-echo with open('temp_build/main.py', 'w') as f: >> create_files.py
-echo     f.write(main_content) >> create_files.py
-echo. >> create_files.py
-echo with open('temp_build/hook-src.py', 'w') as f: >> create_files.py
-echo     f.write(hook_content) >> create_files.py
-echo. >> create_files.py
-echo print("Successfully created required files") >> create_files.py
-
-REM Run the Python script to create our files
-echo Creating required files...
-python create_files.py
-if %ERRORLEVEL% neq 0 (
-    echo Failed to create required files
-    exit /b 1
-)
-
-cd temp_build
-
-REM Create hook-python.py file for Python directory imports
-echo from PyInstaller.utils.hooks import collect_submodules > hook-python.py
-echo hiddenimports = collect_submodules('python') >> hook-python.py
-
-REM Create directories in the target folder
-mkdir ..\%TARGET_DIR%\input
-mkdir ..\%TARGET_DIR%\output
-
-REM Create a README file for the executable
-echo # %OUTPUT_NAME% Executable > ..\%TARGET_DIR%\README.txt
-echo. >> ..\%TARGET_DIR%\README.txt
-echo This executable is configured with the following default arguments: >> ..\%TARGET_DIR%\README.txt
-echo. >> ..\%TARGET_DIR%\README.txt
-echo - processJson: %DEFAULT_PROC_JSON% >> ..\%TARGET_DIR%\README.txt
-echo - rawchatpath: %DEFAULT_RAW_CHAT_PATH% >> ..\%TARGET_DIR%\README.txt
-echo - procJsonPath: %DEFAULT_PROC_JSON_PATH% >> ..\%TARGET_DIR%\README.txt
-echo. >> ..\%TARGET_DIR%\README.txt
-echo The program will automatically create the input and output directories if they don't exist. >> ..\%TARGET_DIR%\README.txt
-echo. >> ..\%TARGET_DIR%\README.txt
-echo ## Advanced Usage >> ..\%TARGET_DIR%\README.txt
-echo. >> ..\%TARGET_DIR%\README.txt
-echo You can also override these defaults by providing command-line arguments: >> ..\%TARGET_DIR%\README.txt
-echo. >> ..\%TARGET_DIR%\README.txt
-echo ```>> ..\%TARGET_DIR%\README.txt
-echo %OUTPUT_NAME%.exe [processJson] [rawchatpath] [procJsonPath] >> ..\%TARGET_DIR%\README.txt
-echo ``` >> ..\%TARGET_DIR%\README.txt
-
-REM Modify your PyInstaller command
-pyinstaller --onefile --clean ^
-    --name "%OUTPUT_NAME%" ^
-    --paths=. ^
-    --paths=python ^
-    --additional-hooks-dir=. ^
-    --add-data "..\spacy_model\en_core_web_sm;en_core_web_sm" ^
-    --add-data "..\vector_model_package;vector_model_package" ^
-    --add-data ".env;.env" ^
-    --hidden-import=python ^
-    --hidden-import=python.processJson ^
-    --collect-all openai ^
-    --collect-all spacy ^
-    --collect-all sentence_transformers ^
-    --log-level=DEBUG ^
-    main.py
-
-REM Verify build success
-if exist "dist\%OUTPUT_NAME%.exe" (
-    echo Build successful!
+REM Check if build was successful
+if exist "dist\%OUTPUT_NAME%" (
+    echo Build successful! Executable is in dist\%OUTPUT_NAME%\
     
-    REM Move executable to final location
-    move "dist\%OUTPUT_NAME%.exe" "..\%TARGET_DIR%\" 
+    REM Create output directory structure that matches the path in JavaScript
+    set TARGET_DIR=python-scripts\%PLATFORM_NAME%
+    echo Creating directory: %TARGET_DIR%
+    if not exist "%TARGET_DIR%" mkdir "%TARGET_DIR%"
     
-    echo Final executable: %TARGET_DIR%\%OUTPUT_NAME%.exe
-    echo Created README file with usage instructions: %TARGET_DIR%\README.txt
+    REM Copy build to final location
+    echo Copying executable to: %TARGET_DIR%
+    xcopy /s /e /i /y "dist\%OUTPUT_NAME%\*" "%TARGET_DIR%"
+    
+    REM Verify executable exists
+    if exist "%TARGET_DIR%\%OUTPUT_NAME%.exe" (
+        echo ✅ Executable confirmed at %TARGET_DIR%\%OUTPUT_NAME%.exe
+    ) else (
+        echo ❌ Warning: Executable not found at expected location!
+        echo Looking for executable in the target directory...
+        dir /s /b "%TARGET_DIR%\*.exe"
+    )
+    
+    REM Verify spaCy model was included in the build
+    echo Checking for spaCy model in the build...
+    if exist "%TARGET_DIR%\en_core_web_sm" (
+        echo ✅ spaCy model confirmed at %TARGET_DIR%\en_core_web_sm
+    ) else (
+        echo ❌ Warning: spaCy model not found in expected location!
+        echo Looking for spaCy model in the target directory...
+        dir /s /b /ad "%TARGET_DIR%\*en_core_web_sm*"
+    )
+    
+    echo Final executable location: %TARGET_DIR%\%OUTPUT_NAME%.exe
+    echo Contents of final directory:
+    dir "%TARGET_DIR%"
+    
+    REM Print the directory structure to help debug issues
+    echo Directory structure of final package:
+    dir /s /b "%TARGET_DIR%" | findstr /v "__pycache__" | sort
 ) else (
-    echo Build failed! Check the logs above.
+    echo Build failed!
     exit /b 1
 )
 
-REM Clean up
-cd ..
-rmdir /s /q temp_build
-del create_files.py
-
-echo Build process completed.
-echo.
-echo NOTE: The executable is configured with the following default arguments:
-echo   - processJson: %DEFAULT_PROC_JSON%
-echo   - rawchatpath: %DEFAULT_RAW_CHAT_PATH%
-echo   - procJsonPath: %DEFAULT_PROC_JSON_PATH%
-echo.
-echo The program will automatically create the input and output directories.
+endlocal
 
