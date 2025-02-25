@@ -1,0 +1,57 @@
+
+{
+  "name": "electron",
+  "version": "1.0.0",
+  "description": "analytics",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "build": "npm run dist"
+  },
+  "dependencies": {
+    "electron": "^30.0.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.6.0"
+  },
+  "build": {
+    "appId": "com.yourcompany.yourapp",
+    "productName": "YourApp",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "frontend/**/*",
+      "python-scripts/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "python-scripts/",
+        "to": "python-scripts/",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icons/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icons/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "icons/"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "your-github-username",
+        "repo": "your-repo"
+      }
+    ]
+  }
+}

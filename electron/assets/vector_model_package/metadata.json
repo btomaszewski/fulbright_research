@@ -1,0 +1,1 @@
+{"model_type": "sentence_transformer", "categories": ["Accommodation and Housing", "Accountability to Affected Populations", "Education", "Health and Mental Health", "Intentions and Mobility", "Protection", "Social Cohesion and Discrimination", "Socio-Economic Inclusion & Livelihoods"], "embedding_dimension": 768, "base_model_name": "sentence-transformers/all-mpnet-base-v2"}

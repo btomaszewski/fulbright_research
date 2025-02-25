@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "description": "analytics",
   "main": "main.js",
+  "author": "Natalie Crowell <nec9907@rit.edu>",
   "scripts": {
-    "dist": "electron-builder",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "DEBUG=electron-builder electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
     "build": "npm run dist"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
     "electron-squirrel-startup": "^1.0.1",
     "firebase-admin": "^13.1.0",
-    "fs": "^0.0.1-security",
     "google-auth-library": "^9.15.1",
     "google-spreadsheet": "^4.1.4"
   },
@@ -23,29 +28,79 @@
     "appId": "com.yourcompany.yourapp",
     "productName": "App",
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "build"
     },
     "files": [
-      "main.js",
-      "frontend/**/*",
-      "assets/python-scripts/**/*"
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,*.pyc,*.pyo,*.pyd,.Python,*.spec}",
+      "!**/{.env,.venv,env,venv,ENV,env.bak,venv.bak,*.venv}",
+      "!assets/{dist-darwin,dist-win32,dist-linux}/**/{build,__pycache__}"
     ],
     "extraResources": [
       {
-        "from": "assets/python-scripts/",
-        "to": "assets/python-scripts/",
-        "filter": [
-          "**/*"
-        ]
+        "from": "assets/dist-darwin",
+        "to": "assets/dist-darwin",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "assets/dist-win32",
+        "to": "assets/dist-win32",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "assets/dist-linux",
+        "to": "assets/dist-linux",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "assets/gsCredentials.json",
+        "to": "assets/gsCredentials.json"
       }
     ],
+    "asar": true,
+    "asarUnpack": [
+      "assets/dist-darwin/**/*",
+      "assets/dist-win32/**/*",
+      "assets/dist-linux/**/*"
+    ],
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] },
+        { "target": "zip", "arch": ["x64", "arm64"] }
+      ],
+      "icon": "icons/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "entitlements.plist",
+      "entitlementsInherit": "entitlements.plist"
+    },
+    "dmg": {
+      "format": "UDZO",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
     "win": {
       "target": "nsis",
       "icon": "icons/icon.ico"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "icons/icon.icns"
     },
     "linux": {
       "target": "AppImage",
