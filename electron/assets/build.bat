@@ -47,7 +47,7 @@ REM Prepare spaCy model files
 echo Preparing spaCy model files...
 python copy_spacy_model.py
 if %ERRORLEVEL% neq 0 (
-    echo ❌ Failed to prepare spaCy model files
+    echo Failed to prepare spaCy model files
     exit /b 1
 )
 
@@ -64,102 +64,110 @@ if exist ".env" (
     copy .env temp_build\
 )
 
-REM Create a single entry-point script
-echo Creating merged entry script...
+REM Create a Python script that will create our required files
+echo import os > create_files.py
+echo. >> create_files.py
+echo # Main script content >> create_files.py
+echo main_content = """#!/usr/bin/env python >> create_files.py
+echo import os >> create_files.py
+echo import sys >> create_files.py
+echo import logging >> create_files.py
+echo. >> create_files.py
+echo # Configure basic logging >> create_files.py
+echo logging.basicConfig( >> create_files.py
+echo     level=logging.INFO, >> create_files.py
+echo     format='%%(asctime)s - %%(name)s - %%(levelname)s - %%(message)s', >> create_files.py
+echo     handlers=[logging.StreamHandler()] >> create_files.py
+echo ) >> create_files.py
+echo logger = logging.getLogger("main") >> create_files.py
+echo. >> create_files.py
+echo # Log startup info >> create_files.py
+echo logger.info(f"Starting application from {os.path.abspath(__file__)}") >> create_files.py
+echo logger.info(f"Working directory: {os.getcwd()}") >> create_files.py
+echo logger.info(f"Arguments: {sys.argv}") >> create_files.py
+echo. >> create_files.py
+echo # Add src directory to path >> create_files.py
+echo src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src") >> create_files.py
+echo sys.path.insert(0, src_dir) >> create_files.py
+echo logger.info(f"Added to path: {src_dir}") >> create_files.py
+echo. >> create_files.py
+echo # Try to load environment variables >> create_files.py
+echo try: >> create_files.py
+echo     from dotenv import load_dotenv >> create_files.py
+echo     env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env") >> create_files.py
+echo     if os.path.exists(env_file): >> create_files.py
+echo         load_dotenv(env_file) >> create_files.py
+echo         logger.info(f"Loaded environment from {env_file}") >> create_files.py
+echo     else: >> create_files.py
+echo         logger.warning(".env file not found") >> create_files.py
+echo except ImportError: >> create_files.py
+echo     logger.warning("python-dotenv not available, skipping .env loading") >> create_files.py
+echo. >> create_files.py
+echo # Import and run the main function >> create_files.py
+echo try: >> create_files.py
+echo     from src.processJson import main >> create_files.py
+echo     logger.info("Successfully imported processJson module") >> create_files.py
+echo     sys.exit(main()) >> create_files.py
+echo except Exception as e: >> create_files.py
+echo     logger.error(f"Error in main application: {e}", exc_info=True) >> create_files.py
+echo     sys.exit(1) >> create_files.py
+echo """ >> create_files.py
+echo. >> create_files.py
+echo # Hook script content >> create_files.py
+echo hook_content = """from PyInstaller.utils.hooks import collect_all, collect_submodules >> create_files.py
+echo. >> create_files.py
+echo # Collect all for important packages >> create_files.py
+echo datas, binaries, hiddenimports = collect_all('spacy') >> create_files.py
+echo datas2, binaries2, hiddenimports2 = collect_all('openai') >> create_files.py
+echo datas3, binaries3, hiddenimports3 = collect_all('sentence_transformers') >> create_files.py
+echo. >> create_files.py
+echo # Combine all collected items >> create_files.py
+echo datas.extend(datas2) >> create_files.py
+echo datas.extend(datas3) >> create_files.py
+echo binaries.extend(binaries2) >> create_files.py
+echo binaries.extend(binaries3) >> create_files.py
+echo hiddenimports.extend(hiddenimports2) >> create_files.py
+echo hiddenimports.extend(hiddenimports3) >> create_files.py
+echo. >> create_files.py
+echo # Add more specific hidden imports >> create_files.py
+echo hiddenimports.extend([ >> create_files.py
+echo     'en_core_web_sm', >> create_files.py
+echo     'src.frameExtraction', >> create_files.py
+echo     'src.videoAnalysis', >> create_files.py
+echo     'src.imageAnalysis', >> create_files.py
+echo     'src.aiLoader', >> create_files.py
+echo     'src.helpers', >> create_files.py
+echo     'src.cleanJson', >> create_files.py
+echo     'src.vectorImplementation', >> create_files.py
+echo     'dotenv', >> create_files.py
+echo     'numpy', >> create_files.py
+echo     'pandas', >> create_files.py
+echo     'json', >> create_files.py
+echo     'pathlib', >> create_files.py
+echo     'shutil', >> create_files.py
+echo     'torch', >> create_files.py
+echo     'transformers', >> create_files.py
+echo     'PIL', >> create_files.py
+echo     'cv2', >> create_files.py
+echo ]) >> create_files.py
+echo """ >> create_files.py
+echo. >> create_files.py
+echo # Write files >> create_files.py
+echo with open('temp_build/main.py', 'w') as f: >> create_files.py
+echo     f.write(main_content) >> create_files.py
+echo. >> create_files.py
+echo with open('temp_build/hook-src.py', 'w') as f: >> create_files.py
+echo     f.write(hook_content) >> create_files.py
+echo. >> create_files.py
+echo print("Successfully created required files") >> create_files.py
 
-REM Windows doesn't have here documents like bash, so we'll use a Python script to create the file
-python -c "
-with open('temp_build/main.py', 'w') as f:
-    f.write('''#!/usr/bin/env python
-import os
-import sys
-import logging
-
-# Configure basic logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%%(asctime)s - %%(name)s - %%(levelname)s - %%(message)s',
-    handlers=[logging.StreamHandler()]
+REM Run the Python script to create our files
+echo Creating required files...
+python create_files.py
+if %ERRORLEVEL% neq 0 (
+    echo Failed to create required files
+    exit /b 1
 )
-logger = logging.getLogger(\"main\")
-
-# Log startup info
-logger.info(f\"Starting application from {os.path.abspath(__file__)}\")
-logger.info(f\"Working directory: {os.getcwd()}\")
-logger.info(f\"Arguments: {sys.argv}\")
-
-# Add src directory to path
-src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), \"src\")
-sys.path.insert(0, src_dir)
-logger.info(f\"Added to path: {src_dir}\")
-
-# Try to load environment variables
-try:
-    from dotenv import load_dotenv
-    env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), \".env\")
-    if os.path.exists(env_file):
-        load_dotenv(env_file)
-        logger.info(f\"Loaded environment from {env_file}\")
-    else:
-        logger.warning(\".env file not found\")
-except ImportError:
-    logger.warning(\"python-dotenv not available, skipping .env loading\")
-
-# Import and run the main function
-try:
-    from src.processJson import main
-    logger.info(\"Successfully imported processJson module\")
-    sys.exit(main())
-except Exception as e:
-    logger.error(f\"Error in main application: {e}\", exc_info=True)
-    sys.exit(1)
-''')
-"
-
-REM Run PyInstaller
-echo Running PyInstaller...
-
-REM Create hook file in a similar way to the main script
-python -c "
-with open('temp_build/hook-src.py', 'w') as f:
-    f.write('''from PyInstaller.utils.hooks import collect_all, collect_submodules
-
-# Collect all for important packages
-datas, binaries, hiddenimports = collect_all('spacy')
-datas2, binaries2, hiddenimports2 = collect_all('openai')
-datas3, binaries3, hiddenimports3 = collect_all('sentence_transformers')
-
-# Combine all collected items
-datas.extend(datas2)
-datas.extend(datas3)
-binaries.extend(binaries2)
-binaries.extend(binaries3)
-hiddenimports.extend(hiddenimports2)
-hiddenimports.extend(hiddenimports3)
-
-# Add more specific hidden imports
-hiddenimports.extend([
-    'en_core_web_sm',
-    'src.frameExtraction',
-    'src.videoAnalysis',
-    'src.imageAnalysis',
-    'src.aiLoader',
-    'src.helpers',
-    'src.cleanJson',
-    'src.vectorImplementation',
-    'dotenv',
-    'numpy',
-    'pandas',
-    'json',
-    'pathlib',
-    'shutil',
-    'torch',
-    'transformers',
-    'PIL',
-    'cv2',
-])
-''')
-"
 
 cd temp_build
 
@@ -179,20 +187,21 @@ pyinstaller --onefile --clean ^
 
 REM Verify build success
 if exist "dist\%OUTPUT_NAME%.exe" (
-    echo ✅ Build successful!
+    echo Build successful!
     
     REM Move executable to final location
     move "dist\%OUTPUT_NAME%.exe" "..\%TARGET_DIR%\" 
     
     echo Final executable: %TARGET_DIR%\%OUTPUT_NAME%.exe
 ) else (
-    echo ❌ Build failed! Check the logs above.
+    echo Build failed! Check the logs above.
     exit /b 1
 )
 
 REM Clean up
 cd ..
 rmdir /s /q temp_build
+del create_files.py
 
 echo Build process completed.
 
