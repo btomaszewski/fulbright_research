@@ -11,8 +11,7 @@
     <script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
 </head>
 <body>
-    <h2>AEGIS ANALYTICS</h2>
-    <p id="status"></p>
+    <h1>AEGIS ANALYTICS</h1>
     <div class="container">
         <div class="datasets panel">
             <h2>Datasets</h2>
@@ -57,8 +56,6 @@
         const { GoogleSpreadsheet } = require('google-spreadsheet');
         const { JWT } = require('google-auth-library');
         require('dotenv').config();
-
-        const status = document.getElementById('status');
     
         document.getElementById('addNew').addEventListener('click', async () => {
             const dirPath = await ipcRenderer.invoke('select-directory');
@@ -108,7 +105,7 @@
                 loaderA.style.animationPlayState = 'running';
                 
                 try {
-                    const result = await ipcRenderer.invoke('process-json', dirPath);
+                    //const result = await ipcRenderer.invoke('process-json', dirPath);
                     try {
                         uploadFileToSheets(filePath);
                         uploadBtn.disabled = true;

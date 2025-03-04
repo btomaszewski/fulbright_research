@@ -3,11 +3,11 @@ const exportPDF = document.getElementById("exportPDF");
 const exportImage = document.getElementById("exportImage");
 let viz;
 
-const url = "https://public.tableau.com/shared/3CF6NNNYR?:display_count=n&:origin=viz_share_link";
+const url = "https://public.tableau.com/views/AegisAnalytics/Dashboard1?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link";
 const options = {
     hideTabs: true,
     height: 800,
-    width: 1000,
+    width: 800,
     device: "desktop",
     onFirstInteractive: function() {
         console.log("dashboard is ready");
