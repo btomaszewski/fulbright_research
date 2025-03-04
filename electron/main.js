@@ -7,7 +7,7 @@ const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
 require("dotenv").config();
 
-// Track spawned processes for cleanup
+// Track spawned processes for cleanup 
 let pythonProcesses = [];
 
 // Load environment variables
@@ -166,13 +166,14 @@ async function uploadToGoogleSheets(filePath) {
             throw new Error('"messages" array is empty');
         }
 
-        const sheetName = String(jsonData.id);
+        const sheetName = "allMessages";
 
+        
         // Extract headers
-        const headers = new Set([
+        /*const headers = new Set([
             "id", "date", "from", "text", "reply_id", "LANGUAGE", "TRANSLATED_TEXT"
-        ]);
-
+        ]);*/
+        /*
         // Collect category fields
         messages.forEach(message => {
             if (message.CATEGORIES && Array.isArray(message.CATEGORIES.categories)) {
@@ -180,10 +181,10 @@ async function uploadToGoogleSheets(filePath) {
                     headers.add(`CAT_${cat}`);
                 });
             }
-        });
+        });*/
 
-        const headersArray = Array.from(headers);
-
+        /*const headersArray = Array.from(headers);*/
+        /*
         // Convert messages to rows
         const values = messages.map(message => {
             return headersArray.map(header => {
@@ -197,17 +198,57 @@ async function uploadToGoogleSheets(filePath) {
                 }
                 return message[header] || "";
             });
-        });
+        });*/
 
         // Manage sheet
-        const existingSheet = doc.sheetsByTitle[sheetName];
-        if (existingSheet) {
-            await existingSheet.delete();
+        let sheet = doc.sheetsByTitle[sheetName];
+        if (!sheet) {
+            sheet = await doc.addSheet({
+                title: sheetName,
+                headerValues: [
+                    "id", "date", "from", "text", "reply_id", "LANGUAGE", 
+                    "TRANSLATED_TEXT", "locations_names", "locations_coordinates"
+                ]
+            });
         }
-        const newSheet = await doc.addSheet({ title: sheetName, headerValues: headersArray });
-        await newSheet.addRows(values);
-
+        
+        await sheet.loadCells("A:A");
+        const existingIds = new Set();
+        for (let row = 0; row < sheet.rowCount; row++) {
+            const cell = sheet.getCell(row, 0);
+            if (cell.value) {
+                existingIds.add(String(cell.value));
+            }
+        }
+        
+        const newRows = messages.filter(msg => !existingIds.has(String(msg.id)))
+                                .map(msg => {
+                                    const locations = (msg.LOCATIONS || []).filter(loc => loc.coordinates);
+                                    const locationNames = locations.map(loc => loc.name).join(", ");
+                                    const locationCoords = locations
+                                        .map(loc => `(${loc.coordinates.latitude}, ${loc.coordinates.longitude})`)
+                                        .join("; ");
+                                    
+                                    return {
+                                        id: msg.id || "",
+                                        date: msg.date || "",
+                                        from: msg.from || "",
+                                        text: msg.text || "",
+                                        reply_id: msg.reply_id || "",
+                                        LANGUAGE: msg.LANGUAGE || "",
+                                        TRANSLATED_TEXT: msg.TRANSLATED_TEXT || "",
+                                        locations_names: locationNames || "",
+                                        locations_coordinates: locationCoords || ""
+                                    };
+                                });
+        
+        if (newRows.length > 0) {
+            await sheet.addRows(newRows);
+        }
+        
         return 'Upload successful';
+        
+
     } catch (error) {
         console.error('Upload error:', error);
         throw new Error(`Failed to upload to Google Sheets: ${error.message}, ${filePath}`);
