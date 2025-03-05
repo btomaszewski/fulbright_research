@@ -1,6 +1,8 @@
 .env
 gsCredentials.json
 electron/Lib
+ner_model_optimized2
+vector_model_package
 
 .venv 
 
