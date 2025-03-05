@@ -13,17 +13,15 @@ from cleanText import clean_text
 
 # Define category hierarchy
 CATEGORY_HIERARCHY = {
-    "Health": ["Health problems and needs", "Access to Healthcare", "Mental Health Support", "Persons with disabilities"],
+    "Intentions and Mobility": ["Border Crossings"],
+    "Accountability to Affected Populations": ["Information Needs", "Aid Received", "Feedback and Reporting"],
+    "Health and Mental Health": ["Access to Health Care", "Mental Health Support", "Physical Health Support", "Persons with disabilities"],
     "Education": ["School Enrollment", "Remote Learning", "Barriers to Education"],
-    "Housing": ["Living Arrangements", "Pressure to leave Accommodation"],
-    "Employment": ["Labour exploitation"],
-    "Safety": ["Safety and Security", "Gender-Based Violence", "Detention"],
-    "Language": ["Polish Language Proficiency"],
-    "Community": ["Negative Attitudes from Host Communities", "Perceived Reasons for Hostility", "Social Media Hostility"],
-    "Support": ["Aid Received", "Information Needs", "Feedback and Reporting"],
-    "Mobility": ["Future Intentions", "Visits to Ukraine", "Challenges Returning to Poland"],
-    "Livelihood": ["Livelihood and Coping Strategies"]
-    # Add other parent categories and their children as needed
+    "Accommodation and Housing": ["Living Arrangements and conditions", "Pressure to leave accommodation"],
+    "Socio-Economic Inclusion & Livelihoods": ["Employment", "Polish Language Proficiency", "Livelihood and Coping Strategies", "Community Support" ],
+    "Protection": ["Legal Status and Documentation", "Safety and Security", "Insurance", "Family Support"],
+    "Social Cohesion and Discrimination": [],
+    "Null": []
 }
 
 # Create a lookup dictionary for child->parent relationships

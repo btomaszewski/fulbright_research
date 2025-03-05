@@ -19,3 +19,4 @@ ffmpeg-python>=0.2.0
 contractions>=0.1.73
 auto-labeling-pipeline>=0.1.23
 python-dotenv>=1.0.1 
+accelerate>=0.26.0
