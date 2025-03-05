@@ -3,6 +3,8 @@ gsCredentials.json
 electron/Lib
 ner_model_optimized2
 vector_model_package
+spacy_model
+dist-darwin
 
 .venv 
 
