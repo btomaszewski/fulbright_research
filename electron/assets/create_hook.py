@@ -37,6 +37,7 @@ hiddenimports.extend([
     'transformers',
     'PIL',
     'cv2',
+    'contractions',
 ])
 '''
 

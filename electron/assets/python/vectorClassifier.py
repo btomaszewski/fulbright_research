@@ -4,6 +4,9 @@ from sentence_transformers import SentenceTransformer
 import re
 import os
 import sys
+import tarfile
+import tempfile
+import shutil
 from typing import List, Dict, Tuple
 import logging
 
@@ -23,14 +26,14 @@ class VectorClassifier:
         model_path: str, 
         category_embeddings_path: str, 
         metadata_path: str = None,
-        threshold: float = 0.6,  # Lower default threshold for multi-label
-        multi_label: bool = True  # Default to multi-label mode
+        threshold: float = 0.6,
+        multi_label: bool = True
     ):
         """
         Initialize classifier with model and category embeddings.
         
         Args:
-            model_path: Path to the trained model
+            model_path: Path to the trained model or compressed model archive
             category_embeddings_path: Path to saved category embeddings
             metadata_path: Path to model metadata
             threshold: Minimum similarity score to assign a category
@@ -39,11 +42,47 @@ class VectorClassifier:
         # Handle PyInstaller frozen environment for model paths
         if getattr(sys, 'frozen', False):
             base_dir = os.path.dirname(sys.executable)
-            model_path = os.path.join(base_dir, model_path)
-            category_embeddings_path = os.path.join(base_dir, category_embeddings_path)
+            model_path = self.resolve_path(model_path)
+            category_embeddings_path = self.resolve_path(category_embeddings_path)
             if metadata_path:
-                metadata_path = os.path.join(base_dir, metadata_path)
+                metadata_path = self.resolve_path(metadata_path)
             
+        # Check if model is compressed
+        self.temp_dir = None
+        if model_path.endswith('.tar.gz') or model_path.endswith('.tgz'):
+            logger.info(f"Decompressing model from: {model_path}")
+            # Create temp directory for the decompressed model
+            self.temp_dir = tempfile.mkdtemp(prefix="vector_model_")
+            
+            try:
+                # Decompress the model
+                with tarfile.open(model_path, "r:gz") as tar:
+                    tar.extractall(path=self.temp_dir)
+                
+                # Find the model directory in the decompressed files
+                # Typically it's the sentence_transformer directory
+                model_dirs = [d for d in os.listdir(self.temp_dir) 
+                             if os.path.isdir(os.path.join(self.temp_dir, d))]
+                
+                if 'sentence_transformer' in model_dirs:
+                    # Direct match
+                    model_path = os.path.join(self.temp_dir, 'sentence_transformer')
+                elif model_dirs:
+                    # Take the first directory
+                    model_path = os.path.join(self.temp_dir, model_dirs[0])
+                else:
+                    # Use the temp dir itself
+                    model_path = self.temp_dir
+                    
+                logger.info(f"Decompressed model to: {model_path}")
+            except Exception as e:
+                logger.error(f"Error decompressing model: {str(e)}")
+                # Clean up the temp directory if decompression fails
+                if self.temp_dir and os.path.exists(self.temp_dir):
+                    shutil.rmtree(self.temp_dir)
+                    self.temp_dir = None
+                raise
+        
         logger.info(f"Loading SentenceTransformer model from: {model_path}")
         self.model = SentenceTransformer(model_path)
         self.threshold = threshold
@@ -97,6 +136,62 @@ class VectorClassifier:
             logger.error(f"Category embeddings file not found at {category_embeddings_path}")
             logger.error(f"Files in directory: {os.listdir(os.path.dirname(category_embeddings_path))}")
             raise
+    
+    def __del__(self):
+        """Clean up temporary files when the classifier is destroyed."""
+        if self.temp_dir and os.path.exists(self.temp_dir):
+            try:
+                shutil.rmtree(self.temp_dir)
+                logger.info(f"Cleaned up temporary directory: {self.temp_dir}")
+            except Exception as e:
+                logger.error(f"Error cleaning up temporary directory: {str(e)}")
+    
+    @staticmethod
+    def resolve_path(path):
+        """
+        Resolve a path to an absolute path, checking various locations.
+        
+        Args:
+            path: Path to resolve
+            
+        Returns:
+            Absolute path that exists if possible
+        """
+        # Convert to absolute path if needed
+        if not os.path.isabs(path):
+            # First check relative to current directory
+            if os.path.exists(path):
+                return os.path.abspath(path)
+            
+            # Then check relative to script directory
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            script_relative_path = os.path.join(script_dir, path)
+            if os.path.exists(script_relative_path):
+                return script_relative_path
+                
+            # When packaged with PyInstaller, check relative to executable
+            if getattr(sys, 'frozen', False):
+                exe_dir = os.path.dirname(sys.executable)
+                exe_relative_path = os.path.join(exe_dir, path)
+                if os.path.exists(exe_relative_path):
+                    return exe_relative_path
+                
+                # Also check in the _MEIPASS directory (PyInstaller's temp directory)
+                if hasattr(sys, '_MEIPASS'):
+                    meipass_relative_path = os.path.join(sys._MEIPASS, path)
+                    if os.path.exists(meipass_relative_path):
+                        return meipass_relative_path
+                    
+                    # Also try removing the first directory component
+                    if '/' in path or '\\' in path:
+                        parts = re.split(r'[/\\]', path, 1)
+                        if len(parts) > 1:
+                            simpler_path = parts[1]
+                            meipass_simpler_path = os.path.join(sys._MEIPASS, simpler_path)
+                            if os.path.exists(meipass_simpler_path):
+                                return meipass_simpler_path
+                
+        return path  # Return original path if nothing else works
     
     def predict_categories(self, text: str, original_text: str) -> Dict:
         """

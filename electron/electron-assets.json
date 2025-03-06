@@ -1,0 +1,6 @@
+{
+  "pyInstaller": {
+    "executablePath": "dist-darwin/processJson",
+    "platform": "darwin"
+  }
+}

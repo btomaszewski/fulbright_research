@@ -1,4 +1,6 @@
 import os
+import sys
+import certifi
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -6,6 +8,13 @@ from dotenv import load_dotenv
 def loadAI():
     # Explicitly load environment variables
     load_dotenv()
+    
+    # Set up SSL certificates for PyInstaller bundle
+    if hasattr(sys, '_MEIPASS'):
+        cert_path = certifi.where()
+        os.environ['SSL_CERT_FILE'] = cert_path
+        os.environ['REQUESTS_CA_BUNDLE'] = cert_path
+        print(f"Using SSL certificates from: {cert_path}")
     
     # First try to get API key from environment
     api_key = os.getenv("OPENAI_API_KEY")
@@ -15,4 +24,4 @@ def loadAI():
         raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
         
     client = OpenAI(api_key=api_key)
-    return client 
+    return client

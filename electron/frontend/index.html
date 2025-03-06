@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +7,8 @@
     <title>Aegis Analytics</title>
     <link rel="stylesheet" href="styles/styles.css">
     <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.0/firebase-storage.js";></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.0/firebase-storage.js"></script>
     <script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
 </head>
 <body>
@@ -28,15 +29,15 @@
 
         <div class="dashboard panel">
             <h2>Dashboard</h2>
-            <div i="exportBtns">
-                <button id = "exportPDF" class="button">
+            <div id="exportBtns">
+                <button id="exportPDF" class="button">
                     <span class="shadow"></span>
                     <span class="edge"></span>
                     <div class="front">
                       <span>Export to PDF</span>
                     </div>
                 </button>
-                <button id = "exportImage" class="button">
+                <button id="exportImage" class="button">
                     <span class="shadow"></span>
                     <span class="edge"></span>
                     <div class="front">
@@ -44,7 +45,8 @@
                     </div>
                 </button>
             </div>
-
+            
+            <div id="statusMessages" class="status-container"></div>
             <div id="vizContainer"></div>
         </div>
     </div>
@@ -57,96 +59,158 @@
         const { JWT } = require('google-auth-library');
         require('dotenv').config();
     
+        // Status message display functions
+        function showStatus(message, type = 'info') {
+            const statusContainer = document.getElementById('statusMessages');
+            const statusElement = document.createElement('div');
+            statusElement.className = `status-message ${type}`;
+            statusElement.textContent = message;
+            
+            statusContainer.appendChild(statusElement);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                statusElement.classList.add('fade-out');
+                setTimeout(() => statusElement.remove(), 500);
+            }, 5000);
+        }
+        
         document.getElementById('addNew').addEventListener('click', async () => {
-            const dirPath = await ipcRenderer.invoke('select-directory');
-            if (dirPath) {
-                addDatasetToList(dirPath);
+            try {
+                const dirPath = await ipcRenderer.invoke('select-directory');
+                if (dirPath) {
+                    addDatasetToList(dirPath);
+                    showStatus(`Added dataset: ${path.basename(dirPath)}`, 'success');
+                }
+            } catch (error) {
+                console.error('Error adding new dataset:', error);
+                showStatus(`Error adding dataset: ${error.message}`, 'error');
             }
         });
 
         function addDatasetToList(dirPath) {
-            let dirName = path.basename(dirPath);
+            const baseDirName = path.basename(dirPath);
+            const processedDirName = baseDirName + "Processed";
+            
             const ul = document.getElementById('datasetList');
             const li = document.createElement('li');
 
+            // Create the process & upload button
             const uploadBtn = document.createElement('button');
-            uploadBtn.setAttribute('id', "uploadBtn");
+            uploadBtn.setAttribute('id', `uploadBtn-${baseDirName}`);
             uploadBtn.setAttribute('class', "button");
+            uploadBtn.dataset.processing = "false";
 
-            uploadBtn.innerHTML = `<span class="shadow"></span>`;
+            uploadBtn.innerHTML = `
+                <span class="shadow"></span>
+                <span class="edge"></span>
+                <div class="front">
+                    <span><i class="fas fa-cogs"></i> Process & Upload</span>
+                </div>
+            `;
 
-            const edge = document.createElement('span');
-            edge.setAttribute('class', 'edge');
-            uploadBtn.appendChild(edge);
-
-            const front = document.createElement('div');
-            front.setAttribute('class', 'front');
-            uploadBtn.appendChild(front);
-
-            const loader = document.createElement('div');
-            loader.setAttribute('class', 'loader'); 
-            front.appendChild(loader);
-
-            const loaderB = document.createElement('div');
-            loaderB.setAttribute('class', 'loaderB'); 
-            loader.appendChild(loaderB);
-            const loaderA = document.createElement('div');
-            loaderA.setAttribute('class', 'loaderA'); 
-            loader.appendChild(loaderA);           
-            
-
-            let normalizedPath = path.normalize(dirPath);
-            const parentDir = path.dirname(normalizedPath);
-            const grandparentDir = path.dirname(parentDir);
-            dirName += "Processed";
-            const filePath = path.join(grandparentDir, "processedJson", dirName, "result.json");
+            // Handle button click for processing and uploading
             uploadBtn.addEventListener("click", async() => {
-                loaderB.style.animationPlayState = 'running';
-                loaderA.style.animationPlayState = 'running';
+                // Prevent double-clicks
+                if (uploadBtn.dataset.processing === "true") {
+                    return;
+                }
+                
+                // Update button to show processing state
+                uploadBtn.dataset.processing = "true";
+                uploadBtn.querySelector('.front').innerHTML = `
+                    <div class="loader">
+                        <div class="loaderB" style="animation-play-state: running;"></div>
+                        <div class="loaderA" style="animation-play-state: running;"></div>
+                    </div>
+                `;
                 
                 try {
-                    //const result = await ipcRenderer.invoke('process-json', dirPath);
-                    try {
-                        uploadFileToSheets(filePath);
-                        uploadBtn.disabled = true;
-                        uploadBtn.innerHTML = `<span class="shadow"></span>
-                                                <span class="edge"></span>
-                                                <div class="front">
-                                                    <div class="loader">
-                                                        <span id="check"><i class="fa-solid fa-check"></i></span>
-                                                    </div>
-                                                </div>`
-                        loaderB.style.animationPlayState = 'paused';
-                        loaderA.style.animationPlayState = 'paused';
-                    } catch (error) {
-                        alert('Upload failed:', error);
-                }
+                    showStatus(`Processing dataset: ${baseDirName}...`, 'info');
+                    
+                    // Use the combined process-and-upload handler
+                    const result = await ipcRenderer.invoke('process-and-upload', dirPath);
+                    
+                    // Update button to show success
+                    uploadBtn.querySelector('.front').innerHTML = `
+                        <div class="loader">
+                            <span id="check"><i class="fa-solid fa-check"></i></span>
+                        </div>
+                    `;
+                    
+                    showStatus(`Successfully processed and uploaded ${baseDirName}`, 'success');
+                    
+                    // Disable the button to prevent re-uploading
+                    uploadBtn.disabled = true;
                 } catch (error) {
-                    alert("Error: " + error);
-                    loaderB.style.animationPlayState = 'paused';
-                    loaderA.style.animationPlayState = 'paused';
+                    console.error('Process and upload error:', error);
+                    
+                    // Reset button
+                    uploadBtn.dataset.processing = "false";
+                    uploadBtn.querySelector('.front').innerHTML = `
+                        <span><i class="fas fa-exclamation-triangle"></i> Retry</span>
+                    `;
+                    
+                    showStatus(`Error: ${error.message}`, 'error');
+                    
+                    // Check if the result file exists
+                    try {
+                        const fileStatus = await ipcRenderer.invoke('check-result-file', baseDirName);
+                        if (fileStatus.exists) {
+                            showStatus(`File exists at ${fileStatus.path}, but upload failed.`, 'warning');
+                        } else {
+                            showStatus(`Processing failed. Output file wasn't created.`, 'error');
+                            if (fileStatus.dirExists) {
+                                showStatus(`Directory exists at ${fileStatus.dirPath}, but no result file.`, 'warning');
+                            } else {
+                                showStatus(`Directory not created at ${fileStatus.dirPath}`, 'error');
+                            }
+                        }
+                    } catch (checkError) {
+                        console.error('Error checking file:', checkError);
+                    }
                 }
             });
 
             li.appendChild(uploadBtn);
     
-            li.appendChild(document.createTextNode(dirName));
+            // Add dataset name
+            const datasetName = document.createElement('span');
+            datasetName.textContent = baseDirName;
+            datasetName.className = 'dataset-name';
+            li.appendChild(datasetName);
+            
             li.dataset.path = dirPath;
+            li.dataset.name = baseDirName;
             li.setAttribute('class', 'dataset-item');
 
             // Right-click context menu
             li.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
-                ipcRenderer.send('show-context-menu', dirPath, dirName);
+                ipcRenderer.send('show-context-menu', dirPath, baseDirName);
             });
 
             ul.appendChild(li);
         }
 
+        // Listen for Python process output
+        ipcRenderer.on('python-output', (event, message) => {
+            console.log('Python output:', message);
+            showStatus(`Python: ${message}`, 'info');
+        });
+
+        // Listen for Python process errors
+        ipcRenderer.on('python-error', (event, message) => {
+            console.error('Python error:', message);
+            showStatus(`Python error: ${message}`, 'error');
+        });
+
+        // Initial loading of datasets
         ipcRenderer.on('load-datasets', (event, datasets) => {
             datasets.forEach(addDatasetToList);
         });
 
+        // Handle dataset deletion
         ipcRenderer.on('delete-dataset', (event, deletedPath) => {
             const items = document.querySelectorAll('#datasetList li');
             items.forEach((li) => {
@@ -154,16 +218,23 @@
                     li.remove();
                 }
             });
+            
+            showStatus(`Dataset deleted: ${path.basename(deletedPath)}`, 'warning');
         });
 
-        async function uploadFileToSheets(filePath) {
-            try {
-                const response = await ipcRenderer.invoke('upload-to-google-sheets', filePath);
-            } catch (error) {
-                alert(`Error: ${error}`);
-            }
-        }
+        // Fix i="exportBtns" typo - set event listeners for export buttons
+        document.getElementById('exportPDF')?.addEventListener('click', () => {
+            // Add PDF export functionality when implemented
+            showStatus('PDF export not yet implemented', 'warning');
+        });
+        
+        document.getElementById('exportImage')?.addEventListener('click', () => {
+            // Add image export functionality when implemented
+            showStatus('Image export not yet implemented', 'warning');
+        });
     </script> 
     <script src="./tableau.js"></script>   
 </body>
 </html>
+
+//
