@@ -289,118 +289,6 @@ function checkPythonExecutable() {
     }
 }
 
-// Google Sheets upload functionality
-async function uploadToGoogleSheets(filePath) {
-    try {
-        // Validate filePath is a string
-        if (typeof filePath !== 'string') {
-            throw new Error(`Invalid filePath: expected string but got ${typeof filePath}`);
-        }
-        
-        // Check if file exists
-        if (!fs.existsSync(filePath)) {
-            throw new Error(`File does not exist at path: ${filePath}`);
-        }
-
-        console.log(`Uploading file from: ${filePath}`);
-
-        // Check if we have Google credentials
-        if (!userCredentials.GOOGLE_CREDENTIALS_JSON && !userCredentials.GOOGLE_CREDENTIALS_PATH) {
-            throw new Error(`Google credentials not available. Please provide them in the credentials form.`);
-        }
-
-        let creds;
-        
-        // Get credentials either from JSON content or from file
-        if (userCredentials.GOOGLE_CREDENTIALS_JSON) {
-            creds = userCredentials.GOOGLE_CREDENTIALS_JSON;
-        } else if (fs.existsSync(userCredentials.GOOGLE_CREDENTIALS_PATH)) {
-            creds = JSON.parse(fs.readFileSync(userCredentials.GOOGLE_CREDENTIALS_PATH, 'utf-8'));
-        } else {
-            throw new Error(`Google credentials file not found at: ${userCredentials.GOOGLE_CREDENTIALS_PATH}`);
-        }
-        
-        const serviceAccount = new JWT({
-            email: creds.client_email,
-            key: creds.private_key,
-            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-        });
-
-        const doc = new GoogleSpreadsheet(userCredentials.GOOGLE_SHEET_ID, serviceAccount);
-        await doc.loadInfo();
-
-        const fileData = fs.readFileSync(filePath, 'utf-8');
-        if (!fileData) {
-            throw new Error('File is empty');
-        }
-
-        const jsonData = JSON.parse(fileData);
-        if (!jsonData.messages || !Array.isArray(jsonData.messages)) {
-            throw new Error('"messages" key is missing or not an array');
-        }
-
-        const messages = jsonData.messages;
-        if (messages.length === 0) {
-            throw new Error('"messages" array is empty');
-        }
-
-        const sheetName = "allMessages";
-        
-        // Manage sheet
-        let sheet = doc.sheetsByTitle[sheetName];
-        if (!sheet) {
-            sheet = await doc.addSheet({
-                title: sheetName,
-                headerValues: [
-                    "id", "date", "from", "text", "reply_id", "LANGUAGE", 
-                    "TRANSLATED_TEXT", "locations_names", "locations_coordinates"
-                ]
-            });
-        }
-        
-        await sheet.loadCells("A:A");
-        const existingIds = new Set();
-        for (let row = 0; row < sheet.rowCount; row++) {
-            const cell = sheet.getCell(row, 0);
-            if (cell.value) {
-                existingIds.add(String(cell.value));
-            }
-        }
-        
-        const newRows = messages.filter(msg => !existingIds.has(String(msg.id)))
-                                .map(msg => {
-                                    const locations = (msg.LOCATIONS || []).filter(loc => loc.coordinates);
-                                    const locationNames = locations.map(loc => loc.name).join(", ");
-                                    const locationCoords = locations
-                                        .map(loc => `(${loc.coordinates.latitude}, ${loc.coordinates.longitude})`)
-                                        .join("; ");
-                                    
-                                    return {
-                                        id: msg.id || "",
-                                        date: msg.date || "",
-                                        from: msg.from || "",
-                                        text: msg.text || "",
-                                        reply_id: msg.reply_id || "",
-                                        LANGUAGE: msg.LANGUAGE || "",
-                                        TRANSLATED_TEXT: msg.TRANSLATED_TEXT || "",
-                                        locations_names: locationNames || "",
-                                        locations_coordinates: locationCoords || ""
-                                    };
-                                });
-        
-        if (newRows.length > 0) {
-            await sheet.addRows(newRows);
-            console.log(`Added ${newRows.length} new rows to Google Sheet`);
-        } else {
-            console.log('No new rows to add to Google Sheet');
-        }
-        
-        return 'Upload successful';
-    } catch (error) {
-        console.error('Upload error:', error);
-        throw new Error(`Failed to upload to Google Sheets: ${error.message}, ${filePath}`);
-    }
-}
 
 // IPC Handlers
 ipcMain.on('show-context-menu', (event, datasetPath, datasetName) => {
@@ -589,22 +477,100 @@ ipcMain.handle('process-json', async (event, chatDir) => {
     });
 });
 
-ipcMain.handle('upload-to-google-sheets', async (event, filePath) => {
+// Handle credential submission
+ipcMain.on('submit-credentials', (event, credentials) => {
     try {
-        console.log(`Upload request received for file: ${filePath}`);
+        console.log('Processing submitted credentials');
         
-        // Verify file exists before attempting upload
-        if (!fs.existsSync(filePath)) {
-            console.error(`File does not exist: ${filePath}`);
-            throw new Error(`File does not exist at path: ${filePath}`);
+        // Validate required fields
+        if (!credentials.openaiApiKey || credentials.openaiApiKey.trim() === '') {
+            event.sender.send('credentials-error', 'OpenAI API Key is required');
+            return;
         }
         
-        return await uploadToGoogleSheets(filePath);
+        if (!credentials.googleSheetId || credentials.googleSheetId.trim() === '') {
+            event.sender.send('credentials-error', 'Google Sheet ID is required');
+            return;
+        }
+        
+        // Read the Google credentials JSON file
+        let googleCredsContent = null;
+        if (credentials.googleCredentialsPath) {
+            try {
+                if (!fs.existsSync(credentials.googleCredentialsPath)) {
+                    event.sender.send('credentials-error', `Google credentials file not found: ${credentials.googleCredentialsPath}`);
+                    return;
+                }
+                
+                const fileContent = fs.readFileSync(credentials.googleCredentialsPath, 'utf8');
+                try {
+                    googleCredsContent = JSON.parse(fileContent);
+                    
+                    // Validate Google credentials structure
+                    if (!googleCredsContent.client_email || !googleCredsContent.private_key) {
+                        event.sender.send('credentials-error', 'Google credentials file is missing required fields (client_email or private_key)');
+                        return;
+                    }
+                    
+                    console.log('Google credentials loaded successfully');
+                } catch (parseError) {
+                    console.error('Error parsing Google credentials file:', parseError);
+                    event.sender.send('credentials-error', `Invalid JSON in Google credentials file: ${parseError.message}`);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error reading Google credentials file:', error);
+                event.sender.send('credentials-error', `Error reading Google credentials file: ${error.message}`);
+                return;
+            }
+        } else {
+            event.sender.send('credentials-error', 'Google credentials file path is required');
+            return;
+        }
+        
+        // Log some diagnostics (without exposing sensitive info)
+        console.log('Credentials validation passed:');
+        console.log('- OpenAI API Key: [REDACTED]');
+        console.log(`- Google Sheet ID: ${credentials.googleSheetId}`);
+        console.log(`- Google Credentials Path: ${credentials.googleCredentialsPath}`);
+        console.log(`- Google Credentials JSON valid: ${googleCredsContent !== null}`);
+        
+        // Update credentials
+        userCredentials = {
+            OPENAI_API_KEY: credentials.openaiApiKey,
+            GOOGLE_SHEET_ID: credentials.googleSheetId,
+            GOOGLE_CREDENTIALS_PATH: credentials.googleCredentialsPath,
+            GOOGLE_CREDENTIALS_JSON: googleCredsContent
+        };
+        
+        // Persist credentials in config store
+        try {
+            // Note: Make sure to implement a secure storage mechanism
+            // This is just a placeholder
+            console.log('Credentials saved in memory successfully');
+        } catch (storageError) {
+            console.error('Error storing credentials:', storageError);
+        }
+        
+        event.sender.send('credentials-success', 'Credentials saved successfully');
+        
+        // Close credentials window and show main window
+        if (credentialsWindow && !credentialsWindow.isDestroyed()) {
+            credentialsWindow.close();
+        }
+        
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.show();
+        }
     } catch (error) {
-        console.error('Upload error in handler:', error);
-        showErrorToUser('Upload Error', error.message);
-        throw error;
+        console.error('Error processing credentials:', error);
+        event.sender.send('credentials-error', `Error processing credentials: ${error.message}`);
     }
+});
+
+// Show credentials form
+ipcMain.on('show-credentials-form', () => {
+    createCredentialsWindow();
 });
 
 // Combine process and upload into a single operation
@@ -748,51 +714,6 @@ ipcMain.handle('process-and-upload', async (event, chatDir) => {
     }
 });
 
-// Handle credential submission
-ipcMain.on('submit-credentials', (event, credentials) => {
-    try {
-        // Read the Google credentials JSON file
-        let googleCredsContent = null;
-        if (credentials.googleCredentialsPath) {
-            try {
-                googleCredsContent = JSON.parse(fs.readFileSync(credentials.googleCredentialsPath, 'utf8'));
-                console.log('Google credentials loaded successfully');
-            } catch (error) {
-                console.error('Error reading Google credentials file:', error);
-                event.sender.send('credentials-error', `Error reading Google credentials file: ${error.message}`);
-                return;
-            }
-        }
-        
-        // Update credentials
-        userCredentials = {
-            OPENAI_API_KEY: credentials.openaiApiKey,
-            GOOGLE_SHEET_ID: credentials.googleSheetId,
-            GOOGLE_CREDENTIALS_PATH: credentials.googleCredentialsPath,
-            GOOGLE_CREDENTIALS_JSON: googleCredsContent
-        };
-        
-        event.sender.send('credentials-success', 'Credentials saved successfully');
-        
-        // Close credentials window and show main window
-        if (credentialsWindow && !credentialsWindow.isDestroyed()) {
-            credentialsWindow.close();
-        }
-        
-        if (mainWindow && !mainWindow.isDestroyed()) {
-            mainWindow.show();
-        }
-    } catch (error) {
-        console.error('Error processing credentials:', error);
-        event.sender.send('credentials-error', `Error processing credentials: ${error.message}`);
-    }
-});
-
-// Show credentials form
-ipcMain.on('show-credentials-form', () => {
-    createCredentialsWindow();
-});
-
 // Select Google credentials file
 ipcMain.handle('select-google-credentials-file', async () => {
     try {
@@ -811,6 +732,331 @@ ipcMain.handle('select-google-credentials-file', async () => {
     }
 });
 
+async function uploadToGoogleSheets(filePath) {
+    try {
+        // Validate filePath is a string
+        if (typeof filePath !== 'string') {
+            throw new Error(`Invalid filePath: expected string but got ${typeof filePath}`);
+        }
+        
+        // Check if file exists
+        if (!fs.existsSync(filePath)) {
+            throw new Error(`File does not exist at path: ${filePath}`);
+        }
+
+        console.log(`Uploading file from: ${filePath}`);
+
+        // Check if we have Google credentials
+        if (!userCredentials.GOOGLE_CREDENTIALS_JSON && !userCredentials.GOOGLE_CREDENTIALS_PATH) {
+            throw new Error(`Google credentials not available. Please provide them in the credentials form.`);
+        }
+
+        let creds;
+        
+        // Get credentials either from JSON content or from file
+        if (userCredentials.GOOGLE_CREDENTIALS_JSON) {
+            creds = userCredentials.GOOGLE_CREDENTIALS_JSON;
+        } else if (fs.existsSync(userCredentials.GOOGLE_CREDENTIALS_PATH)) {
+            creds = JSON.parse(fs.readFileSync(userCredentials.GOOGLE_CREDENTIALS_PATH, 'utf-8'));
+        } else {
+            throw new Error(`Google credentials file not found at: ${userCredentials.GOOGLE_CREDENTIALS_PATH}`);
+        }
+        
+        const serviceAccount = new JWT({
+            email: creds.client_email,
+            key: creds.private_key,
+            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        });
+
+        const doc = new GoogleSpreadsheet(userCredentials.GOOGLE_SHEET_ID, serviceAccount);
+        await doc.loadInfo();
+
+        const fileData = fs.readFileSync(filePath, 'utf-8');
+        if (!fileData) {
+            throw new Error('File is empty');
+        }
+
+        const jsonData = JSON.parse(fileData);
+        if (!jsonData.messages || !Array.isArray(jsonData.messages)) {
+            throw new Error('"messages" key is missing or not an array');
+        }
+
+        const messages = jsonData.messages;
+        if (messages.length === 0) {
+            throw new Error('"messages" array is empty');
+        }
+
+        const sheetName = "allMessages";
+        
+        // Manage sheet
+        let sheet = doc.sheetsByTitle[sheetName];
+        if (!sheet) {
+            sheet = await doc.addSheet({
+                title: sheetName,
+                headerValues: [
+                    "id", "date", "from", "text", "reply_id", "LANGUAGE", 
+                    "TRANSLATED_TEXT", "categories", 
+                    "confidence_scores", "locations_names", "locations_coordinates",
+                ]
+            });
+        }
+        
+        // Process messages to extract data including categories
+        const newRows = messages.map(msg => {
+            const locations = (msg.LOCATIONS || []).filter(loc => loc.coordinates);
+            const locationNames = locations.map(loc => loc.name).join(", ");
+            const locationCoords = locations
+                .map(loc => `(${loc.coordinates.latitude}, ${loc.coordinates.longitude})`)
+                .join("; ");
+            
+            // Initialize top category variables
+            let topCategory = "";
+            let topConfidenceScore = "";
+            
+            // Improved category extraction - handle both single and multiple categories
+            if (msg.CATEGORIES && Array.isArray(msg.CATEGORIES) && msg.CATEGORIES.length > 0) {
+                const categoryData = msg.CATEGORIES[0];
+                
+                if (categoryData.classification && categoryData.classification.confidence_scores) {
+                    const scores = categoryData.classification.confidence_scores;
+                    
+                    // Handle both single and multiple category cases
+                    const entries = Object.entries(scores);
+                    
+                    if (entries.length === 1) {
+                        // Single category case - use it directly
+                        const [category, score] = entries[0];
+                        topCategory = category;
+                        topConfidenceScore = score.toFixed(2);
+                        console.log(`Single category found: ${topCategory} with score ${topConfidenceScore}`);
+                    } else if (entries.length > 1) {
+                        // Multiple categories case - find the highest score
+                        let highestScore = -1;
+                        let highestCategory = "";
+                        
+                        for (const [category, score] of entries) {
+                            if (score > highestScore) {
+                                highestScore = score;
+                                highestCategory = category;
+                            }
+                        }
+                        
+                        topCategory = highestCategory;
+                        topConfidenceScore = highestScore.toFixed(2);
+                        console.log(`Found highest category: ${topCategory} with score ${topConfidenceScore}`);
+                    }
+                } else {
+                    console.log('Invalid classification structure:', categoryData);
+                }
+            } else {
+                console.log('No categories found for message:', msg.id);
+            }
+            
+            return {
+                id: msg.id || "",
+                date: msg.date || "",
+                from: msg.from || "",
+                text: msg.text || "",
+                reply_id: msg.reply_to_message_id || "", 
+                LANGUAGE: msg.LANGUAGE || "",
+                TRANSLATED_TEXT: msg.TRANSLATED_TEXT || "",
+                categories: topCategory,
+                confidence_scores: topConfidenceScore,
+                locations_names: locationNames || "",
+                locations_coordinates: locationCoords || ""
+            };
+        });
+        
+        if (newRows.length > 0) {
+            await sheet.addRows(newRows);
+            console.log(`Added ${newRows.length} rows to Google Sheet with categories`);
+        } else {
+            console.log('No rows to add to Google Sheet');
+        }
+        
+        return 'Upload successful';
+    } catch (error) {
+        console.error('Upload error:', error);
+        throw new Error(`Failed to upload to Google Sheets: ${error.message}, ${filePath}`);
+    }
+}
+
+global.uploadToGoogleSheets = async function(filePath) {
+    console.log(`[DEV] Calling uploadToGoogleSheets with path: ${filePath}`);
+    
+    try {
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`File does not exist at path: ${filePath}`);
+      }
+  
+      console.log(`[DEV] File exists, preparing to upload from: ${filePath}`);
+  
+      // Check if we have Google credentials in global.userCredentials
+      if (!global.userCredentials) {
+        throw new Error(`[DEV] userCredentials not available. Credentials may not have been submitted.`);
+      }
+  
+      // Check for necessary libraries
+      try {
+        // First, check if these modules are already loaded
+        let JWT, GoogleSpreadsheet;
+  
+        try {
+          const googleAuth = require('google-auth-library');
+          JWT = googleAuth.JWT;
+          const gs = require('google-spreadsheet');
+          GoogleSpreadsheet = gs.GoogleSpreadsheet;
+          console.log('[DEV] Successfully loaded JWT and GoogleSpreadsheet modules');
+        } catch (moduleErr) {
+          console.error('[DEV] Error loading modules:', moduleErr);
+          throw new Error(`Required modules not available: ${moduleErr.message}`);
+        }
+  
+        // Now we can use the implementation similar to main.js
+        let creds;
+        
+        // Get credentials either from JSON content or from file
+        if (global.userCredentials.GOOGLE_CREDENTIALS_JSON) {
+          creds = global.userCredentials.GOOGLE_CREDENTIALS_JSON;
+          console.log('[DEV] Using credentials from JSON content');
+        } else if (global.userCredentials.GOOGLE_CREDENTIALS_PATH && 
+                  fs.existsSync(global.userCredentials.GOOGLE_CREDENTIALS_PATH)) {
+          creds = JSON.parse(fs.readFileSync(global.userCredentials.GOOGLE_CREDENTIALS_PATH, 'utf-8'));
+          console.log('[DEV] Using credentials from file path');
+        } else {
+          throw new Error(`Google credentials not available. GOOGLE_CREDENTIALS_JSON is ${!!global.userCredentials.GOOGLE_CREDENTIALS_JSON}, GOOGLE_CREDENTIALS_PATH is ${global.userCredentials.GOOGLE_CREDENTIALS_PATH}`);
+        }
+        
+        // Log partial credentials to validate (don't log the private key)
+        console.log('[DEV] Credentials summary:');
+        console.log(`- client_email: ${creds.client_email ? 'Present' : 'Missing'}`);
+        console.log(`- private_key: ${creds.private_key ? 'Present' : 'Missing'}`);
+        
+        const serviceAccount = new JWT({
+          email: creds.client_email,
+          key: creds.private_key,
+          scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        });
+  
+        console.log(`[DEV] Sheet ID: ${global.userCredentials.GOOGLE_SHEET_ID}`);
+        const doc = new GoogleSpreadsheet(global.userCredentials.GOOGLE_SHEET_ID, serviceAccount);
+        
+        console.log('[DEV] Loading sheet info...');
+        await doc.loadInfo();
+        console.log(`[DEV] Sheet loaded: ${doc.title}`);
+  
+        // Read and validate the JSON file
+        const fileData = fs.readFileSync(filePath, 'utf-8');
+        if (!fileData) {
+          throw new Error('File is empty');
+        }
+  
+        const jsonData = JSON.parse(fileData);
+        if (!jsonData.messages || !Array.isArray(jsonData.messages)) {
+          throw new Error('"messages" key is missing or not an array');
+        }
+  
+        const messages = jsonData.messages;
+        if (messages.length === 0) {
+          throw new Error('"messages" array is empty');
+        }
+  
+        console.log(`[DEV] Parsed JSON with ${messages.length} messages`);
+        
+        const sheetName = "allMessages";
+        
+        // Manage sheet
+        let sheet = doc.sheetsByTitle[sheetName];
+        if (!sheet) {
+          console.log(`[DEV] Creating new sheet "${sheetName}"`);
+          sheet = await doc.addSheet({
+            title: sheetName,
+            headerValues: [
+              "id", "date", "from", "text", "reply_id", "LANGUAGE", 
+              "TRANSLATED_TEXT", "categories", 
+              "confidence_scores", "locations_names", "locations_coordinates",
+            ]
+          });
+        } else {
+          console.log(`[DEV] Using existing sheet "${sheetName}"`);
+        }
+        
+        // Process messages similar to main.js
+        const newRows = messages.map(msg => {
+          const locations = (msg.LOCATIONS || []).filter(loc => loc.coordinates);
+          const locationNames = locations.map(loc => loc.name).join(", ");
+          const locationCoords = locations
+            .map(loc => `(${loc.coordinates.latitude}, ${loc.coordinates.longitude})`)
+            .join("; ");
+          
+          // Initialize top category variables
+          let topCategory = "";
+          let topConfidenceScore = "";
+          
+          // Category extraction logic
+          if (msg.CATEGORIES && Array.isArray(msg.CATEGORIES) && msg.CATEGORIES.length > 0) {
+            const categoryData = msg.CATEGORIES[0];
+            
+            if (categoryData.classification && categoryData.classification.confidence_scores) {
+              const scores = categoryData.classification.confidence_scores;
+              const entries = Object.entries(scores);
+              
+              if (entries.length === 1) {
+                const [category, score] = entries[0];
+                topCategory = category;
+                topConfidenceScore = score.toFixed(2);
+              } else if (entries.length > 1) {
+                let highestScore = -1;
+                let highestCategory = "";
+                
+                for (const [category, score] of entries) {
+                  if (score > highestScore) {
+                    highestScore = score;
+                    highestCategory = category;
+                  }
+                }
+                
+                topCategory = highestCategory;
+                topConfidenceScore = highestScore.toFixed(2);
+              }
+            }
+          }
+          
+          return {
+            id: msg.id || "",
+            date: msg.date || "",
+            from: msg.from || "",
+            text: msg.text || "",
+            reply_id: msg.reply_to_message_id || "", 
+            LANGUAGE: msg.LANGUAGE || "",
+            TRANSLATED_TEXT: msg.TRANSLATED_TEXT || "",
+            categories: topCategory,
+            confidence_scores: topConfidenceScore,
+            locations_names: locationNames || "",
+            locations_coordinates: locationCoords || ""
+          };
+        });
+        
+        if (newRows.length > 0) {
+          console.log(`[DEV] Adding ${newRows.length} rows to Google Sheet`);
+          await sheet.addRows(newRows);
+          console.log(`[DEV] Added ${newRows.length} rows to Google Sheet successfully`);
+        } else {
+          console.log('[DEV] No rows to add to Google Sheet');
+        }
+        
+        return `Upload successful - added ${newRows.length} rows to "${doc.title}" sheet`;
+      } catch (innerError) {
+        console.error('[DEV] Error in Google Sheet upload implementation:', innerError);
+        throw innerError;
+      }
+    } catch (error) {
+      console.error('[DEV] Upload error:', error);
+      throw new Error(`Failed to upload to Google Sheets: ${error.message}`);
+    }
+  };
+  
 // Clean up resources before quitting
 app.on('before-quit', () => {
     console.log('Cleaning up resources before quitting...');

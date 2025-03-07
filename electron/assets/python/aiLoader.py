@@ -9,12 +9,12 @@ def loadAI():
     # Explicitly load environment variables
     load_dotenv()
     
-    # Set up SSL certificates for PyInstaller bundle
-    if hasattr(sys, '_MEIPASS'):
-        cert_path = certifi.where()
-        os.environ['SSL_CERT_FILE'] = cert_path
-        os.environ['REQUESTS_CA_BUNDLE'] = cert_path
-        print(f"Using SSL certificates from: {cert_path}")
+    # Set up SSL certificates for both PyInstaller bundle and development
+    # This needs to be done ALWAYS (not just in PyInstaller mode)
+    cert_path = certifi.where()
+    os.environ['SSL_CERT_FILE'] = cert_path
+    os.environ['REQUESTS_CA_BUNDLE'] = cert_path
+    print(f"Using SSL certificates from: {cert_path}")
     
     # First try to get API key from environment
     api_key = os.getenv("OPENAI_API_KEY")

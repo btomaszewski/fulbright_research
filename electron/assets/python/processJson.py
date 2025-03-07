@@ -17,7 +17,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("processJson")
 
-# Log startup information
+# Log startup information 
 logger.info("Script started")
 logger.info(f"Python version: {sys.version}")
 logger.info(f"Script location: {os.path.abspath(__file__)}")
@@ -247,10 +247,10 @@ try:
                 if individualMessage.get("PHOTO_ANALYSIS"):
                     fullText += individualMessage["PHOTO_ANALYSIS"]
 
-                '''if fullText:
+                if fullText:
                     logger.info(f"Processing full text of length {len(fullText)}")
                     processCategories(individualMessage, fullText)
-                    processLocations(individualMessage, fullText)'''
+                    #processLocations(individualMessage, fullText)
             
             # Replace the original messageData with our filtered and processed messages
             messageData.clear()

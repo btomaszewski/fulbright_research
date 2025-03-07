@@ -13,7 +13,11 @@
     "dist:linux": "electron-builder --linux",
     "dist:all": "electron-builder --mac --win --linux",
     "postinstall": "electron-builder install-app-deps",
-    "build-py": "cd assets && ./build.sh"
+    "build-py": "cd assets && ./build.sh",
+    "dev:process": "node combined-dev-test.js process ./test-data",
+    "dev:upload": "node combined-dev-test.js upload",
+    "dev": "node combined-dev-test.js both ./test-data",
+    "start:dev": "electron devTest.js"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
