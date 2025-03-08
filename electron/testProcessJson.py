@@ -82,9 +82,9 @@ def prepare_test_environment():
     logger.info(f"Test environment prepared in {test_chat_dir}")
     return test_chat_dir
 
-def run_main_script(raw_chat_path):
+def run_main_script(rawChatPath):
     """Run the main script with the given path"""
-    logger.info(f"Running main script with paths: {raw_chat_path}, {PROCESSED_DIR}")
+    logger.info(f"Running main script with paths: {rawChatPath}, {PROCESSED_DIR}")
     
     try:
         # Find and load the main script
@@ -110,7 +110,7 @@ def run_main_script(raw_chat_path):
             spec.loader.exec_module(module)
             
             # Run the main function
-            result = module.main(str(raw_chat_path), PROCESSED_DIR)
+            result = module.main(str(rawChatPath), PROCESSED_DIR)
             logger.info(f"Main script completed with result code: {result}")
             return result
             
@@ -122,7 +122,7 @@ def run_main_script(raw_chat_path):
             import subprocess
             logger.info("Falling back to subprocess execution")
             
-            cmd = [sys.executable, script_abs_path, str(raw_chat_path), PROCESSED_DIR]
+            cmd = [sys.executable, script_abs_path, str(rawChatPath), PROCESSED_DIR]
             result = subprocess.run(cmd, capture_output=True, text=True)
             
             logger.info(f"Subprocess stdout: {result.stdout}")
