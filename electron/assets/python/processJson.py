@@ -81,13 +81,13 @@ try:
     except ImportError as e:
         logger.error(f"Failed to import vectorImplementation: {e}")
         
-    '''try:
+    try:
         logger.info("Importing nerImplementation")
         from nerImplementation import getLocations
         logger.info("Successfully imported nerImplementation")
     except ImportError as e:
         logger.error(f"Failed to import nerImplementation: {e}")
-    '''
+    
 
     # Log before AI client initialization
     logger.info("About to initialize AI client")
@@ -187,7 +187,7 @@ try:
             logger.error(f"Error in processCategories: {e}")
             logger.error(traceback.format_exc())
 
-    '''
+    
     def processLocations(individualMessage, fullText):
         logger.info(f"Processing locations for text: {fullText[:50]}...")
         try:
@@ -200,7 +200,7 @@ try:
         except Exception as e:
             logger.error(f"Error in processLocations: {e}")
             logger.error(traceback.format_exc())
-    '''
+    
 
     def processJson(messageData, processedDirPath):
         logger.info(f"Processing JSON with {len(messageData)} messages")
@@ -250,7 +250,7 @@ try:
                 if fullText:
                     logger.info(f"Processing full text of length {len(fullText)}")
                     processCategories(individualMessage, fullText)
-                    #processLocations(individualMessage, fullText)
+                    processLocations(individualMessage, fullText)
             
             # Replace the original messageData with our filtered and processed messages
             messageData.clear()

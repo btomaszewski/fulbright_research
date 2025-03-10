@@ -444,25 +444,16 @@ ipcMain.on('submit-credentials', (event, credentials) => {
 global.uploadToGoogleSheets = async function(filePath) {
   console.log(`[DEV] Calling uploadToGoogleSheets with path: ${filePath}`);
   
-  // We need to use the actual implementation from main.js
-  // First load main.js to get access to its functions
-  const mainModule = require('./main');
+  // Simple mock implementation - don't try to call the real function recursively
+  console.log('[DEV] Using mock implementation for uploadToGoogleSheets');
   
-  // If main.js exports the uploadToGoogleSheets function directly, use it
-  if (typeof mainModule.uploadToGoogleSheets === 'function') {
-    console.log('[DEV] Using exported uploadToGoogleSheets function');
-    return mainModule.uploadToGoogleSheets(filePath);
-  } 
-  // Otherwise, we need to call the original function from the main.js context
-  else if (typeof uploadToGoogleSheets === 'function') {
-    console.log('[DEV] Using global uploadToGoogleSheets function from main.js');
-    return uploadToGoogleSheets(filePath);
+  // You can add some validation logic if needed
+  if (!filePath || typeof filePath !== 'string') {
+    throw new Error('[DEV] Invalid file path provided');
   }
-  else {
-    console.log('[DEV] uploadToGoogleSheets function not found, mocking upload');
-    // Mock implementation for testing if the function isn't available
-    return '[DEV] Upload simulation successful';
-  }
+  
+  // Return a success message without calling any other function
+  return '[DEV] Upload simulation successful';
 };
 
 // Similarly, expose the showErrorToUser function

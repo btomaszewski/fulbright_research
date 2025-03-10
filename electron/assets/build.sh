@@ -11,6 +11,7 @@ VENV_DIR=".venv"  # Adjusted path relative to assets/
 
 # Vector model configuration - use existing directory in same location as build.sh
 VECTOR_MODEL_PACKAGE="vector_model_package"  # Name of existing vector model directory
+NER_MODEL_PACKAGE="ner_model_package"
 
 # Platform detection
 PLATFORM_ID="darwin"  # This script is specifically for macOS
@@ -47,7 +48,7 @@ pip list
 
 # Ensure required packages are installed
 echo "Ensuring required packages are installed..."
-pip install certifi sentence-transformers contractions
+pip install certifi sentence-transformers contractions spacy geopy
 
 # Verify spaCy and model are installed
 echo "Verifying spaCy installation..."
@@ -84,31 +85,62 @@ else:
     pip install contractions
 }
 
-# Prepare spaCy model files
-echo "Preparing spaCy model files..."
+# Package spaCy model files as a tarball
+echo "Packaging spaCy model files..."
 mkdir -p spacy_model
 python -c "
 import shutil
 import os
+import tarfile
 import en_core_web_sm
+import sys
 
 model_path = en_core_web_sm.__path__[0]
-target_path = 'spacy_model/en_core_web_sm'
+target_dir = 'spacy_model'
+os.makedirs(target_dir, exist_ok=True)
+tarball_path = os.path.join(target_dir, 'en_core_web_sm.tar.gz')
 
-if os.path.exists(target_path):
-    shutil.rmtree(target_path)
+# Print the model path and files for debugging
+print(f'Original model path: {model_path}')
+print('Files in original model directory:')
+for root, dirs, files in os.walk(model_path):
+    for file in files:
+        relative_path = os.path.join(os.path.relpath(root, model_path), file)
+        print(f'  {relative_path}')
 
-shutil.copytree(model_path, target_path)
-print(f'Copied model from {model_path} to {target_path}')
+# Create tarball with a simpler structure
+original_dir = os.getcwd()
+try:
+    # Create tarball
+    with tarfile.open(tarball_path, 'w:gz') as tar:
+        # Change to the model directory to create a tarball with the right structure
+        os.chdir(model_path)
+        
+        # Add all files from the current directory (the model directory)
+        for root, dirs, files in os.walk('.'):
+            for file in files:
+                file_path = os.path.join(root, file)
+                print(f'Adding to tarball: {file_path}')
+                tar.add(file_path)
+finally:
+    # Change back to the original directory
+    os.chdir(original_dir)
+
+print(f'Created spaCy model tarball at {tarball_path}')
+print(f'Tarball size: {os.path.getsize(tarball_path) / 1024 / 1024:.2f} MB')
+
+# For debugging, list the contents of the tarball
+print('Contents of the spaCy model tarball:')
+with tarfile.open(tarball_path, 'r:gz') as tar:
+    for member in tar.getmembers():
+        print(f'  {member.name} ({member.size} bytes)')
 " || {
-    echo "❌ Failed to prepare spaCy model files"
+    echo "❌ Failed to package spaCy model files"
     exit 1
 }
 
-# Check if compression is needed for the vector model
+# Check vector model package
 echo "Checking vector model package..."
-
-# Check if model is already compressed
 if [ -f "${VECTOR_MODEL_PACKAGE}/sentence_transformer.tar.gz" ]; then
     echo "✅ Vector model is already compressed"
 else
@@ -137,7 +169,68 @@ else
     fi
 fi
 
-# Verify required files exist in vector model package
+# Handle NER model
+echo "Checking NER model package..."
+if [ ! -d "${NER_MODEL_PACKAGE}" ]; then
+    echo "⚠️ NER model package directory '${NER_MODEL_PACKAGE}' not found in $(pwd)"
+    echo "Do you want to continue without the NER model? (y/n)"
+    read -r answer
+    if [ "$answer" != "y" ]; then
+        echo "Aborting build process."
+        exit 1
+    fi
+    echo "Continuing build process without NER model..."
+else
+    # Check if model structure is correct
+    echo "Checking NER model structure..."
+    ls -la "${NER_MODEL_PACKAGE}"
+    
+    # Check if meta.json exists - this is critical for spaCy models
+    if [ -f "${NER_MODEL_PACKAGE}/meta.json" ]; then
+        echo "✅ Found meta.json in NER model package"
+        
+        # Create a proper compressed model tarball
+        echo "Creating NER model tarball..."
+        
+        # First, create a clean temporary directory with just the model files
+        TEMP_NER_DIR=$(mktemp -d)
+        
+        # Copy required files to temp directory
+        for file in meta.json config.cfg tokenizer vocab; do
+            if [ -f "${NER_MODEL_PACKAGE}/${file}" ]; then
+                cp -r "${NER_MODEL_PACKAGE}/${file}" "${TEMP_NER_DIR}/"
+            elif [ -d "${NER_MODEL_PACKAGE}/${file}" ]; then
+                cp -r "${NER_MODEL_PACKAGE}/${file}" "${TEMP_NER_DIR}/"
+            fi
+        done
+        
+        # Copy ner directory if it exists
+        if [ -d "${NER_MODEL_PACKAGE}/ner" ]; then
+            cp -r "${NER_MODEL_PACKAGE}/ner" "${TEMP_NER_DIR}/"
+        fi
+        
+        # Create tarball from temp directory
+        cd "${TEMP_NER_DIR}"
+        tar -czf ner_model.tar.gz ./*
+        mv ner_model.tar.gz "${NER_MODEL_PACKAGE}/"
+        cd - > /dev/null
+        
+        # Clean up
+        rm -rf "${TEMP_NER_DIR}"
+        
+        echo "✅ Created NER model tarball at ${NER_MODEL_PACKAGE}/ner_model.tar.gz"
+    else
+        echo "⚠️ No meta.json found in NER model package. This will likely cause loading errors."
+        echo "Do you want to continue anyway? (y/n)"
+        read -r answer
+        if [ "$answer" != "y" ]; then
+            echo "Aborting build process."
+            exit 1
+        fi
+    fi
+fi
+
+# Verify required files for vector model
 echo "Verifying vector model package contents..."
 REQUIRED_FILES_FOUND=true
 
@@ -225,7 +318,21 @@ else:
     print(f"Warning: Contractions data directory not found at {data_path}")
 EOL
 
-# Create the spec file for PyInstaller to explicitly include processJson.py
+# Create hook for geopy
+echo "Creating geopy hook..."
+cat > "temp_build/hook-geopy.py" << EOL
+from PyInstaller.utils.hooks import collect_all
+
+datas, binaries, hiddenimports = collect_all('geopy')
+
+# Add specific modules that might be missed
+hiddenimports.extend([
+    'geopy.geocoders',
+    'geopy.geocoders.nominatim',
+])
+EOL
+
+# Create the spec file for PyInstaller
 echo "Creating PyInstaller spec file..."
 cat > "temp_build/process.spec" << EOL
 # -*- mode: python ; coding: utf-8 -*-
@@ -242,14 +349,23 @@ contractions_data_path = os.path.join(contractions_path, 'data')
 contractions_dict_path = os.path.join(contractions_data_path, 'contractions_dict.json')
 contractions_slang_path = os.path.join(contractions_data_path, 'slang_dict.json')
 
+# Path to this spec file's directory
+spec_dir = os.path.dirname(os.path.abspath(SPEC))
+
+# Define paths relative to spec file
+vector_model_path = os.path.join(spec_dir, '..', '${VECTOR_MODEL_PACKAGE}')
+ner_model_path = os.path.join(spec_dir, '..', '${NER_MODEL_PACKAGE}')
+spacy_model_tarball = os.path.join(spec_dir, '..', 'spacy_model/en_core_web_sm.tar.gz')
+
 a = Analysis(
     ['src/wrapper.py'],
     pathex=['src'],
     binaries=[],
     datas=[
         ('src/processJson.py', '.'),  # Explicitly include processJson.py in the root
-        ('../spacy_model/en_core_web_sm', 'en_core_web_sm'),
-        ('../${VECTOR_MODEL_PACKAGE}', '${VECTOR_MODEL_PACKAGE}'),
+        (spacy_model_tarball, '.'),  # Include spaCy model as a tarball in the root
+        (vector_model_path, '${VECTOR_MODEL_PACKAGE}'),
+        (ner_model_path, '${NER_MODEL_PACKAGE}'),
         (certifi.where(), 'certifi'),  # Include SSL certificates
         (contractions_dict_path, os.path.join('contractions', 'data')),  # Include contractions dictionary
         (contractions_slang_path, os.path.join('contractions', 'data')),  # Include slang dictionary
@@ -263,6 +379,7 @@ a = Analysis(
         'src.helpers',
         'src.cleanJson',
         'src.vectorImplementation',
+        'src.nerImplementation',
         'src.processJson',
         'dotenv',
         'numpy',
@@ -278,12 +395,16 @@ a = Analysis(
         'subprocess',
         'openai',
         'spacy',
+        'geopy',
+        'geopy.geocoders',
+        'geopy.geocoders.nominatim',
         'sentence_transformers',
         'certifi',
         'tarfile',
         'contractions',
         'contractions.contractions',
         'contractions.data',
+        'logging',
     ],
     hookspath=['.'],
     hooksconfig={},
@@ -329,20 +450,24 @@ datas2, binaries2, hiddenimports2 = collect_all('openai')
 datas3, binaries3, hiddenimports3 = collect_all('sentence_transformers')
 datas4, binaries4, hiddenimports4 = collect_all('certifi')
 datas5, binaries5, hiddenimports5 = collect_all('contractions')
+datas6, binaries6, hiddenimports6 = collect_all('geopy')
 
 # Combine all collected items
 datas.extend(datas2)
 datas.extend(datas3)
 datas.extend(datas4)
 datas.extend(datas5)
+datas.extend(datas6)
 binaries.extend(binaries2)
 binaries.extend(binaries3)
 binaries.extend(binaries4)
 binaries.extend(binaries5)
+binaries.extend(binaries6)
 hiddenimports.extend(hiddenimports2)
 hiddenimports.extend(hiddenimports3)
 hiddenimports.extend(hiddenimports4)
 hiddenimports.extend(hiddenimports5)
+hiddenimports.extend(hiddenimports6)
 
 # Add more specific hidden imports
 hiddenimports.extend([
@@ -354,6 +479,7 @@ hiddenimports.extend([
     'src.helpers',
     'src.cleanJson',
     'src.vectorImplementation',
+    'src.nerImplementation',
     'src.processJson',
     'dotenv',
     'numpy',
@@ -372,6 +498,10 @@ hiddenimports.extend([
     'sentence_transformers.models',
     'contractions',
     'contractions.contractions',
+    'geopy',
+    'geopy.geocoders',
+    'geopy.geocoders.nominatim',
+    'logging',
 ])
 EOL
 
