@@ -1,50 +1,49 @@
 @echo off
 setlocal enabledelayedexpansion
 
+echo Starting Windows build process for Python application...
+
 :: Set working directory to script location
 cd /d "%~dp0"
 
-:: Import configuration variables
-call scripts\config.bat
-
-echo Starting build process from %cd% for platform: %PLATFORM_ID%
-
-:: Clean previous builds
-call scripts\clean.bat
-
-:: Verify prerequisites
-call scripts\verify_prereqs.bat
-if errorlevel 1 (
-    echo ❌ Prerequisite verification failed
+:: Check if Python is installed
+where python >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo Python not found! Please install Python and make sure it's in your PATH.
     exit /b 1
 )
 
-:: Package models
-call scripts\package_models.bat
-if errorlevel 1 (
-    echo ❌ Model packaging failed
+:: Check Python version
+for /f "tokens=*" %%i in ('python --version') do set PYTHON_VERSION=%%i
+echo Using %PYTHON_VERSION%
+
+:: Check if build_utils.py exists, if not create it
+if not exist build_utils.py (
+    echo build_utils.py not found! Please make sure it's in the same directory as this batch file.
     exit /b 1
 )
 
-:: Prepare build environment
-call scripts\prepare_build.bat
-if errorlevel 1 (
-    echo ❌ Build preparation failed
-    exit /b 1
+:: Parse command line arguments
+set CLEAN_ONLY=0
+for %%a in (%*) do (
+    if "%%a"=="--clean-only" set CLEAN_ONLY=1
 )
 
-:: Run PyInstaller build
-call scripts\run_build.bat
-if errorlevel 1 (
-    echo ❌ PyInstaller build failed
-    exit /b 1
+if %CLEAN_ONLY%==1 (
+    echo Running clean-up only...
+    python build_utils.py --clean-only
+    goto :end
 )
 
-:: Finalize build
-call scripts\finalize.bat
-if errorlevel 1 (
-    echo ❌ Build finalization failed
-    exit /b 1
+:: Run the Python build utility
+echo Running build process...
+python build_utils.py %*
+
+if %ERRORLEVEL% neq 0 (
+    echo Build failed with error code %ERRORLEVEL%
+    exit /b %ERRORLEVEL%
 )
 
-echo ✅ Build process completed successfully!
+:end
+echo Build process completed.
+exit /b 0

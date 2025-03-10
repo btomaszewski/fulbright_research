@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Communication data analytics tool",
   "main": "main.js",
-  "author": "Natalie Crowell <nec9907@rit.edu>",
+  "author": "Olivia Croteau osc3732@rit.edu>",
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",

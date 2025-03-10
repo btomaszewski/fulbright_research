@@ -10,6 +10,14 @@ dist-darwin
 tabVenv
 dev-test-data
 
+ner_model_package
+ner_model_optimized2
+vector_model_package
+processedJson
+rawJson
+Scripts
+processJson.exe
+
 # Logs
 logs
 *.log

@@ -23,7 +23,7 @@ logging.basicConfig(
 logger = logging.getLogger("test_your_data")
 
 # CONFIGURATION - Change these to match your actual paths
-INPUT_DIR = "/Users/nataliecrowell/Documents/GitHub/fulbright_research/ChatExport_2025-02-17"
+INPUT_DIR = "C:/Users/Olivia Croteau/Downloads/Telegram Desktop/ChatExport_2025-03-10"
 RAW_DIR = "./rawJson"
 PROCESSED_DIR = "./processedJson"
 SCRIPT_PATH = "assets/python/processJson.py"  # Path to your main script

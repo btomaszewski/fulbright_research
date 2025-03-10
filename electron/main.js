@@ -18,7 +18,7 @@ let userCredentials = {
     GOOGLE_CREDENTIALS_JSON: null // Will hold the actual JSON content
 };
 
-// Application paths
+// Application paths - ensure consistent path handling across platforms
 const userDataPath = app.getPath('userData');
 const rawJsonPath = path.join(userDataPath, 'processing', 'rawJson');
 const procJsonPath = path.join(userDataPath, 'processing', 'processedJson');
@@ -109,7 +109,10 @@ const getPythonExecutablePath = () => {
             path.join(__dirname, 'dist-win32', 'processJson.exe'),
             path.join(__dirname, 'assets', 'dist-win32', 'processJson.exe'),
             // For packaged app in resources directory
-            path.join(process.resourcesPath, 'dist-win32', 'processJson.exe')
+            path.join(process.resourcesPath, 'dist-win32', 'processJson.exe'),
+            // Additional common locations for Windows
+            path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-win32', 'processJson.exe'),
+            path.join(app.getAppPath(), 'app.asar.unpacked', 'dist-win32', 'processJson.exe')
         ];
         
         for (const testPath of possiblePaths) {
@@ -135,14 +138,23 @@ const getPythonExecutablePath = () => {
     return executablePath;
 };
 
-// Validate credentials
+// Validate credentials with improved whitespace handling
 function validateCredentials() {
     const requiredCredentials = ['OPENAI_API_KEY', 'GOOGLE_SHEET_ID'];
-    const missingCreds = requiredCredentials.filter(cred => !userCredentials[cred]);
+    const missingCreds = requiredCredentials.filter(cred => {
+        // Check if credential exists and is not just whitespace
+        return !userCredentials[cred] || (typeof userCredentials[cred] === 'string' && userCredentials[cred].trim() === '');
+    });
     
-    if (missingCreds.length > 0 || (!userCredentials.GOOGLE_CREDENTIALS_PATH && !userCredentials.GOOGLE_CREDENTIALS_JSON)) {
+    // Special check for Google credentials - either path or JSON must be present
+    const hasGoogleCreds = (
+        (userCredentials.GOOGLE_CREDENTIALS_PATH && userCredentials.GOOGLE_CREDENTIALS_PATH.trim() !== '') || 
+        (userCredentials.GOOGLE_CREDENTIALS_JSON && Object.keys(userCredentials.GOOGLE_CREDENTIALS_JSON).length > 0)
+    );
+    
+    if (missingCreds.length > 0 || !hasGoogleCreds) {
         console.log('Credential validation failed. Missing:', missingCreds.join(', '));
-        console.log('Google creds:', !!userCredentials.GOOGLE_CREDENTIALS_PATH || !!userCredentials.GOOGLE_CREDENTIALS_JSON);
+        console.log('Google creds:', hasGoogleCreds);
         return false;
     }
     return true;
@@ -192,7 +204,10 @@ function createMainWindow() {
         show: false // Keep this to not show until credentials are verified
       });
 
-        mainWindow.loadFile('frontend/index.html');
+        // Use normalized path for loading the file
+        const indexPath = path.normalize(path.join(app.getAppPath(), 'frontend', 'index.html'));
+        console.log(`Loading main window from: ${indexPath}`);
+        mainWindow.loadFile(indexPath);
 
         mainWindow.webContents.once('did-finish-load', () => {
             try {
@@ -206,7 +221,9 @@ function createMainWindow() {
         });
         
         // Always open DevTools for local development
-        mainWindow.webContents.openDevTools();
+        if (!app.isPackaged) {
+            mainWindow.webContents.openDevTools();
+        }
 
         mainWindow.on('closed', () => {
             mainWindow = null;
@@ -233,7 +250,7 @@ function createCredentialsWindow() {
     }
   
     // Check if frontend/credentials.html exists with path normalization for Windows
-    const credentialsPath = path.join(app.getAppPath(), 'frontend', 'credentials.html');
+    const credentialsPath = path.normalize(path.join(app.getAppPath(), 'frontend', 'credentials.html'));
     console.log('Looking for credentials HTML at:', credentialsPath);
     
     if (!fs.existsSync(credentialsPath)) {
@@ -255,8 +272,10 @@ function createCredentialsWindow() {
       }
     });
   
-    // Force DevTools to open in credentials window
-    credentialsWindow.webContents.openDevTools();
+    // Force DevTools to open in credentials window only in development
+    if (!app.isPackaged) {
+      credentialsWindow.webContents.openDevTools();
+    }
   
     console.log('Loading credentials.html into window');
     credentialsWindow.loadFile('frontend/credentials.html');
@@ -313,20 +332,58 @@ function checkPythonExecutable() {
     }
 }
 
-// IPC handlers remain the same but spawn process function needs adjustment for Windows
-
 // Modified spawn process for Windows compatibility
 function spawnPythonProcess(execPath, args) {
-    // For Windows: spawn a detached process when in development
-    const options = {};
+    // Normalize path for Windows
+    execPath = path.normalize(execPath);
     
-    if (process.platform === 'win32' && !app.isPackaged) {
-        options.windowsHide = false; // Show window for debugging
-        options.detached = false;    // Not detached for proper handling
-        options.shell = true;        // Use shell on Windows for better path handling
+    const options = {
+        windowsHide: true
+    };
+    
+    if (process.platform === 'win32') {
+        options.shell = true;  // Use shell on Windows for better path handling
+        
+        // Make sure credentials JSON is properly formatted
+        if (args[0] && typeof args[0] === 'string') {
+            try {
+                // If it's already a JSON string, parse it first
+                const credentials = JSON.parse(args[0]);
+                // Re-stringify with proper formatting and escaping
+                args[0] = JSON.stringify(credentials);
+            } catch (e) {
+                // If it fails to parse, it might not be JSON or might need escaping
+                console.warn("Ensuring JSON string is properly formatted:", e);
+                // Try to escape it properly
+                args[0] = `'${args[0].replace(/'/g, "\\'")}'`;
+            }
+        }
+        
+        // For the path arguments, quote them properly
+        for (let i = 1; i < args.length; i++) {
+            if (typeof args[i] === 'string' && args[i].includes(' ')) {
+                args[i] = `"${args[i]}"`;
+            }
+        }
+        
+        // For Windows, combine arguments into a single string command
+        // This helps with spaces in paths
+        const cmd = [
+            `"${execPath}"`,
+            ...args.map(arg => typeof arg === 'string' ? `"${arg}"` : arg)
+        ].join(' ');
+        
+        console.log(`Windows command: ${cmd}`);
+        
+        // Use execFile with shell option for Windows
+        return require('child_process').spawn(cmd, [], { 
+            shell: true,
+            windowsHide: options.windowsHide
+        });
+    } else {
+        // On Unix, use the list form without shell
+        return spawn(execPath, args, options);
     }
-    
-    return spawn(execPath, args, options);
 }
 
 // Handler for processing JSON
@@ -370,22 +427,50 @@ ipcMain.handle('process-json', async (event, chatDir) => {
             console.log(`Input directory: ${chatDir}`);
             console.log(`Output directory: ${procJsonPath}`);
             
-            // Prepare credentials JSON to pass to Python
-            const credentialsJson = JSON.stringify({
-                OPENAI_API_KEY: userCredentials.OPENAI_API_KEY,
-                GOOGLE_SHEET_ID: userCredentials.GOOGLE_SHEET_ID,
+            // Prepare credentials JSON to pass to Python with improved formatting
+            const credentialsObj = {
+                OPENAI_API_KEY: typeof userCredentials.OPENAI_API_KEY === 'string' ? 
+                    userCredentials.OPENAI_API_KEY.trim() : userCredentials.OPENAI_API_KEY,
+                GOOGLE_SHEET_ID: typeof userCredentials.GOOGLE_SHEET_ID === 'string' ? 
+                    userCredentials.GOOGLE_SHEET_ID.trim() : userCredentials.GOOGLE_SHEET_ID,
                 GOOGLE_CREDENTIALS_JSON: userCredentials.GOOGLE_CREDENTIALS_JSON
-            });
+            };
+            
+            // Ensure we're sending a properly formatted JSON string
+            const credentialsJson = JSON.stringify(credentialsObj);
             
             // Log the command being executed (redact actual credentials)
             console.log(`Command: ${execPath} [credentials] ${chatDir} ${procJsonPath}`);
             
-            // Launch the Python executable with credentials and paths
-            const pythonProcess = spawnPythonProcess(execPath, [
-                credentialsJson,  // Pass credentials as first argument
-                chatDir,          // Input directory as second argument
-                procJsonPath      // Output directory as third argument
-            ]);
+            // For Windows platforms, directly create a quoted command to handle spaces in paths
+            let pythonProcess;
+            
+            if (process.platform === 'win32') {
+                console.log('Using Windows-specific process spawning method');
+                
+                // Format paths safely for Windows command line
+                const safeExecPath = `"${execPath}"`;
+                const safeCredentials = `"${credentialsJson.replace(/"/g, '\\"')}"`;
+                const safeChatDir = `"${chatDir}"`;
+                const safeProcJsonPath = `"${procJsonPath}"`;
+                
+                // Create a safe command string
+                const commandString = `${safeExecPath} ${safeCredentials} ${safeChatDir} ${safeProcJsonPath}`;
+                console.log(`Windows command string: ${commandString.replace(safeCredentials, '"[CREDENTIALS REDACTED]"')}`);
+                
+                // Use spawn with shell option for Windows
+                pythonProcess = require('child_process').spawn(commandString, [], { 
+                    shell: true,
+                    windowsHide: true
+                });
+            } else {
+                // For non-Windows platforms, use the regular approach
+                pythonProcess = spawn(execPath, [
+                    credentialsJson,
+                    chatDir,
+                    procJsonPath
+                ]);
+            }
 
             pythonProcesses.push(pythonProcess);
 
@@ -446,10 +531,7 @@ ipcMain.handle('process-json', async (event, chatDir) => {
     });
 });
 
-// Rest of your code remains the same with the updated spawnPythonProcess function
-// replacing all instances of spawn for pythonProcess...
-
-// For process-and-upload, use the same spawnPythonProcess approach:
+// For process-and-upload, with improved Windows path handling:
 ipcMain.handle('process-and-upload', async (event, chatDir) => {
     try {
         console.log(`Starting combined process-and-upload for: ${chatDir}`);
@@ -457,7 +539,7 @@ ipcMain.handle('process-and-upload', async (event, chatDir) => {
         // First process the data - call the process-json handler directly
         const processResult = await new Promise((resolve, reject) => {
             try {
-                // This is the same implementation as the process-json handler with spawn replaced by spawnPythonProcess
+                // This is the same implementation as the process-json handler with improved Windows handling
                 console.log(`Starting process-json from process-and-upload with chatDir: ${chatDir}`);
                 
                 if (!validateCredentials()) {
@@ -494,22 +576,50 @@ ipcMain.handle('process-and-upload', async (event, chatDir) => {
                 console.log(`Input directory: ${chatDir}`);
                 console.log(`Output directory: ${procJsonPath}`);
                 
-                // Prepare credentials JSON to pass to Python
-                const credentialsJson = JSON.stringify({
-                    OPENAI_API_KEY: userCredentials.OPENAI_API_KEY,
-                    GOOGLE_SHEET_ID: userCredentials.GOOGLE_SHEET_ID,
+                // Prepare credentials JSON to pass to Python with improved formatting
+                const credentialsObj = {
+                    OPENAI_API_KEY: typeof userCredentials.OPENAI_API_KEY === 'string' ? 
+                        userCredentials.OPENAI_API_KEY.trim() : userCredentials.OPENAI_API_KEY,
+                    GOOGLE_SHEET_ID: typeof userCredentials.GOOGLE_SHEET_ID === 'string' ? 
+                        userCredentials.GOOGLE_SHEET_ID.trim() : userCredentials.GOOGLE_SHEET_ID,
                     GOOGLE_CREDENTIALS_JSON: userCredentials.GOOGLE_CREDENTIALS_JSON
-                });
+                };
+                
+                // Ensure we're sending a properly formatted JSON string
+                const credentialsJson = JSON.stringify(credentialsObj);
                 
                 // Log the command being executed (redact actual credentials)
                 console.log(`Command: ${execPath} [credentials] ${chatDir} ${procJsonPath}`);
                 
-                // Launch the Python executable with credentials and paths - use the spawnPythonProcess function
-                const pythonProcess = spawnPythonProcess(execPath, [
-                    credentialsJson,  // Pass credentials as first argument
-                    chatDir,          // Input directory as second argument
-                    procJsonPath      // Output directory as third argument
-                ]);
+                // For Windows platforms, directly create a quoted command to handle spaces in paths
+                let pythonProcess;
+                
+                if (process.platform === 'win32') {
+                    console.log('Using Windows-specific process spawning method');
+                    
+                    // Format paths safely for Windows command line
+                    const safeExecPath = `"${execPath}"`;
+                    const safeCredentials = `"${credentialsJson.replace(/"/g, '\\"')}"`;
+                    const safeChatDir = `"${chatDir}"`;
+                    const safeProcJsonPath = `"${procJsonPath}"`;
+                    
+                    // Create a safe command string
+                    const commandString = `${safeExecPath} ${safeCredentials} ${safeChatDir} ${safeProcJsonPath}`;
+                    console.log(`Windows command string: ${commandString.replace(safeCredentials, '"[CREDENTIALS REDACTED]"')}`);
+                    
+                    // Use spawn with shell option for Windows
+                    pythonProcess = require('child_process').spawn(commandString, [], { 
+                        shell: true,
+                        windowsHide: true
+                    });
+                } else {
+                    // For non-Windows platforms, use the regular approach
+                    pythonProcess = spawn(execPath, [
+                        credentialsJson,
+                        chatDir,
+                        procJsonPath
+                    ]);
+                }
 
                 pythonProcesses.push(pythonProcess);
 
@@ -591,9 +701,6 @@ ipcMain.handle('process-and-upload', async (event, chatDir) => {
     }
 });
 
-// The rest of the functions remain the same
-// ...
-
 // Clean up resources before quitting
 app.on('before-quit', () => {
     console.log('Cleaning up resources before quitting...');
@@ -604,7 +711,12 @@ app.on('before-quit', () => {
                 if (process.platform === 'win32') {
                     // Try to terminate via Windows-specific commands if needed
                     if (process.pid) {
-                        require('child_process').exec(`taskkill /F /PID ${process.pid}`);
+                        try {
+                            require('child_process').execSync(`taskkill /F /PID ${process.pid}`, { windowsHide: true });
+                            console.log(`Killed Windows process with PID ${process.pid}`);
+                        } catch (killError) {
+                            console.error(`Error killing Windows process: ${killError.message}`);
+                        }
                     }
                 } else {
                     process.kill();
@@ -650,34 +762,42 @@ app.on('activate', () => {
     }
 });
 
-// Function implementations that were referenced earlier but not included in the truncated code
-
-// Handle credential submission
+// Handle credential submission with improved whitespace handling
 ipcMain.on('submit-credentials', (event, credentials) => {
     try {
         console.log('Processing submitted credentials');
         
+        // Clean up whitespace in credential values
+        const cleanedCredentials = {
+            openaiApiKey: credentials.openaiApiKey ? credentials.openaiApiKey.trim() : '',
+            googleSheetId: credentials.googleSheetId ? credentials.googleSheetId.trim() : '',
+            googleCredentialsPath: credentials.googleCredentialsPath ? credentials.googleCredentialsPath.trim() : ''
+        };
+        
         // Validate required fields
-        if (!credentials.openaiApiKey || credentials.openaiApiKey.trim() === '') {
+        if (!cleanedCredentials.openaiApiKey) {
             event.sender.send('credentials-error', 'OpenAI API Key is required');
             return;
         }
         
-        if (!credentials.googleSheetId || credentials.googleSheetId.trim() === '') {
+        if (!cleanedCredentials.googleSheetId) {
             event.sender.send('credentials-error', 'Google Sheet ID is required');
             return;
         }
         
         // Read the Google credentials JSON file
         let googleCredsContent = null;
-        if (credentials.googleCredentialsPath) {
+        if (cleanedCredentials.googleCredentialsPath) {
             try {
-                if (!fs.existsSync(credentials.googleCredentialsPath)) {
-                    event.sender.send('credentials-error', `Google credentials file not found: ${credentials.googleCredentialsPath}`);
+                // Normalize path for Windows compatibility
+                const normalizedPath = path.normalize(cleanedCredentials.googleCredentialsPath);
+                
+                if (!fs.existsSync(normalizedPath)) {
+                    event.sender.send('credentials-error', `Google credentials file not found: ${normalizedPath}`);
                     return;
                 }
                 
-                const fileContent = fs.readFileSync(credentials.googleCredentialsPath, 'utf8');
+                const fileContent = fs.readFileSync(normalizedPath, 'utf8');
                 try {
                     googleCredsContent = JSON.parse(fileContent);
                     
@@ -706,15 +826,15 @@ ipcMain.on('submit-credentials', (event, credentials) => {
         // Log some diagnostics (without exposing sensitive info)
         console.log('Credentials validation passed:');
         console.log('- OpenAI API Key: [REDACTED]');
-        console.log(`- Google Sheet ID: ${credentials.googleSheetId}`);
-        console.log(`- Google Credentials Path: ${credentials.googleCredentialsPath}`);
+        console.log(`- Google Sheet ID: ${cleanedCredentials.googleSheetId}`);
+        console.log(`- Google Credentials Path: ${cleanedCredentials.googleCredentialsPath}`);
         console.log(`- Google Credentials JSON valid: ${googleCredsContent !== null}`);
         
         // Update credentials
         userCredentials = {
-            OPENAI_API_KEY: credentials.openaiApiKey,
-            GOOGLE_SHEET_ID: credentials.googleSheetId,
-            GOOGLE_CREDENTIALS_PATH: credentials.googleCredentialsPath,
+            OPENAI_API_KEY: cleanedCredentials.openaiApiKey,
+            GOOGLE_SHEET_ID: cleanedCredentials.googleSheetId,
+            GOOGLE_CREDENTIALS_PATH: cleanedCredentials.googleCredentialsPath,
             GOOGLE_CREDENTIALS_JSON: googleCredsContent
         };
         
@@ -757,7 +877,8 @@ ipcMain.handle('select-google-credentials-file', async () => {
         });
         
         if (!result.canceled && result.filePaths.length > 0) {
-            return result.filePaths[0];
+            // Return normalized path for cross-platform compatibility
+            return path.normalize(result.filePaths[0]);
         }
         return null;
     } catch (error) {
@@ -775,7 +896,7 @@ ipcMain.handle('select-directory', async () => {
 
         if (!result.filePaths.length) return null;
 
-        const selectedDir = result.filePaths[0];
+        const selectedDir = path.normalize(result.filePaths[0]);
         const targetDir = path.join(rawJsonPath, path.basename(selectedDir));
         
         try {
@@ -849,12 +970,15 @@ async function uploadToGoogleSheets(filePath) {
             throw new Error(`Invalid filePath: expected string but got ${typeof filePath}`);
         }
         
+        // Normalize the file path for cross-platform compatibility
+        const normalizedPath = path.normalize(filePath);
+        
         // Check if file exists
-        if (!fs.existsSync(filePath)) {
-            throw new Error(`File does not exist at path: ${filePath}`);
+        if (!fs.existsSync(normalizedPath)) {
+            throw new Error(`File does not exist at path: ${normalizedPath}`);
         }
 
-        console.log(`Uploading file from: ${filePath}`);
+        console.log(`Uploading file from: ${normalizedPath}`);
 
         // Check if we have Google credentials
         if (!userCredentials.GOOGLE_CREDENTIALS_JSON && !userCredentials.GOOGLE_CREDENTIALS_PATH) {
@@ -867,10 +991,19 @@ async function uploadToGoogleSheets(filePath) {
         if (userCredentials.GOOGLE_CREDENTIALS_JSON) {
             creds = userCredentials.GOOGLE_CREDENTIALS_JSON;
         } else if (fs.existsSync(userCredentials.GOOGLE_CREDENTIALS_PATH)) {
-            creds = JSON.parse(fs.readFileSync(userCredentials.GOOGLE_CREDENTIALS_PATH, 'utf-8'));
+            const credContent = fs.readFileSync(userCredentials.GOOGLE_CREDENTIALS_PATH, 'utf-8');
+            try {
+                creds = JSON.parse(credContent);
+            } catch (parseError) {
+                throw new Error(`Error parsing Google credentials file: ${parseError.message}`);
+            }
         } else {
             throw new Error(`Google credentials file not found at: ${userCredentials.GOOGLE_CREDENTIALS_PATH}`);
         }
+        
+        // Ensure credential values are properly trimmed
+        const sheetId = typeof userCredentials.GOOGLE_SHEET_ID === 'string' ? 
+            userCredentials.GOOGLE_SHEET_ID.trim() : userCredentials.GOOGLE_SHEET_ID;
         
         const serviceAccount = new JWT({
             email: creds.client_email,
@@ -878,10 +1011,10 @@ async function uploadToGoogleSheets(filePath) {
             scopes: ['https://www.googleapis.com/auth/spreadsheets'],
         });
 
-        const doc = new GoogleSpreadsheet(userCredentials.GOOGLE_SHEET_ID, serviceAccount);
+        const doc = new GoogleSpreadsheet(sheetId, serviceAccount);
         await doc.loadInfo();
 
-        const fileData = fs.readFileSync(filePath, 'utf-8');
+        const fileData = fs.readFileSync(normalizedPath, 'utf-8');
         if (!fileData) {
             throw new Error('File is empty');
         }
@@ -992,11 +1125,16 @@ async function uploadToGoogleSheets(filePath) {
             console.log('No rows to add to Google Sheet');
         }
 
-        setTimeout(() => {
-            refreshDashboard(); // Refresh Tableau after upload
-        }, 5000); // Delay to ensure data syncs
-
-        document.addEventListener("DOMContentLoaded", initViz);
+        // Try/catch for dashboard refresh to prevent errors if not available
+        try {
+            setTimeout(() => {
+                if (typeof refreshDashboard === 'function') {
+                    refreshDashboard(); // Refresh Tableau after upload
+                }
+            }, 5000); // Delay to ensure data syncs
+        } catch (dashboardError) {
+            console.log('Dashboard refresh not available:', dashboardError);
+        }
         
         return 'Upload successful';
     } catch (error) {
