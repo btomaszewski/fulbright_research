@@ -563,7 +563,7 @@ def categorize(text):
                 result[0]["classification"]["hierarchy_info"] = classification_result["hierarchy_info"]
             """
         
-        logger.info(f"Categorization complete. Found categories: {categories}")
+        logger.info(f"Categorization complete. Found categories: {result}")
         return result
         
     except Exception as e:

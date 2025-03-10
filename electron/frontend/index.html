@@ -12,24 +12,26 @@
     <script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
 </head>
 <body>
-    <h1>AEGIS ANALYTICS</h1>
+    <!--<h1>AEGIS ANALYTICS</h1>-->
     <div class="container">
         <div class="datasets panel">
-            <h2>Datasets</h2>
-            <button id="addNew" class="button">
-                <span class="shadow"></span>
-                <span class="edge"></span>
-                <div class="front">
-                  <span><i class="fas fa-plus"></i> New dataset</span>
-                </div>
-            </button>
+            <div class="panel-heads">
+                <h2>Datasets</h2>
+                <button id="addNew" class="button">
+                    <span class="shadow"></span>
+                    <span class="edge"></span>
+                    <div class="front">
+                        <span><i class="fas fa-plus"></i> New dataset</span>
+                    </div>
+                </button>
+            </div>
             <div id="datasetList"></div>
             
         </div>
 
         <div class="dashboard panel">
-            <h2>Dashboard</h2>
-            <div id="exportBtns">
+            <div class="panel-heads">
+                <h2>Dashboard</h2>
                 <button id="exportPDF" class="button">
                     <span class="shadow"></span>
                     <span class="edge"></span>
@@ -236,5 +238,3 @@
     <script src="./tableau.js"></script>   
 </body>
 </html>
-
-//

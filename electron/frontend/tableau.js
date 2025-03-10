@@ -7,18 +7,27 @@ const url = "https://public.tableau.com/views/AegisAnalytics/Dashboard1?:languag
 const options = {
     hideTabs: true,
     height: 800,
-    width: 800,
+    width: "100%",
+    borderRadius: "0.625rem",
     device: "desktop",
-    onFirstInteractive: function() {
-        console.log("dashboard is ready");
-    },
-    onFirstVizSizeKnown: function() {
-        console.log("hey my dashboard has a size")
+    onFirstInteractive: function () {
+        console.log("Tableau Dashboard is ready.");
+        viz = tableau.VizManager.getVizs()[0]; // Store the instance
     }
 };
 
 function initViz() {
     viz = new tableau.Viz (containerDiv, url, options)
+}
+
+// Function to refresh the Tableau dashboard
+function refreshDashboard() {
+    if (viz) {
+        console.log("Refreshing Tableau dashboard...");
+        viz.refreshDataAsync().then(() => {
+            console.log("Dashboard refreshed.");
+        }).catch(err => console.error("Error refreshing dashboard:", err));
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initViz)
