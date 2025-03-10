@@ -873,6 +873,12 @@ async function uploadToGoogleSheets(filePath) {
         } else {
             console.log('No rows to add to Google Sheet');
         }
+
+        setTimeout(() => {
+            refreshDashboard(); // Refresh Tableau after upload
+        }, 5000); // Delay to ensure data syncs
+
+        document.addEventListener("DOMContentLoaded", initViz);
         
         return 'Upload successful';
     } catch (error) {
