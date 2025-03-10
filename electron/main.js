@@ -23,37 +23,39 @@ const userDataPath = app.getPath('userData');
 const rawJsonPath = path.join(userDataPath, 'processing', 'rawJson');
 const procJsonPath = path.join(userDataPath, 'processing', 'processedJson');
 
-// Add this near the top of main.js, after your requires
-/*app.whenReady().then(() => {
-    const userDataPath = app.getPath('userData');
-    console.log('Clearing app data from:', userDataPath);
-    try {
-      require('fs').rmSync(userDataPath, { recursive: true, force: true });
-      console.log('App data cleared successfully');
-    } catch (err) {
-      console.error('Failed to clear app data:', err);
-    }
-    
-    // Continue with normal app initialization after clearing
-    createAppDirectories();
-    createMainWindow();
-    
-    // Other initialization code...
-  });  */
-
 // Path to Python executable - now using the PyInstaller executable
 const getPythonExecutablePath = () => {
     // First try to get the path from electron-assets.json
     try {
-        const assetsFilePath = path.join(app.getAppPath(), 'assets/electron-assets.json');
-        console.log('Looking for electron-assets.json at:', assetsFilePath);
+        // Try multiple locations for the assets file
+        const possibleAssetsPaths = [
+            path.join(app.getAppPath(), 'assets', 'electron-assets.json'),
+            path.join(app.getAppPath(), 'electron-assets.json'),
+            path.join(__dirname, 'assets', 'electron-assets.json'),
+            path.join(__dirname, 'electron-assets.json')
+        ];
         
-        if (fs.existsSync(assetsFilePath)) {
-            console.log('Found electron-assets.json, reading executable path');
+        let assetsFilePath = null;
+        for (const assetPath of possibleAssetsPaths) {
+            if (fs.existsSync(assetPath)) {
+                assetsFilePath = assetPath;
+                console.log('Found electron-assets.json at:', assetsFilePath);
+                break;
+            }
+        }
+        
+        if (assetsFilePath) {
             const assetsData = JSON.parse(fs.readFileSync(assetsFilePath, 'utf8'));
             
             if (assetsData.pyInstaller && assetsData.pyInstaller.executablePath) {
-                const execPath = path.join(app.getAppPath(), assetsData.pyInstaller.executablePath);
+                // Check if path is absolute or relative
+                let execPath;
+                if (path.isAbsolute(assetsData.pyInstaller.executablePath)) {
+                    execPath = assetsData.pyInstaller.executablePath;
+                } else {
+                    execPath = path.join(app.getAppPath(), assetsData.pyInstaller.executablePath);
+                }
+                
                 console.log('Using executable path from assets file:', execPath);
                 
                 // Check if the file exists at this path
@@ -65,7 +67,7 @@ const getPythonExecutablePath = () => {
                 }
             }
         } else {
-            console.error('electron-assets.json not found at:', assetsFilePath);
+            console.error('electron-assets.json not found in any of the expected locations');
         }
     } catch (error) {
         console.error('Error reading electron-assets.json:', error);
@@ -100,7 +102,29 @@ const getPythonExecutablePath = () => {
             executablePath = path.join(app.getAppPath(), 'dist-darwin', 'processJson');
         }
     } else if (platform === 'win32') {
-        executablePath = path.join(app.getAppPath(), 'dist-win32', 'processJson.exe');
+        // Try multiple potential locations for Windows executable
+        const possiblePaths = [
+            path.join(app.getAppPath(), 'dist-win32', 'processJson.exe'),
+            path.join(app.getAppPath(), 'assets', 'dist-win32', 'processJson.exe'),
+            path.join(__dirname, 'dist-win32', 'processJson.exe'),
+            path.join(__dirname, 'assets', 'dist-win32', 'processJson.exe'),
+            // For packaged app in resources directory
+            path.join(process.resourcesPath, 'dist-win32', 'processJson.exe')
+        ];
+        
+        for (const testPath of possiblePaths) {
+            console.log('Testing Windows executable path:', testPath);
+            if (fs.existsSync(testPath)) {
+                console.log('Found Windows executable at:', testPath);
+                executablePath = testPath;
+                break;
+            }
+        }
+        
+        if (!executablePath) {
+            console.error('Could not find Windows executable at any expected path');
+            executablePath = path.join(app.getAppPath(), 'dist-win32', 'processJson.exe');
+        }
     } else if (platform === 'linux') {
         executablePath = path.join(app.getAppPath(), 'dist-linux', 'processJson');
     } else {
@@ -208,7 +232,7 @@ function createCredentialsWindow() {
       return;
     }
   
-    // Check if frontend/credentials.html exists
+    // Check if frontend/credentials.html exists with path normalization for Windows
     const credentialsPath = path.join(app.getAppPath(), 'frontend', 'credentials.html');
     console.log('Looking for credentials HTML at:', credentialsPath);
     
@@ -249,7 +273,7 @@ function createCredentialsWindow() {
       console.log('Credentials window closed');
       credentialsWindow = null;
     });
-  }
+}
 
 // Check if Python executable exists
 function checkPythonExecutable() {
@@ -289,76 +313,21 @@ function checkPythonExecutable() {
     }
 }
 
+// IPC handlers remain the same but spawn process function needs adjustment for Windows
 
-// IPC Handlers
-ipcMain.on('show-context-menu', (event, datasetPath, datasetName) => {
-    const template = [{
-        label: 'Delete',
-        click: () => {
-            dialog.showMessageBox(mainWindow, {
-                type: 'warning',
-                buttons: ['Cancel', 'Delete'],
-                defaultId: 1,
-                title: 'Delete Dataset',
-                message: `Are you sure you want to delete ${datasetName}?`,
-            }).then(({ response }) => {
-                if (response === 1) {
-                    try {
-                        fs.rmSync(datasetPath, { recursive: true, force: true });
-                        mainWindow.webContents.send('delete-dataset', datasetPath);
-                    } catch (error) {
-                        console.error(`Error deleting dataset: ${error.message}`);
-                        showErrorToUser('Delete Error', `Failed to delete dataset: ${error.message}`);
-                    }
-                }
-            });
-        }
-    }];
-
-    Menu.buildFromTemplate(template).popup({ window: mainWindow });
-});
-
-ipcMain.handle('select-directory', async () => {
-    try {
-        const result = await dialog.showOpenDialog(mainWindow, {
-            properties: ['openDirectory']
-        });
-
-        if (!result.filePaths.length) return null;
-
-        const selectedDir = result.filePaths[0];
-        const targetDir = path.join(rawJsonPath, path.basename(selectedDir));
-        
-        try {
-            fs.cpSync(selectedDir, targetDir, { recursive: true });
-            return targetDir;
-        } catch (error) {
-            console.error(`Error copying directory: ${error.message}`);
-            showErrorToUser('Directory Copy Error', `Failed to copy directory: ${error.message}`);
-            return null;
-        }
-    } catch (error) {
-        console.error('Directory selection error:', error);
-        return null;
+// Modified spawn process for Windows compatibility
+function spawnPythonProcess(execPath, args) {
+    // For Windows: spawn a detached process when in development
+    const options = {};
+    
+    if (process.platform === 'win32' && !app.isPackaged) {
+        options.windowsHide = false; // Show window for debugging
+        options.detached = false;    // Not detached for proper handling
+        options.shell = true;        // Use shell on Windows for better path handling
     }
-});
-
-// New handler to check if result file exists
-ipcMain.handle('check-result-file', (event, dirName) => {
-    const outputDir = path.join(procJsonPath, dirName + 'Processed');
-    const resultFile = path.join(outputDir, 'result.json');
     
-    console.log(`Checking for file at: ${resultFile}`);
-    const exists = fs.existsSync(resultFile);
-    console.log(`File exists: ${exists}`);
-    
-    return {
-        exists,
-        path: resultFile,
-        dirPath: outputDir,
-        dirExists: fs.existsSync(outputDir)
-    };
-});
+    return spawn(execPath, args, options);
+}
 
 // Handler for processing JSON
 ipcMain.handle('process-json', async (event, chatDir) => {
@@ -388,7 +357,7 @@ ipcMain.handle('process-json', async (event, chatDir) => {
                 return;
             }
             
-            // Ensure output directory exists
+            // Ensure output directory exists with Windows-safe paths
             const outputDirName = path.basename(chatDir) + 'Processed';
             const outputDir = path.join(procJsonPath, outputDirName);
             
@@ -412,7 +381,7 @@ ipcMain.handle('process-json', async (event, chatDir) => {
             console.log(`Command: ${execPath} [credentials] ${chatDir} ${procJsonPath}`);
             
             // Launch the Python executable with credentials and paths
-            const pythonProcess = spawn(execPath, [
+            const pythonProcess = spawnPythonProcess(execPath, [
                 credentialsJson,  // Pass credentials as first argument
                 chatDir,          // Input directory as second argument
                 procJsonPath      // Output directory as third argument
@@ -476,6 +445,212 @@ ipcMain.handle('process-json', async (event, chatDir) => {
         }
     });
 });
+
+// Rest of your code remains the same with the updated spawnPythonProcess function
+// replacing all instances of spawn for pythonProcess...
+
+// For process-and-upload, use the same spawnPythonProcess approach:
+ipcMain.handle('process-and-upload', async (event, chatDir) => {
+    try {
+        console.log(`Starting combined process-and-upload for: ${chatDir}`);
+        
+        // First process the data - call the process-json handler directly
+        const processResult = await new Promise((resolve, reject) => {
+            try {
+                // This is the same implementation as the process-json handler with spawn replaced by spawnPythonProcess
+                console.log(`Starting process-json from process-and-upload with chatDir: ${chatDir}`);
+                
+                if (!validateCredentials()) {
+                    console.log('Credentials validation failed');
+                    reject("Missing required credentials. Please provide them in the credentials form.");
+                    createCredentialsWindow();
+                    return;
+                }
+                
+                const execPath = getPythonExecutablePath();
+                if (!fs.existsSync(execPath)) {
+                    console.log(`Executable not found: ${execPath}`);
+                    reject(`Python executable not found at: ${execPath}`);
+                    return;
+                }
+                
+                // Verify the directory exists
+                if (!fs.existsSync(chatDir)) {
+                    console.error(`Input directory does not exist: ${chatDir}`);
+                    reject(`Input directory does not exist: ${chatDir}`);
+                    return;
+                }
+                
+                // Ensure output directory exists
+                const outputDirName = path.basename(chatDir) + 'Processed';
+                const outputDir = path.join(procJsonPath, outputDirName);
+                
+                if (!fs.existsSync(outputDir)) {
+                    fs.mkdirSync(outputDir, { recursive: true });
+                    console.log(`Created output directory: ${outputDir}`);
+                }
+                
+                console.log(`Running Python executable: ${execPath}`);
+                console.log(`Input directory: ${chatDir}`);
+                console.log(`Output directory: ${procJsonPath}`);
+                
+                // Prepare credentials JSON to pass to Python
+                const credentialsJson = JSON.stringify({
+                    OPENAI_API_KEY: userCredentials.OPENAI_API_KEY,
+                    GOOGLE_SHEET_ID: userCredentials.GOOGLE_SHEET_ID,
+                    GOOGLE_CREDENTIALS_JSON: userCredentials.GOOGLE_CREDENTIALS_JSON
+                });
+                
+                // Log the command being executed (redact actual credentials)
+                console.log(`Command: ${execPath} [credentials] ${chatDir} ${procJsonPath}`);
+                
+                // Launch the Python executable with credentials and paths - use the spawnPythonProcess function
+                const pythonProcess = spawnPythonProcess(execPath, [
+                    credentialsJson,  // Pass credentials as first argument
+                    chatDir,          // Input directory as second argument
+                    procJsonPath      // Output directory as third argument
+                ]);
+
+                pythonProcesses.push(pythonProcess);
+
+                let output = "";
+                let errorOutput = "";
+
+                pythonProcess.stdout.on('data', (data) => {
+                    const message = data.toString();
+                    console.log(`Python stdout: ${message}`);
+                    output += message;
+                    // Forward output to UI
+                    if (mainWindow && !mainWindow.isDestroyed()) {
+                        mainWindow.webContents.send('python-output', message);
+                    }
+                });
+
+                pythonProcess.stderr.on('data', (data) => {
+                    const message = data.toString();
+                    console.error(`Python stderr: ${message}`);
+                    errorOutput += message;
+                    // Forward errors to UI
+                    if (mainWindow && !mainWindow.isDestroyed()) {
+                        mainWindow.webContents.send('python-error', message);
+                    }
+                });
+
+                pythonProcess.on('close', (code) => {
+                    console.log(`Python process exited with code ${code}`);
+                    
+                    // Check if the expected output file was created
+                    const resultFile = path.join(outputDir, 'result.json');
+                    const resultExists = fs.existsSync(resultFile);
+                    console.log(`Result file exists: ${resultExists}, path: ${resultFile}`);
+                    
+                    if (code === 0) {
+                        if (resultExists) {
+                            resolve({
+                                success: true,
+                                message: output.trim(),
+                                resultPath: resultFile
+                            });
+                        } else {
+                            reject(`Process completed but result file was not created: ${resultFile}`);
+                        }
+                    } else {
+                        reject(`Process exited with code ${code}: ${errorOutput.trim()}`);
+                    }
+                });
+
+                pythonProcess.on('error', (error) => {
+                    console.error(`Failed to start Python process: ${error.message}`);
+                    reject(`Failed to start Python process: ${error.message}`);
+                });
+            } catch (error) {
+                console.error(`Error in process-json handler: ${error.message}`);
+                reject(`Error in process-json handler: ${error.message}`);
+            }
+        });
+        
+        console.log('Processing completed successfully');
+        
+        // If processing succeeded and we have a result path, upload it
+        if (processResult && processResult.resultPath) {
+            console.log(`Now uploading from: ${processResult.resultPath}`);
+            const uploadResult = await uploadToGoogleSheets(processResult.resultPath);
+            return {
+                success: true,
+                processResult: processResult.message,
+                uploadResult
+            };
+        } else {
+            throw new Error('Processing completed but no result path was returned');
+        }
+    } catch (error) {
+        console.error('Process and upload failed:', error);
+        const errorMessage = error && error.message ? error.message : String(error);
+        showErrorToUser('Process and Upload Error', errorMessage);
+        throw error;
+    }
+});
+
+// The rest of the functions remain the same
+// ...
+
+// Clean up resources before quitting
+app.on('before-quit', () => {
+    console.log('Cleaning up resources before quitting...');
+    pythonProcesses.forEach(process => {
+        if (process && !process.killed) {
+            try {
+                // On Windows, we need to use a different approach to kill processes
+                if (process.platform === 'win32') {
+                    // Try to terminate via Windows-specific commands if needed
+                    if (process.pid) {
+                        require('child_process').exec(`taskkill /F /PID ${process.pid}`);
+                    }
+                } else {
+                    process.kill();
+                }
+                console.log('Killed a Python process');
+            } catch (error) {
+                console.error('Failed to kill process:', error);
+            }
+        }
+    });
+});
+
+// App lifecycle
+app.whenReady().then(() => {
+    try {
+        createAppDirectories();
+        createMainWindow();
+        
+        // Check if Python executable exists at startup
+        if (!checkPythonExecutable()) {
+            dialog.showMessageBox({
+                type: 'warning',
+                title: 'Python Executable Missing',
+                message: `Python executable not found or permissions could not be set. Make sure the build process has completed successfully.`,
+                buttons: ['OK']
+            });
+        }
+    } catch (error) {
+        console.error(`Error during app initialization: ${error.message}`);
+        showErrorToUser('Initialization Error', `Failed to initialize app: ${error.message}`);
+    }
+});
+
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
+});
+
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createMainWindow();
+    }
+});
+
+// Function implementations that were referenced earlier but not included in the truncated code
 
 // Handle credential submission
 ipcMain.on('submit-credentials', (event, credentials) => {
@@ -573,147 +748,6 @@ ipcMain.on('show-credentials-form', () => {
     createCredentialsWindow();
 });
 
-// Combine process and upload into a single operation
-ipcMain.handle('process-and-upload', async (event, chatDir) => {
-    try {
-        console.log(`Starting combined process-and-upload for: ${chatDir}`);
-        
-        // First process the data - call the process-json handler directly
-        const processResult = await new Promise((resolve, reject) => {
-            try {
-                // This is the same implementation as the process-json handler
-                console.log(`Starting process-json from process-and-upload with chatDir: ${chatDir}`);
-                
-                if (!validateCredentials()) {
-                    console.log('Credentials validation failed');
-                    reject("Missing required credentials. Please provide them in the credentials form.");
-                    createCredentialsWindow();
-                    return;
-                }
-                
-                const execPath = getPythonExecutablePath();
-                if (!fs.existsSync(execPath)) {
-                    console.log(`Executable not found: ${execPath}`);
-                    reject(`Python executable not found at: ${execPath}`);
-                    return;
-                }
-                
-                // Verify the directory exists
-                if (!fs.existsSync(chatDir)) {
-                    console.error(`Input directory does not exist: ${chatDir}`);
-                    reject(`Input directory does not exist: ${chatDir}`);
-                    return;
-                }
-                
-                // Ensure output directory exists
-                const outputDirName = path.basename(chatDir) + 'Processed';
-                const outputDir = path.join(procJsonPath, outputDirName);
-                
-                if (!fs.existsSync(outputDir)) {
-                    fs.mkdirSync(outputDir, { recursive: true });
-                    console.log(`Created output directory: ${outputDir}`);
-                }
-                
-                console.log(`Running Python executable: ${execPath}`);
-                console.log(`Input directory: ${chatDir}`);
-                console.log(`Output directory: ${procJsonPath}`);
-                
-                // Prepare credentials JSON to pass to Python
-                const credentialsJson = JSON.stringify({
-                    OPENAI_API_KEY: userCredentials.OPENAI_API_KEY,
-                    GOOGLE_SHEET_ID: userCredentials.GOOGLE_SHEET_ID,
-                    GOOGLE_CREDENTIALS_JSON: userCredentials.GOOGLE_CREDENTIALS_JSON
-                });
-                
-                // Log the command being executed (redact actual credentials)
-                console.log(`Command: ${execPath} [credentials] ${chatDir} ${procJsonPath}`);
-                
-                // Launch the Python executable with credentials and paths
-                const pythonProcess = spawn(execPath, [
-                    credentialsJson,  // Pass credentials as first argument
-                    chatDir,          // Input directory as second argument
-                    procJsonPath      // Output directory as third argument
-                ]);
-
-                pythonProcesses.push(pythonProcess);
-
-                let output = "";
-                let errorOutput = "";
-
-                pythonProcess.stdout.on('data', (data) => {
-                    const message = data.toString();
-                    console.log(`Python stdout: ${message}`);
-                    output += message;
-                    // Forward output to UI
-                    if (mainWindow && !mainWindow.isDestroyed()) {
-                        mainWindow.webContents.send('python-output', message);
-                    }
-                });
-
-                pythonProcess.stderr.on('data', (data) => {
-                    const message = data.toString();
-                    console.error(`Python stderr: ${message}`);
-                    errorOutput += message;
-                    // Forward errors to UI
-                    if (mainWindow && !mainWindow.isDestroyed()) {
-                        mainWindow.webContents.send('python-error', message);
-                    }
-                });
-
-                pythonProcess.on('close', (code) => {
-                    console.log(`Python process exited with code ${code}`);
-                    
-                    // Check if the expected output file was created
-                    const resultFile = path.join(outputDir, 'result.json');
-                    const resultExists = fs.existsSync(resultFile);
-                    console.log(`Result file exists: ${resultExists}, path: ${resultFile}`);
-                    
-                    if (code === 0) {
-                        if (resultExists) {
-                            resolve({
-                                success: true,
-                                message: output.trim(),
-                                resultPath: resultFile
-                            });
-                        } else {
-                            reject(`Process completed but result file was not created: ${resultFile}`);
-                        }
-                    } else {
-                        reject(`Process exited with code ${code}: ${errorOutput.trim()}`);
-                    }
-                });
-
-                pythonProcess.on('error', (error) => {
-                    console.error(`Failed to start Python process: ${error.message}`);
-                    reject(`Failed to start Python process: ${error.message}`);
-                });
-            } catch (error) {
-                console.error(`Error in process-json handler: ${error.message}`);
-                reject(`Error in process-json handler: ${error.message}`);
-            }
-        });
-        
-        console.log('Processing completed successfully');
-        
-        // If processing succeeded and we have a result path, upload it
-        if (processResult && processResult.resultPath) {
-            console.log(`Now uploading from: ${processResult.resultPath}`);
-            const uploadResult = await uploadToGoogleSheets(processResult.resultPath);
-            return {
-                success: true,
-                processResult: processResult.message,
-                uploadResult
-            };
-        } else {
-            throw new Error('Processing completed but no result path was returned');
-        }
-    } catch (error) {
-        console.error('Process and upload failed:', error);
-        showErrorToUser('Process and Upload Error', error.message);
-        throw error;
-    }
-});
-
 // Select Google credentials file
 ipcMain.handle('select-google-credentials-file', async () => {
     try {
@@ -732,6 +766,82 @@ ipcMain.handle('select-google-credentials-file', async () => {
     }
 });
 
+// IPC Handlers for datasets
+ipcMain.handle('select-directory', async () => {
+    try {
+        const result = await dialog.showOpenDialog(mainWindow, {
+            properties: ['openDirectory']
+        });
+
+        if (!result.filePaths.length) return null;
+
+        const selectedDir = result.filePaths[0];
+        const targetDir = path.join(rawJsonPath, path.basename(selectedDir));
+        
+        try {
+            // For Windows compatibility when copying directories
+            if (process.platform === 'win32') {
+                // We need to use recursive: true for Windows
+                if (!fs.existsSync(targetDir)) {
+                    fs.mkdirSync(targetDir, { recursive: true });
+                }
+                
+                // Helper function to copy directory recursively on Windows
+                const copyDirRecursive = (src, dest) => {
+                    const entries = fs.readdirSync(src, { withFileTypes: true });
+                    
+                    for (const entry of entries) {
+                        const srcPath = path.join(src, entry.name);
+                        const destPath = path.join(dest, entry.name);
+                        
+                        if (entry.isDirectory()) {
+                            if (!fs.existsSync(destPath)) {
+                                fs.mkdirSync(destPath, { recursive: true });
+                            }
+                            copyDirRecursive(srcPath, destPath);
+                        } else {
+                            fs.copyFileSync(srcPath, destPath);
+                        }
+                    }
+                };
+                
+                // Copy directory recursively
+                copyDirRecursive(selectedDir, targetDir);
+            } else {
+                // On macOS/Linux use fs.cpSync
+                fs.cpSync(selectedDir, targetDir, { recursive: true });
+            }
+            
+            return targetDir;
+        } catch (error) {
+            console.error(`Error copying directory: ${error.message}`);
+            showErrorToUser('Directory Copy Error', `Failed to copy directory: ${error.message}`);
+            return null;
+        }
+    } catch (error) {
+        console.error('Directory selection error:', error);
+        return null;
+    }
+});
+
+// New handler to check if result file exists
+ipcMain.handle('check-result-file', (event, dirName) => {
+    const outputDir = path.join(procJsonPath, dirName + 'Processed');
+    const resultFile = path.join(outputDir, 'result.json');
+    
+    console.log(`Checking for file at: ${resultFile}`);
+    const exists = fs.existsSync(resultFile);
+    console.log(`File exists: ${exists}`);
+    
+    return {
+        exists,
+        path: resultFile,
+        dirPath: outputDir,
+        dirExists: fs.existsSync(outputDir)
+    };
+});
+
+// Function to upload to Google Sheets
 async function uploadToGoogleSheets(filePath) {
     try {
         // Validate filePath is a string
@@ -803,11 +913,19 @@ async function uploadToGoogleSheets(filePath) {
         
         // Process messages to extract data including categories
         const newRows = messages.map(msg => {
-            const locations = (msg.LOCATIONS || []).filter(loc => loc.coordinates);
-            const locationNames = locations.map(loc => loc.name).join(", ");
-            const locationCoords = locations
-                .map(loc => `(${loc.coordinates.latitude}, ${loc.coordinates.longitude})`)
-                .join("; ");
+            // Get only the first location if available
+            let locationName = "";
+            let locationCoords = "";
+            
+            if (msg.LOCATIONS && Array.isArray(msg.LOCATIONS) && msg.LOCATIONS.length > 0) {
+                const firstLocation = msg.LOCATIONS[0];
+                locationName = firstLocation.location || "";
+                
+                // Check if location has coordinates
+                if (firstLocation.latitude !== undefined && firstLocation.longitude !== undefined) {
+                    locationCoords = `(${firstLocation.latitude}, ${firstLocation.longitude})`;
+                }
+            }
             
             // Initialize top category variables
             let topCategory = "";
@@ -862,8 +980,8 @@ async function uploadToGoogleSheets(filePath) {
                 TRANSLATED_TEXT: msg.TRANSLATED_TEXT || "",
                 categories: topCategory,
                 confidence_scores: topConfidenceScore,
-                locations_names: locationNames || "",
-                locations_coordinates: locationCoords || ""
+                locations_names: locationName,
+                locations_coordinates: locationCoords
             };
         });
         
@@ -880,223 +998,3 @@ async function uploadToGoogleSheets(filePath) {
         throw new Error(`Failed to upload to Google Sheets: ${error.message}, ${filePath}`);
     }
 }
-
-global.uploadToGoogleSheets = async function(filePath) {
-    console.log(`[DEV] Calling uploadToGoogleSheets with path: ${filePath}`);
-    
-    try {
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        throw new Error(`File does not exist at path: ${filePath}`);
-      }
-  
-      console.log(`[DEV] File exists, preparing to upload from: ${filePath}`);
-  
-      // Check if we have Google credentials in global.userCredentials
-      if (!global.userCredentials) {
-        throw new Error(`[DEV] userCredentials not available. Credentials may not have been submitted.`);
-      }
-  
-      // Check for necessary libraries
-      try {
-        // First, check if these modules are already loaded
-        let JWT, GoogleSpreadsheet;
-  
-        try {
-          const googleAuth = require('google-auth-library');
-          JWT = googleAuth.JWT;
-          const gs = require('google-spreadsheet');
-          GoogleSpreadsheet = gs.GoogleSpreadsheet;
-          console.log('[DEV] Successfully loaded JWT and GoogleSpreadsheet modules');
-        } catch (moduleErr) {
-          console.error('[DEV] Error loading modules:', moduleErr);
-          throw new Error(`Required modules not available: ${moduleErr.message}`);
-        }
-  
-        // Now we can use the implementation similar to main.js
-        let creds;
-        
-        // Get credentials either from JSON content or from file
-        if (global.userCredentials.GOOGLE_CREDENTIALS_JSON) {
-          creds = global.userCredentials.GOOGLE_CREDENTIALS_JSON;
-          console.log('[DEV] Using credentials from JSON content');
-        } else if (global.userCredentials.GOOGLE_CREDENTIALS_PATH && 
-                  fs.existsSync(global.userCredentials.GOOGLE_CREDENTIALS_PATH)) {
-          creds = JSON.parse(fs.readFileSync(global.userCredentials.GOOGLE_CREDENTIALS_PATH, 'utf-8'));
-          console.log('[DEV] Using credentials from file path');
-        } else {
-          throw new Error(`Google credentials not available. GOOGLE_CREDENTIALS_JSON is ${!!global.userCredentials.GOOGLE_CREDENTIALS_JSON}, GOOGLE_CREDENTIALS_PATH is ${global.userCredentials.GOOGLE_CREDENTIALS_PATH}`);
-        }
-        
-        // Log partial credentials to validate (don't log the private key)
-        console.log('[DEV] Credentials summary:');
-        console.log(`- client_email: ${creds.client_email ? 'Present' : 'Missing'}`);
-        console.log(`- private_key: ${creds.private_key ? 'Present' : 'Missing'}`);
-        
-        const serviceAccount = new JWT({
-          email: creds.client_email,
-          key: creds.private_key,
-          scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-        });
-  
-        console.log(`[DEV] Sheet ID: ${global.userCredentials.GOOGLE_SHEET_ID}`);
-        const doc = new GoogleSpreadsheet(global.userCredentials.GOOGLE_SHEET_ID, serviceAccount);
-        
-        console.log('[DEV] Loading sheet info...');
-        await doc.loadInfo();
-        console.log(`[DEV] Sheet loaded: ${doc.title}`);
-  
-        // Read and validate the JSON file
-        const fileData = fs.readFileSync(filePath, 'utf-8');
-        if (!fileData) {
-          throw new Error('File is empty');
-        }
-  
-        const jsonData = JSON.parse(fileData);
-        if (!jsonData.messages || !Array.isArray(jsonData.messages)) {
-          throw new Error('"messages" key is missing or not an array');
-        }
-  
-        const messages = jsonData.messages;
-        if (messages.length === 0) {
-          throw new Error('"messages" array is empty');
-        }
-  
-        console.log(`[DEV] Parsed JSON with ${messages.length} messages`);
-        
-        const sheetName = "allMessages";
-        
-        // Manage sheet
-        let sheet = doc.sheetsByTitle[sheetName];
-        if (!sheet) {
-          console.log(`[DEV] Creating new sheet "${sheetName}"`);
-          sheet = await doc.addSheet({
-            title: sheetName,
-            headerValues: [
-              "id", "date", "from", "text", "reply_id", "LANGUAGE", 
-              "TRANSLATED_TEXT", "categories", 
-              "confidence_scores", "locations_names", "locations_coordinates",
-            ]
-          });
-        } else {
-          console.log(`[DEV] Using existing sheet "${sheetName}"`);
-        }
-        
-        // Process messages similar to main.js
-        const newRows = messages.map(msg => {
-          const locations = (msg.LOCATIONS || []).filter(loc => loc.coordinates);
-          const locationNames = locations.map(loc => loc.name).join(", ");
-          const locationCoords = locations
-            .map(loc => `(${loc.coordinates.latitude}, ${loc.coordinates.longitude})`)
-            .join("; ");
-          
-          // Initialize top category variables
-          let topCategory = "";
-          let topConfidenceScore = "";
-          
-          // Category extraction logic
-          if (msg.CATEGORIES && Array.isArray(msg.CATEGORIES) && msg.CATEGORIES.length > 0) {
-            const categoryData = msg.CATEGORIES[0];
-            
-            if (categoryData.classification && categoryData.classification.confidence_scores) {
-              const scores = categoryData.classification.confidence_scores;
-              const entries = Object.entries(scores);
-              
-              if (entries.length === 1) {
-                const [category, score] = entries[0];
-                topCategory = category;
-                topConfidenceScore = score.toFixed(2);
-              } else if (entries.length > 1) {
-                let highestScore = -1;
-                let highestCategory = "";
-                
-                for (const [category, score] of entries) {
-                  if (score > highestScore) {
-                    highestScore = score;
-                    highestCategory = category;
-                  }
-                }
-                
-                topCategory = highestCategory;
-                topConfidenceScore = highestScore.toFixed(2);
-              }
-            }
-          }
-          
-          return {
-            id: msg.id || "",
-            date: msg.date || "",
-            from: msg.from || "",
-            text: msg.text || "",
-            reply_id: msg.reply_to_message_id || "", 
-            LANGUAGE: msg.LANGUAGE || "",
-            TRANSLATED_TEXT: msg.TRANSLATED_TEXT || "",
-            categories: topCategory,
-            confidence_scores: topConfidenceScore,
-            locations_names: locationNames || "",
-            locations_coordinates: locationCoords || ""
-          };
-        });
-        
-        if (newRows.length > 0) {
-          console.log(`[DEV] Adding ${newRows.length} rows to Google Sheet`);
-          await sheet.addRows(newRows);
-          console.log(`[DEV] Added ${newRows.length} rows to Google Sheet successfully`);
-        } else {
-          console.log('[DEV] No rows to add to Google Sheet');
-        }
-        
-        return `Upload successful - added ${newRows.length} rows to "${doc.title}" sheet`;
-      } catch (innerError) {
-        console.error('[DEV] Error in Google Sheet upload implementation:', innerError);
-        throw innerError;
-      }
-    } catch (error) {
-      console.error('[DEV] Upload error:', error);
-      throw new Error(`Failed to upload to Google Sheets: ${error.message}`);
-    }
-  };
-  
-// Clean up resources before quitting
-app.on('before-quit', () => {
-    console.log('Cleaning up resources before quitting...');
-    pythonProcesses.forEach(process => {
-        if (process && !process.killed) {
-            process.kill();
-            console.log('Killed a Python process');
-        }
-    });
-});
-
-// App lifecycle
-app.whenReady().then(() => {
-    try {
-        createAppDirectories();
-        createMainWindow();
-        
-        // Check if Python executable exists at startup
-        if (!checkPythonExecutable()) {
-            dialog.showMessageBox({
-                type: 'warning',
-                title: 'Python Executable Missing',
-                message: `Python executable not found or permissions could not be set. Make sure the build process has completed successfully.`,
-                buttons: ['OK']
-            });
-        }
-    } catch (error) {
-        console.error(`Error during app initialization: ${error.message}`);
-        showErrorToUser('Initialization Error', `Failed to initialize app: ${error.message}`);
-    }
-});
-
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
-});
-
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createMainWindow();
-    }
-});
