@@ -1037,7 +1037,7 @@ async function uploadToGoogleSheets(filePath) {
             sheet = await doc.addSheet({
                 title: sheetName,
                 headerValues: [
-                    "id", "date", "from", "text", "reply_id", "LANGUAGE", 
+                    "id", "date", "date_unixtime", "from", "text", "reply_id", "LANGUAGE", 
                     "TRANSLATED_TEXT", "categories", 
                     "confidence_scores", "locations_names", "locations_coordinates",
                 ]
@@ -1106,8 +1106,9 @@ async function uploadToGoogleSheets(filePath) {
             return {
                 id: msg.id || "",
                 date: msg.date || "",
+                date_unixtime: msg.date_unixtime || "",
                 from: msg.from || "",
-                text: msg.text || "",
+                text: msg.text ? msg.text.toString().normalize("NFC") : "", // Normalize text
                 reply_id: msg.reply_to_message_id || "", 
                 LANGUAGE: msg.LANGUAGE || "",
                 TRANSLATED_TEXT: msg.TRANSLATED_TEXT || "",
