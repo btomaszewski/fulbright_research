@@ -526,9 +526,9 @@ def categorize(text):
         classification_result = classifier.predict_categories(cleaned_text, original_text)
         
         # Format the result for Google Sheets compatibility
-        # We'll create a structure that matches what the Google Sheets uploader expects
         confidence_scores = classification_result.get("confidence_scores", {})
         categories = classification_result.get("categories", [])
+        hierarchy_info = classification_result.get("hierarchy_info", {})
         
         # Create return object in format expected by main.py
         result = [{
@@ -550,18 +550,38 @@ def categorize(text):
             # Create the result object in the format expected by Google Sheets uploader
             result[0]["classification"]["categories"] = categories
             
+            # Find the top child category if available
+            top_child_category = None
+            top_child_score = 0
+            
+            for cat, score in sorted_categories:
+                # Check if this category is a child
+                if cat in hierarchy_info and hierarchy_info[cat].get("type") == "child":
+                    top_child_category = cat
+                    top_child_score = score
+                    break
+            
+            # Add top child category to result if found
+            if top_child_category:
+                result[0]["classification"]["top_child_category"] = top_child_category
+                result[0]["classification"]["top_child_score"] = top_child_score
+            
             # This exactly matches the format used in the Google Sheets uploader
-            # See the uploadToGoogleSheets function in your JS code
-            result[0]["classification"]["formatted_output"] = {
-                "categories": ";".join([cat for cat, _ in sorted_categories]), 
-                "confidence_scores": ";".join([f"{cat}: {score:.2f}" for cat, score in sorted_categories])
+            # Now include the top child category in formatted output if available
+            formatted_categories = ";".join([cat for cat, _ in sorted_categories])
+            formatted_scores = ";".join([f"{cat}: {score:.2f}" for cat, score in sorted_categories])
+            
+            formatted_output = {
+                "categories": formatted_categories,
+                "confidence_scores": formatted_scores
             }
             
-            # Hierarchy data is commented out as requested, but available
-            """
-            if "hierarchy_info" in classification_result:
-                result[0]["classification"]["hierarchy_info"] = classification_result["hierarchy_info"]
-            """
+            # Add top child category to formatted output
+            if top_child_category:
+                formatted_output["top_child_category"] = top_child_category
+                formatted_output["top_child_score"] = f"{top_child_score:.2f}"
+            
+            result[0]["classification"]["formatted_output"] = formatted_output
         
         logger.info(f"Categorization complete. Found categories: {result}")
         return result
@@ -572,6 +592,7 @@ def categorize(text):
         logger.error(traceback.format_exc())
         return [{"classification": {"error": str(e)}}]
 
+    
 # For testing
 if __name__ == "__main__":
     # Test the categorization function
