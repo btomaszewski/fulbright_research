@@ -7,7 +7,7 @@ const url = "https://public.tableau.com/views/AegisAnalytics/Dashboard1?:languag
 const options = {
     hideTabs: true,
     height: 800,
-    width: "100%",
+    width: 900,
     borderRadius: "0.625rem",
     device: "desktop",
     onFirstInteractive: function () {
