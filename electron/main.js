@@ -1,164 +1,24 @@
 const { app, BrowserWindow, dialog, ipcMain, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { spawn } = require("child_process");
 const os = require("os");
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
+const axios = require('axios'); // For making API calls to Cloud Run
 require("dotenv").config();
-
-// Track spawned processes for cleanup 
-let pythonProcesses = [];
 
 // User credentials container - will be populated via UI
 let userCredentials = {
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY || null,
     GOOGLE_CREDENTIALS_PATH: process.env.GOOGLE_CREDENTIALS_PATH || null,
     GOOGLE_SHEET_ID: process.env.GOOGLE_SHEET_ID || null,
-    GOOGLE_CREDENTIALS_JSON: null // Will hold the actual JSON content
+    GOOGLE_CREDENTIALS_JSON: null, // Will hold the actual JSON content
+    CLOUD_RUN_URL: process.env.CLOUD_RUN_URL || 'https://processjson-1061451118144.us-central1.run.app' // Cloud Run service URL
 };
 
 // Application paths - ensure consistent path handling across platforms
 const userDataPath = app.getPath('userData');
 const rawJsonPath = path.join(userDataPath, 'processing', 'rawJson');
 const procJsonPath = path.join(userDataPath, 'processing', 'processedJson');
-
-// Path to Python executable - now using the PyInstaller executable
-const getPythonExecutablePath = () => {
-    // First try to get the path from electron-assets.json
-    try {
-        // Try multiple locations for the assets file
-        const possibleAssetsPaths = [
-            path.join(app.getAppPath(), 'assets', 'electron-assets.json'),
-            path.join(app.getAppPath(), 'electron-assets.json'),
-            path.join(__dirname, 'assets', 'electron-assets.json'),
-            path.join(__dirname, 'electron-assets.json')
-        ];
-        
-        let assetsFilePath = null;
-        for (const assetPath of possibleAssetsPaths) {
-            if (fs.existsSync(assetPath)) {
-                assetsFilePath = assetPath;
-                console.log('Found electron-assets.json at:', assetsFilePath);
-                break;
-            }
-        }
-        
-        if (assetsFilePath) {
-            const assetsData = JSON.parse(fs.readFileSync(assetsFilePath, 'utf8'));
-            
-            if (assetsData.pyInstaller && assetsData.pyInstaller.executablePath) {
-                // Check if path is absolute or relative
-                let execPath;
-                if (path.isAbsolute(assetsData.pyInstaller.executablePath)) {
-                    execPath = assetsData.pyInstaller.executablePath;
-                } else {
-                    execPath = path.join(app.getAppPath(), assetsData.pyInstaller.executablePath);
-                }
-                
-                console.log('Using executable path from assets file:', execPath);
-                
-                // Check if the file exists at this path
-                if (fs.existsSync(execPath)) {
-                    return execPath;
-                } else {
-                    console.error(`Executable not found at path from assets file: ${execPath}`);
-                    // Continue to fallback
-                }
-            }
-        } else {
-            console.error('electron-assets.json not found in any of the expected locations');
-        }
-    } catch (error) {
-        console.error('Error reading electron-assets.json:', error);
-        // Continue to fallback method
-    }
-    
-    // Fallback to hardcoded paths if electron-assets.json doesn't provide the path
-    console.log('Using hardcoded executable path');
-    const platform = process.platform;
-    let executablePath;
-    
-    if (platform === 'darwin') {
-        // Try multiple potential locations in order of likelihood
-        const possiblePaths = [
-            path.join(app.getAppPath(), 'dist-darwin', 'processJson'),
-            path.join(app.getAppPath(), 'assets', 'dist-darwin', 'processJson'),
-            path.join(__dirname, 'dist-darwin', 'processJson'),
-            path.join(__dirname, 'assets', 'dist-darwin', 'processJson')
-        ];
-        
-        for (const testPath of possiblePaths) {
-            console.log('Testing path:', testPath);
-            if (fs.existsSync(testPath)) {
-                console.log('Found executable at:', testPath);
-                executablePath = testPath;
-                break;
-            }
-        }
-        
-        if (!executablePath) {
-            console.error('Could not find executable at any expected path');
-            executablePath = path.join(app.getAppPath(), 'dist-darwin', 'processJson');
-        }
-    } else if (platform === 'win32') {
-        // Try multiple potential locations for Windows executable
-        const possiblePaths = [
-            path.join(app.getAppPath(), 'dist-win32', 'processJson.exe'),
-            path.join(app.getAppPath(), 'assets', 'dist-win32', 'processJson.exe'),
-            path.join(__dirname, 'dist-win32', 'processJson.exe'),
-            path.join(__dirname, 'assets', 'dist-win32', 'processJson.exe'),
-            // For packaged app in resources directory
-            path.join(process.resourcesPath, 'dist-win32', 'processJson.exe'),
-            // Additional common locations for Windows
-            path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-win32', 'processJson.exe'),
-            path.join(app.getAppPath(), 'app.asar.unpacked', 'dist-win32', 'processJson.exe')
-        ];
-        
-        for (const testPath of possiblePaths) {
-            console.log('Testing Windows executable path:', testPath);
-            if (fs.existsSync(testPath)) {
-                console.log('Found Windows executable at:', testPath);
-                executablePath = testPath;
-                break;
-            }
-        }
-        
-        if (!executablePath) {
-            console.error('Could not find Windows executable at any expected path');
-            executablePath = path.join(app.getAppPath(), 'dist-win32', 'processJson.exe');
-        }
-    } else if (platform === 'linux') {
-        executablePath = path.join(app.getAppPath(), 'dist-linux', 'processJson');
-    } else {
-        throw new Error(`Unsupported platform: ${platform}`);
-    }
-    
-    console.log('Final executable path:', executablePath);
-    return executablePath;
-};
-
-// Validate credentials with improved whitespace handling
-function validateCredentials() {
-    const requiredCredentials = ['OPENAI_API_KEY', 'GOOGLE_SHEET_ID'];
-    const missingCreds = requiredCredentials.filter(cred => {
-        // Check if credential exists and is not just whitespace
-        return !userCredentials[cred] || (typeof userCredentials[cred] === 'string' && userCredentials[cred].trim() === '');
-    });
-    
-    // Special check for Google credentials - either path or JSON must be present
-    const hasGoogleCreds = (
-        (userCredentials.GOOGLE_CREDENTIALS_PATH && userCredentials.GOOGLE_CREDENTIALS_PATH.trim() !== '') || 
-        (userCredentials.GOOGLE_CREDENTIALS_JSON && Object.keys(userCredentials.GOOGLE_CREDENTIALS_JSON).length > 0)
-    );
-    
-    if (missingCreds.length > 0 || !hasGoogleCreds) {
-        console.log('Credential validation failed. Missing:', missingCreds.join(', '));
-        console.log('Google creds:', hasGoogleCreds);
-        return false;
-    }
-    return true;
-}
 
 // Helper function to show errors to users
 function showErrorToUser(title, message) {
@@ -294,390 +154,198 @@ function createCredentialsWindow() {
     });
 }
 
-// Check if Python executable exists
-function checkPythonExecutable() {
-    try {
-        const execPath = getPythonExecutablePath();
-        if (!fs.existsSync(execPath)) {
-            const errorMsg = `Python executable not found at: ${execPath}`;
-            console.error(errorMsg);
-            return false;
-        }
-        
-        console.log(`Python executable found at: ${execPath}`);
-        // Make executable (chmod +x) for macOS and Linux with more verbose output
-        if (process.platform !== 'win32') {
-            try {
-                fs.chmodSync(execPath, '755');
-                console.log(`Successfully set executable permissions on: ${execPath}`);
-                
-                // Verify permissions were set correctly
-                const stats = fs.statSync(execPath);
-                const octalPermissions = '0' + (stats.mode & parseInt('777', 8)).toString(8);
-                console.log(`Permissions on executable: ${octalPermissions}`);
-                
-                if ((stats.mode & parseInt('111', 8)) === 0) {
-                    console.error(`ERROR: Executable permissions not set correctly`);
-                    return false;
-                }
-            } catch (permissionError) {
-                console.error(`Failed to set permissions: ${permissionError}`);
-                return false;
-            }
-        }
-        return true;
-    } catch (error) {
-        console.error(`Error checking Python executable: ${error.message}`);
+// Validate credentials
+function validateCredentials() {
+    const requiredCredentials = ['GOOGLE_SHEET_ID'];
+    const missingCreds = requiredCredentials.filter(cred => {
+        // Check if credential exists and is not just whitespace
+        return !userCredentials[cred] || (typeof userCredentials[cred] === 'string' && userCredentials[cred].trim() === '');
+    });
+    
+    // Special check for Google credentials - either path or JSON must be present
+    const hasGoogleCreds = (
+        (userCredentials.GOOGLE_CREDENTIALS_PATH && userCredentials.GOOGLE_CREDENTIALS_PATH.trim() !== '') || 
+        (userCredentials.GOOGLE_CREDENTIALS_JSON && Object.keys(userCredentials.GOOGLE_CREDENTIALS_JSON).length > 0)
+    );
+    
+    if (missingCreds.length > 0 || !hasGoogleCreds) {
+        console.log('Credential validation failed. Missing:', missingCreds.join(', '));
+        console.log('Google creds:', hasGoogleCreds);
         return false;
     }
+    return true;
 }
 
-// Modified spawn process for Windows compatibility
-function spawnPythonProcess(execPath, args) {
-    // Normalize path for Windows
-    execPath = path.normalize(execPath);
-    
-    const options = {
-        windowsHide: true
-    };
-    
-    if (process.platform === 'win32') {
-        options.shell = true;  // Use shell on Windows for better path handling
-        
-        // Make sure credentials JSON is properly formatted
-        if (args[0] && typeof args[0] === 'string') {
-            try {
-                // If it's already a JSON string, parse it first
-                const credentials = JSON.parse(args[0]);
-                // Re-stringify with proper formatting and escaping
-                args[0] = JSON.stringify(credentials);
-            } catch (e) {
-                // If it fails to parse, it might not be JSON or might need escaping
-                console.warn("Ensuring JSON string is properly formatted:", e);
-                // Try to escape it properly
-                args[0] = `'${args[0].replace(/'/g, "\\'")}'`;
-            }
-        }
-        
-        // For the path arguments, quote them properly
-        for (let i = 1; i < args.length; i++) {
-            if (typeof args[i] === 'string' && args[i].includes(' ')) {
-                args[i] = `"${args[i]}"`;
-            }
-        }
-        
-        // For Windows, combine arguments into a single string command
-        // This helps with spaces in paths
-        const cmd = [
-            `"${execPath}"`,
-            ...args.map(arg => typeof arg === 'string' ? `"${arg}"` : arg)
-        ].join(' ');
-        
-        console.log(`Windows command: ${cmd}`);
-        
-        // Use execFile with shell option for Windows
-        return require('child_process').spawn(cmd, [], { 
-            shell: true,
-            windowsHide: options.windowsHide
-        });
-    } else {
-        // On Unix, use the list form without shell
-        return spawn(execPath, args, options);
+async function handleProcessJson(chatDir) {
+    if (!validateCredentials()) {
+        throw new Error("Missing required credentials. Please provide them in the credentials form.");
     }
+    
+    // Verify the directory exists
+    if (!fs.existsSync(chatDir)) {
+        throw new Error(`Input directory does not exist: ${chatDir}`);
+    }
+    
+    // Ensure output directory exists - THIS IS MISSING
+    const outputDirName = path.basename(chatDir) + 'Processed';
+    const outputDir = path.join(procJsonPath, outputDirName);
+    
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+        console.log(`Created output directory: ${outputDir}`);
+    }
+    
+    // Return the result
+    const result = await processWithCloudRun(chatDir, outputDir);
+    return {
+        success: true,
+        message: result.message,
+        resultPath: path.join(outputDir, 'result.json')
+    };
 }
 
 // Handler for processing JSON
 ipcMain.handle('process-json', async (event, chatDir) => {
-    return new Promise((resolve, reject) => {
-        try {
-            // Add log to verify this is being called
-            console.log(`Starting process-json handler with chatDir: ${chatDir}`);
-            
-            if (!validateCredentials()) {
-                console.log('Credentials validation failed');
-                reject("Missing required credentials. Please provide them in the credentials form.");
-                createCredentialsWindow();
-                return;
-            }
-            
-            const execPath = getPythonExecutablePath();
-            if (!fs.existsSync(execPath)) {
-                console.log(`Executable not found: ${execPath}`);
-                reject(`Python executable not found at: ${execPath}`);
-                return;
-            }
-            
-            // Verify the directory exists
-            if (!fs.existsSync(chatDir)) {
-                console.error(`Input directory does not exist: ${chatDir}`);
-                reject(`Input directory does not exist: ${chatDir}`);
-                return;
-            }
-            
-            // Ensure output directory exists with Windows-safe paths
-            const outputDirName = path.basename(chatDir) + 'Processed';
-            const outputDir = path.join(procJsonPath, outputDirName);
-            
-            if (!fs.existsSync(outputDir)) {
-                fs.mkdirSync(outputDir, { recursive: true });
-                console.log(`Created output directory: ${outputDir}`);
-            }
-            
-            console.log(`Running Python executable: ${execPath}`);
-            console.log(`Input directory: ${chatDir}`);
-            console.log(`Output directory: ${procJsonPath}`);
-            
-            // Prepare credentials JSON to pass to Python with improved formatting
-            const credentialsObj = {
-                OPENAI_API_KEY: typeof userCredentials.OPENAI_API_KEY === 'string' ? 
-                    userCredentials.OPENAI_API_KEY.trim() : userCredentials.OPENAI_API_KEY,
-                GOOGLE_SHEET_ID: typeof userCredentials.GOOGLE_SHEET_ID === 'string' ? 
-                    userCredentials.GOOGLE_SHEET_ID.trim() : userCredentials.GOOGLE_SHEET_ID,
-                GOOGLE_CREDENTIALS_JSON: userCredentials.GOOGLE_CREDENTIALS_JSON
-            };
-            
-            // Ensure we're sending a properly formatted JSON string
-            const credentialsJson = JSON.stringify(credentialsObj);
-            
-            // Log the command being executed (redact actual credentials)
-            console.log(`Command: ${execPath} [credentials] ${chatDir} ${procJsonPath}`);
-            
-            // For Windows platforms, directly create a quoted command to handle spaces in paths
-            let pythonProcess;
-            
-            if (process.platform === 'win32') {
-                console.log('Using Windows-specific process spawning method');
-                
-                // Format paths safely for Windows command line
-                const safeExecPath = `"${execPath}"`;
-                const safeCredentials = `"${credentialsJson.replace(/"/g, '\\"')}"`;
-                const safeChatDir = `"${chatDir}"`;
-                const safeProcJsonPath = `"${procJsonPath}"`;
-                
-                // Create a safe command string
-                const commandString = `${safeExecPath} ${safeCredentials} ${safeChatDir} ${safeProcJsonPath}`;
-                console.log(`Windows command string: ${commandString.replace(safeCredentials, '"[CREDENTIALS REDACTED]"')}`);
-                
-                // Use spawn with shell option for Windows
-                pythonProcess = require('child_process').spawn(commandString, [], { 
-                    shell: true,
-                    windowsHide: true
-                });
-            } else {
-                // For non-Windows platforms, use the regular approach
-                pythonProcess = spawn(execPath, [
-                    credentialsJson,
-                    chatDir,
-                    procJsonPath
-                ]);
-            }
-
-            pythonProcesses.push(pythonProcess);
-
-            let output = "";
-            let errorOutput = "";
-
-            pythonProcess.stdout.on('data', (data) => {
-                const message = data.toString();
-                console.log(`Python stdout: ${message}`);
-                output += message;
-                // Forward output to UI
-                if (mainWindow && !mainWindow.isDestroyed()) {
-                    mainWindow.webContents.send('python-output', message);
-                }
-            });
-
-            pythonProcess.stderr.on('data', (data) => {
-                const message = data.toString();
-                console.error(`Python stderr: ${message}`);
-                errorOutput += message;
-                // Forward errors to UI
-                if (mainWindow && !mainWindow.isDestroyed()) {
-                    mainWindow.webContents.send('python-error', message);
-                }
-            });
-
-            pythonProcess.on('close', (code) => {
-                console.log(`Python process exited with code ${code}`);
-                
-                // Check if the expected output file was created
-                const resultFile = path.join(outputDir, 'result.json');
-                const resultExists = fs.existsSync(resultFile);
-                console.log(`Result file exists: ${resultExists}, path: ${resultFile}`);
-                
-                if (code === 0) {
-                    if (resultExists) {
-                        resolve({
-                            success: true,
-                            message: output.trim(),
-                            resultPath: resultFile
-                        });
-                    } else {
-                        reject(`Process completed but result file was not created: ${resultFile}`);
-                    }
-                } else {
-                    reject(`Process exited with code ${code}: ${errorOutput.trim()}`);
-                }
-            });
-
-            pythonProcess.on('error', (error) => {
-                console.error(`Failed to start Python process: ${error.message}`);
-                reject(`Failed to start Python process: ${error.message}`);
-            });
-        } catch (error) {
-            console.error(`Error in process-json handler: ${error.message}`);
-            reject(`Error in process-json handler: ${error.message}`);
-        }
-    });
+    try {
+        return await handleProcessJson(chatDir);
+    } catch (error) {
+        console.error(`Error in process-json handler: ${error.message}`);
+        throw error; // Re-throw to let the renderer process handle it
+    }
 });
 
-// For process-and-upload, with improved Windows path handling:
+// Warmup function for Cloud Run service
+async function warmupCloudRunService() {
+    try {
+      console.log('Warming up Cloud Run service...');
+      const response = await axios.get(`${userCredentials.CLOUD_RUN_URL}/health`, {
+        timeout: 60000 // 60 second timeout for warmup
+      });
+      
+      if (response.status === 200) {
+        console.log('Cloud Run service warmed up successfully');
+        return true;
+      } else {
+        console.warn(`Unexpected response from warmup: ${response.status}`);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error warming up Cloud Run service:', error.message);
+      return false;
+    }
+}
+
+// Process with Cloud Run service
+async function processWithCloudRun(inputDir, outputDir) {
+    try {
+        // First warm up the service before sending the main request
+        const isWarmedUp = await warmupCloudRunService();
+        if (!isWarmedUp) {
+            console.log('Warmup failed, but will attempt to process anyway');
+            // Optional: You could add additional retry logic here
+        }
+        // Read all files in the input directory
+        const files = fs.readdirSync(inputDir);
+        const jsonFiles = files.filter(file => file.endsWith('.json'));
+        const mediaFiles = files.filter(file => 
+            file.endsWith('.mp4') || 
+            file.endsWith('.jpg') || 
+            file.endsWith('.jpeg') || 
+            file.endsWith('.png')
+        );
+        
+        if (jsonFiles.length === 0) {
+            throw new Error('No JSON files found in the input directory');
+        }
+        
+        // Read the content of each JSON file
+        const jsonContents = {};
+        for (const file of jsonFiles) {
+            const filePath = path.join(inputDir, file);
+            const content = fs.readFileSync(filePath, 'utf8');
+            jsonContents[file] = content;
+        }
+        
+        // Read and encode media files if any
+        const mediaFilesContents = {};
+        for (const file of mediaFiles) {
+            const filePath = path.join(inputDir, file);
+            try {
+                // Read file as binary and convert to base64
+                const content = fs.readFileSync(filePath);
+                const base64Content = content.toString('base64');
+                mediaFilesContents[file] = base64Content;
+                console.log(`Encoded media file: ${file}`);
+            } catch (error) {
+                console.error(`Error reading media file ${file}: ${error.message}`);
+                // Continue with other files
+            }
+        }
+        
+        // Prepare request payload
+        const payload = {
+            jsonContents,
+            mediaFiles: mediaFilesContents,
+            outputDir: path.basename(outputDir)
+        };
+        
+        // Log payload size for debugging
+        const payloadSize = JSON.stringify(payload).length;
+        console.log(`Sending request to Cloud Run with payload size: ${(payloadSize / 1024 / 1024).toFixed(2)} MB`);
+        
+        // Add progress notification to the UI
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('python-output', 'Sending data to Cloud Run for processing...');
+        }
+        
+        // Call Cloud Run service
+        const response = await axios.post(`${userCredentials.CLOUD_RUN_URL}/process-json`, payload, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // Set a longer timeout for larger payloads
+            timeout: 1800000 // 5 minutes
+        });
+        
+        // Write the processed results to the output directory
+        if (response.data && response.data.result) {
+            fs.writeFileSync(path.join(outputDir, 'result.json'), 
+                JSON.stringify(response.data.result, null, 2));
+            
+            // Forward logs from the Cloud Run service
+            if (mainWindow && !mainWindow.isDestroyed() && response.data.logs) {
+                for (const log of response.data.logs) {
+                    mainWindow.webContents.send('python-output', log);
+                }
+            }
+            
+            return {
+                success: true,
+                message: response.data.message || 'Processing completed successfully'
+            };
+        } else {
+            throw new Error('Invalid response from Cloud Run service');
+        }
+    } catch (error) {
+        console.error('Error processing with Cloud Run:', error);
+        
+        // Forward error message to UI
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('python-error', 
+                `Error communicating with Cloud Run: ${error.message}`);
+        }
+        
+        throw error;
+    }
+}
+
+// For process-and-upload
 ipcMain.handle('process-and-upload', async (event, chatDir) => {
     try {
         console.log(`Starting combined process-and-upload for: ${chatDir}`);
         
-        // First process the data - call the process-json handler directly
-        const processResult = await new Promise((resolve, reject) => {
-            try {
-                // This is the same implementation as the process-json handler with improved Windows handling
-                console.log(`Starting process-json from process-and-upload with chatDir: ${chatDir}`);
-                
-                if (!validateCredentials()) {
-                    console.log('Credentials validation failed');
-                    reject("Missing required credentials. Please provide them in the credentials form.");
-                    createCredentialsWindow();
-                    return;
-                }
-                
-                const execPath = getPythonExecutablePath();
-                if (!fs.existsSync(execPath)) {
-                    console.log(`Executable not found: ${execPath}`);
-                    reject(`Python executable not found at: ${execPath}`);
-                    return;
-                }
-                
-                // Verify the directory exists
-                if (!fs.existsSync(chatDir)) {
-                    console.error(`Input directory does not exist: ${chatDir}`);
-                    reject(`Input directory does not exist: ${chatDir}`);
-                    return;
-                }
-                
-                // Ensure output directory exists
-                const outputDirName = path.basename(chatDir) + 'Processed';
-                const outputDir = path.join(procJsonPath, outputDirName);
-                
-                if (!fs.existsSync(outputDir)) {
-                    fs.mkdirSync(outputDir, { recursive: true });
-                    console.log(`Created output directory: ${outputDir}`);
-                }
-                
-                console.log(`Running Python executable: ${execPath}`);
-                console.log(`Input directory: ${chatDir}`);
-                console.log(`Output directory: ${procJsonPath}`);
-                
-                // Prepare credentials JSON to pass to Python with improved formatting
-                const credentialsObj = {
-                    OPENAI_API_KEY: typeof userCredentials.OPENAI_API_KEY === 'string' ? 
-                        userCredentials.OPENAI_API_KEY.trim() : userCredentials.OPENAI_API_KEY,
-                    GOOGLE_SHEET_ID: typeof userCredentials.GOOGLE_SHEET_ID === 'string' ? 
-                        userCredentials.GOOGLE_SHEET_ID.trim() : userCredentials.GOOGLE_SHEET_ID,
-                    GOOGLE_CREDENTIALS_JSON: userCredentials.GOOGLE_CREDENTIALS_JSON
-                };
-                
-                // Ensure we're sending a properly formatted JSON string
-                const credentialsJson = JSON.stringify(credentialsObj);
-                
-                // Log the command being executed (redact actual credentials)
-                console.log(`Command: ${execPath} [credentials] ${chatDir} ${procJsonPath}`);
-                
-                // For Windows platforms, directly create a quoted command to handle spaces in paths
-                let pythonProcess;
-                
-                if (process.platform === 'win32') {
-                    console.log('Using Windows-specific process spawning method');
-                    
-                    // Format paths safely for Windows command line
-                    const safeExecPath = `"${execPath}"`;
-                    const safeCredentials = `"${credentialsJson.replace(/"/g, '\\"')}"`;
-                    const safeChatDir = `"${chatDir}"`;
-                    const safeProcJsonPath = `"${procJsonPath}"`;
-                    
-                    // Create a safe command string
-                    const commandString = `${safeExecPath} ${safeCredentials} ${safeChatDir} ${safeProcJsonPath}`;
-                    console.log(`Windows command string: ${commandString.replace(safeCredentials, '"[CREDENTIALS REDACTED]"')}`);
-                    
-                    // Use spawn with shell option for Windows
-                    pythonProcess = require('child_process').spawn(commandString, [], { 
-                        shell: true,
-                        windowsHide: true
-                    });
-                } else {
-                    // For non-Windows platforms, use the regular approach
-                    pythonProcess = spawn(execPath, [
-                        credentialsJson,
-                        chatDir,
-                        procJsonPath
-                    ]);
-                }
-
-                pythonProcesses.push(pythonProcess);
-
-                let output = "";
-                let errorOutput = "";
-
-                pythonProcess.stdout.on('data', (data) => {
-                    const message = data.toString();
-                    console.log(`Python stdout: ${message}`);
-                    output += message;
-                    // Forward output to UI
-                    if (mainWindow && !mainWindow.isDestroyed()) {
-                        mainWindow.webContents.send('python-output', message);
-                    }
-                });
-
-                pythonProcess.stderr.on('data', (data) => {
-                    const message = data.toString();
-                    console.error(`Python stderr: ${message}`);
-                    errorOutput += message;
-                    // Forward errors to UI
-                    if (mainWindow && !mainWindow.isDestroyed()) {
-                        mainWindow.webContents.send('python-error', message);
-                    }
-                });
-
-                pythonProcess.on('close', (code) => {
-                    console.log(`Python process exited with code ${code}`);
-                    
-                    // Check if the expected output file was created
-                    const resultFile = path.join(outputDir, 'result.json');
-                    const resultExists = fs.existsSync(resultFile);
-                    console.log(`Result file exists: ${resultExists}, path: ${resultFile}`);
-                    
-                    if (code === 0) {
-                        if (resultExists) {
-                            resolve({
-                                success: true,
-                                message: output.trim(),
-                                resultPath: resultFile
-                            });
-                        } else {
-                            reject(`Process completed but result file was not created: ${resultFile}`);
-                        }
-                    } else {
-                        reject(`Process exited with code ${code}: ${errorOutput.trim()}`);
-                    }
-                });
-
-                pythonProcess.on('error', (error) => {
-                    console.error(`Failed to start Python process: ${error.message}`);
-                    reject(`Failed to start Python process: ${error.message}`);
-                });
-            } catch (error) {
-                console.error(`Error in process-json handler: ${error.message}`);
-                reject(`Error in process-json handler: ${error.message}`);
-            }
-        });
+        // First process the data - call the function directly instead of through IPC
+        const processResult = await handleProcessJson(chatDir);
         
         console.log('Processing completed successfully');
         
@@ -701,49 +369,11 @@ ipcMain.handle('process-and-upload', async (event, chatDir) => {
     }
 });
 
-// Clean up resources before quitting
-app.on('before-quit', () => {
-    console.log('Cleaning up resources before quitting...');
-    pythonProcesses.forEach(process => {
-        if (process && !process.killed) {
-            try {
-                // On Windows, we need to use a different approach to kill processes
-                if (process.platform === 'win32') {
-                    // Try to terminate via Windows-specific commands if needed
-                    if (process.pid) {
-                        try {
-                            require('child_process').execSync(`taskkill /F /PID ${process.pid}`, { windowsHide: true });
-                            console.log(`Killed Windows process with PID ${process.pid}`);
-                        } catch (killError) {
-                            console.error(`Error killing Windows process: ${killError.message}`);
-                        }
-                    }
-                } else {
-                    process.kill();
-                }
-                console.log('Killed a Python process');
-            } catch (error) {
-                console.error('Failed to kill process:', error);
-            }
-        }
-    });
-});
-
 // App lifecycle
 app.whenReady().then(() => {
     try {
         createAppDirectories();
         createMainWindow();
-        
-        // Check if Python executable exists at startup
-        if (!checkPythonExecutable()) {
-            dialog.showMessageBox({
-                type: 'warning',
-                title: 'Python Executable Missing',
-                message: `Python executable not found or permissions could not be set. Make sure the build process has completed successfully.`,
-                buttons: ['OK']
-            });
-        }
     } catch (error) {
         console.error(`Error during app initialization: ${error.message}`);
         showErrorToUser('Initialization Error', `Failed to initialize app: ${error.message}`);
@@ -769,17 +399,11 @@ ipcMain.on('submit-credentials', (event, credentials) => {
         
         // Clean up whitespace in credential values
         const cleanedCredentials = {
-            openaiApiKey: credentials.openaiApiKey ? credentials.openaiApiKey.trim() : '',
             googleSheetId: credentials.googleSheetId ? credentials.googleSheetId.trim() : '',
             googleCredentialsPath: credentials.googleCredentialsPath ? credentials.googleCredentialsPath.trim() : ''
         };
         
         // Validate required fields
-        if (!cleanedCredentials.openaiApiKey) {
-            event.sender.send('credentials-error', 'OpenAI API Key is required');
-            return;
-        }
-        
         if (!cleanedCredentials.googleSheetId) {
             event.sender.send('credentials-error', 'Google Sheet ID is required');
             return;
@@ -825,17 +449,16 @@ ipcMain.on('submit-credentials', (event, credentials) => {
         
         // Log some diagnostics (without exposing sensitive info)
         console.log('Credentials validation passed:');
-        console.log('- OpenAI API Key: [REDACTED]');
         console.log(`- Google Sheet ID: ${cleanedCredentials.googleSheetId}`);
         console.log(`- Google Credentials Path: ${cleanedCredentials.googleCredentialsPath}`);
         console.log(`- Google Credentials JSON valid: ${googleCredsContent !== null}`);
         
         // Update credentials
         userCredentials = {
-            OPENAI_API_KEY: cleanedCredentials.openaiApiKey,
             GOOGLE_SHEET_ID: cleanedCredentials.googleSheetId,
             GOOGLE_CREDENTIALS_PATH: cleanedCredentials.googleCredentialsPath,
-            GOOGLE_CREDENTIALS_JSON: googleCredsContent
+            GOOGLE_CREDENTIALS_JSON: googleCredsContent,
+            CLOUD_RUN_URL: userCredentials.CLOUD_RUN_URL // Keep existing Cloud Run URL
         };
         
         // Persist credentials in config store
@@ -1029,19 +652,53 @@ async function uploadToGoogleSheets(filePath) {
             throw new Error('"messages" array is empty');
         }
 
-        const sheetName = "allMessages";
+        const sheetName = "allMessages";pm
         
-        // Manage sheet
-        let sheet = doc.sheetsByTitle[sheetName];
-        if (!sheet) {
+        // Define the expected header values for Google Sheet
+        const expectedHeaders = [
+            "id", "date", "date_unixtime", "from", "text", "reply_id", "LANGUAGE", 
+            "TRANSLATED_TEXT", "parent_category", "parent_confidence_score", 
+            "child_category", "child_confidence_score",
+            "locations_names", "locations_coordinates"
+        ];
+        
+        // Manage sheet with proper loading
+        let sheet;
+        
+        // First check if the sheet exists
+        if (doc.sheetsByTitle[sheetName]) {
+            sheet = doc.sheetsByTitle[sheetName];
+            // Make sure to load the sheet headers before accessing them
+            console.log("Sheet exists, loading headers...");
+            await sheet.loadHeaderRow();
+            console.log("Headers loaded successfully");
+            
+            // Now check if the sheet has all the expected headers
+            const existingHeaders = sheet.headerValues || [];
+            console.log("Existing headers:", existingHeaders);
+            
+            const missingHeaders = expectedHeaders.filter(header => !existingHeaders.includes(header));
+            
+            // If there are missing headers, update the sheet headers
+            if (missingHeaders.length > 0) {
+                console.log(`Adding missing headers to sheet: ${missingHeaders.join(', ')}`);
+                await sheet.setHeaderRow([
+                    ...existingHeaders,
+                    ...missingHeaders
+                ]);
+                // Reload headers after updating
+                await sheet.loadHeaderRow();
+            }
+        } else {
+            // Create a new sheet with the expected headers
+            console.log("Creating new sheet with headers:", expectedHeaders);
             sheet = await doc.addSheet({
                 title: sheetName,
-                headerValues: [
-                    "id", "date", "date_unixtime", "from", "text", "reply_id", "LANGUAGE", 
-                    "TRANSLATED_TEXT", "categories", 
-                    "confidence_scores", "locations_names", "locations_coordinates",
-                ]
+                headerValues: expectedHeaders
             });
+            // Ensure headers are loaded
+            await sheet.loadHeaderRow();
+            console.log("New sheet created and headers loaded");
         }
         
         // Process messages to extract data including categories
@@ -1060,42 +717,24 @@ async function uploadToGoogleSheets(filePath) {
                 }
             }
             
-            // Initialize top category variables
-            let topCategory = "";
-            let topConfidenceScore = "";
+            // Initialize category variables with empty strings
+            let parentCategory = "";
+            let parentScore = "";
+            let childCategory = "";
+            let childScore = "";
             
-            // Improved category extraction - handle both single and multiple categories
+            // Extract category information if available
             if (msg.CATEGORIES && Array.isArray(msg.CATEGORIES) && msg.CATEGORIES.length > 0) {
                 const categoryData = msg.CATEGORIES[0];
                 
-                if (categoryData.classification && categoryData.classification.confidence_scores) {
-                    const scores = categoryData.classification.confidence_scores;
+                if (categoryData.classification) {
+                    // Directly access the parent and child category fields
+                    parentCategory = categoryData.classification.parent_category || "";
+                    parentScore = categoryData.classification.parent_confidence_score || "";
+                    childCategory = categoryData.classification.child_category || "";
+                    childScore = categoryData.classification.child_confidence_score || "";
                     
-                    // Handle both single and multiple category cases
-                    const entries = Object.entries(scores);
-                    
-                    if (entries.length === 1) {
-                        // Single category case - use it directly
-                        const [category, score] = entries[0];
-                        topCategory = category;
-                        topConfidenceScore = score.toFixed(2);
-                        console.log(`Single category found: ${topCategory} with score ${topConfidenceScore}`);
-                    } else if (entries.length > 1) {
-                        // Multiple categories case - find the highest score
-                        let highestScore = -1;
-                        let highestCategory = "";
-                        
-                        for (const [category, score] of entries) {
-                            if (score > highestScore) {
-                                highestScore = score;
-                                highestCategory = category;
-                            }
-                        }
-                        
-                        topCategory = highestCategory;
-                        topConfidenceScore = highestScore.toFixed(2);
-                        console.log(`Found highest category: ${topCategory} with score ${topConfidenceScore}`);
-                    }
+                    console.log(`Found categories - Parent: ${parentCategory} (${parentScore}), Child: ${childCategory} (${childScore})`);
                 } else {
                     console.log('Invalid classification structure:', categoryData);
                 }
@@ -1103,6 +742,7 @@ async function uploadToGoogleSheets(filePath) {
                 console.log('No categories found for message:', msg.id);
             }
             
+            // Create the row object with the exact column names matching sheet headers
             return {
                 id: msg.id || "",
                 date: msg.date || "",
@@ -1112,16 +752,47 @@ async function uploadToGoogleSheets(filePath) {
                 reply_id: msg.reply_to_message_id || "", 
                 LANGUAGE: msg.LANGUAGE || "",
                 TRANSLATED_TEXT: msg.TRANSLATED_TEXT || "",
-                categories: topCategory,
-                confidence_scores: topConfidenceScore,
+                parent_category: parentCategory,
+                parent_confidence_score: parentScore,
+                child_category: childCategory,
+                child_confidence_score: childScore,
                 locations_names: locationName,
                 locations_coordinates: locationCoords
             };
         });
         
         if (newRows.length > 0) {
-            await sheet.addRows(newRows);
-            console.log(`Added ${newRows.length} rows to Google Sheet with categories`);
+            // Add additional logging for debugging
+            console.log(`Adding ${newRows.length} rows to Google Sheet`);
+            console.log("First row sample:", JSON.stringify(newRows[0], null, 2));
+            
+            try {
+                // Add rows with error handling
+                await sheet.addRows(newRows);
+                console.log(`Successfully added ${newRows.length} rows to Google Sheet with categories`);
+            } catch (rowError) {
+                console.error("Error adding rows:", rowError);
+                
+                // Try adding rows one by one to identify problematic rows
+                console.log("Attempting to add rows individually...");
+                let successCount = 0;
+                
+                for (let i = 0; i < newRows.length; i++) {
+                    try {
+                        await sheet.addRow(newRows[i]);
+                        successCount++;
+                    } catch (singleRowError) {
+                        console.error(`Error adding row ${i}:`, singleRowError);
+                        console.error("Problematic row:", JSON.stringify(newRows[i], null, 2));
+                    }
+                }
+                
+                if (successCount > 0) {
+                    console.log(`Successfully added ${successCount} out of ${newRows.length} rows`);
+                } else {
+                    throw new Error("Failed to add any rows to the sheet");
+                }
+            }
         } else {
             console.log('No rows to add to Google Sheet');
         }
