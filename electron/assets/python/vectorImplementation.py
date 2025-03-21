@@ -364,36 +364,128 @@ class VectorClassifier:
                 'error': str(e)
             }
     
-    def _process_hierarchical_results(self, results: List[Tuple[str, float]]) -> List[Tuple[str, float]]:
-        """
-        Process results to include parent categories when child categories are detected.
+def _process_hierarchical_results(self, results: List[Tuple[str, float]]) -> List[Tuple[str, float]]:
+    """
+    Process results to include parent categories when child categories are detected.
+    
+    Args:
+        results: List of (category, score) tuples
         
-        Args:
-            results: List of (category, score) tuples
+    Returns:
+        Processed list of (category, score) tuples with parent categories added
+    """
+    processed_results = []
+    seen_categories = set()
+    
+    # First pass: add all direct matches
+    for cat, score in results:
+        if cat not in seen_categories:
+            processed_results.append((cat, score))
+            seen_categories.add(cat)
+    
+    # Second pass: add parent categories for any children that were detected
+    for cat, score in results:
+        if cat in self.child_to_parent:
+            parent = self.child_to_parent[cat]
+            if parent not in seen_categories:
+                # Add parent with the same score as the highest scoring child
+                processed_results.append((parent, score))
+                seen_categories.add(parent)
+    
+    # Sort processed results by score
+    return sorted(processed_results, key=lambda x: x[1], reverse=True)
+
+
+# In the categorize function, update the code to find the top child category
+def categorize(text):
+    """
+    Main function to categorize text, returning a format compatible with the Google Sheets uploader.
+    
+    Args:
+        text: Text to categorize
+        
+    Returns:
+        List containing one item with classification results in Google Sheets compatible format
+    """
+    logger.info(f"Categorizing text: {text[:50]}...")
+    
+    try:
+        # Get or initialize classifier
+        classifier = get_classifier()
+        
+        # Clean the text
+        original_text = text
+        cleaned_text = clean_text(original_text)
+        
+        # Get classification result
+        classification_result = classifier.predict_categories(cleaned_text, original_text)
+        
+        # Format the result for Google Sheets compatibility
+        confidence_scores = classification_result.get("confidence_scores", {})
+        categories = classification_result.get("categories", [])
+        hierarchy_info = classification_result.get("hierarchy_info", {})
+        
+        # Create return object in format expected by main.py
+        result = [{
+            "classification": {
+                # This format matches what the Google Sheets uploader expects
+                "confidence_scores": confidence_scores
+            }
+        }]
+        
+        # Optional: Add formatted output that matches Google Sheets expected format directly
+        if categories and confidence_scores:
+            # Sort categories by confidence score (descending)
+            sorted_categories = sorted(
+                [(cat, score) for cat, score in confidence_scores.items()],
+                key=lambda x: x[1],
+                reverse=True
+            )
             
-        Returns:
-            Processed list of (category, score) tuples with parent categories added
-        """
-        processed_results = []
-        seen_categories = set()
+            # Create the result object in the format expected by Google Sheets uploader
+            result[0]["classification"]["categories"] = categories
+            
+            # Find the top child category if available
+            top_child_category = None
+            top_child_score = 0
+            
+            for cat, score in sorted_categories:
+                # Check if this category is a child
+                if cat in hierarchy_info and hierarchy_info[cat].get("type") == "child":
+                    top_child_category = cat
+                    top_child_score = score
+                    break
+            
+            # Add top child category to result if found
+            if top_child_category:
+                result[0]["classification"]["top_child_category"] = top_child_category
+                result[0]["classification"]["top_child_score"] = top_child_score
+            
+            # This exactly matches the format used in the Google Sheets uploader
+            # Now include the top child category in formatted output if available
+            formatted_categories = ";".join([cat for cat, _ in sorted_categories])
+            formatted_scores = ";".join([f"{cat}: {score:.2f}" for cat, score in sorted_categories])
+            
+            formatted_output = {
+                "categories": formatted_categories,
+                "confidence_scores": formatted_scores
+            }
+            
+            # Add top child category to formatted output
+            if top_child_category:
+                formatted_output["top_child_category"] = top_child_category
+                formatted_output["top_child_score"] = f"{top_child_score:.2f}"
+            
+            result[0]["classification"]["formatted_output"] = formatted_output
         
-        # First pass: add all direct matches
-        for cat, score in results:
-            if cat not in seen_categories:
-                processed_results.append((cat, score))
-                seen_categories.add(cat)
+        logger.info(f"Categorization complete. Found categories: {result}")
+        return result
         
-        # Second pass: add parent categories for any children that were detected
-        for cat, score in results:
-            if cat in self.child_to_parent:
-                parent = self.child_to_parent[cat]
-                if parent not in seen_categories:
-                    # Add parent with the same score as the highest scoring child
-                    processed_results.append((parent, score))
-                    seen_categories.add(parent)
-        
-        # Sort processed results by score
-        return sorted(processed_results, key=lambda x: x[1], reverse=True)
+    except Exception as e:
+        logger.error(f"Error in categorize function: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return [{"classification": {"error": str(e)}}]
     
     
     def _create_hierarchy_info(self, categories: List[str]) -> Dict:

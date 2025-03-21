@@ -1,9 +1,9 @@
 {
   "name": "chat-analyser",
   "version": "1.0.0",
-  "description": "Communication data analytics tool",
+  "description": "Communication data analytics tool with Cloud Run backend",
   "main": "main.js",
-  "author": "Olivia Croteau osc3732@rit.edu>",
+  "author": "Olivia Croteau <osc3732@rit.edu>",
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
@@ -13,21 +13,22 @@
     "dist:linux": "electron-builder --linux",
     "dist:all": "electron-builder --mac --win --linux",
     "postinstall": "electron-builder install-app-deps",
-    "build-py": "cd assets && ./build.sh",
+    "debug": "electron . --debug",
     "dev:process": "node combined-dev-test.js process ./test-data",
     "dev:upload": "node combined-dev-test.js upload",
-    "dev": "node combined-dev-test.js both ./test-data",
-    "start:dev": "electron devTest.js"
+    "dev": "node combined-dev-test.js both ./test-data"
   },
   "dependencies": {
+    "axios": "^1.8.3",
     "dotenv": "^16.3.1",
     "electron-squirrel-startup": "^1.0.1",
     "firebase-admin": "^13.1.0",
     "google-auth-library": "^9.15.1",
-    "google-spreadsheet": "^4.1.4"
+    "google-spreadsheet": "^4.1.4",
+    "portfinder": "^1.0.35"
   },
   "devDependencies": {
-    "electron": "^30.0.0",
+    "electron": "^30.5.1",
     "electron-builder": "^24.6.0"
   },
   "publish": [
@@ -38,67 +39,29 @@
     }
   ],
   "build": {
-    "appId": "com.nataliecrowell.chatanalyser",
-    "productName": "Chat Analyser",
-    "directories": {
-      "output": "dist",
-      "buildResources": "assets"
-    },
     "files": [
-      "main.js",
-      "preload.js",
-      "frontend/**/*",
-      "frontend/credentials.html",
-      "electron-assets.json",
-      "assets/**/*.bat",
-      "assets/**/*.py",
-      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
-      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
-      "!**/node_modules/*.d.ts",
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,test,__tests__,tests}",
       "!**/node_modules/.bin",
       "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
       "!.editorconfig",
       "!**/._*",
-      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
-      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}"
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,__pycache__,thumbs.db,.gitignore}"
     ],
-    "extraResources": [
-      {
-        "from": "dist-${os}",
-        "to": "dist-${os}",
-        "filter": ["**/*"]
-      },
-      {
-        "from": "assets/dist-${os}",
-        "to": "dist-${os}",
-        "filter": ["**/*"]
-      },
-      {
-        "from": "assets/vector_model_package",
-        "to": "vector_model_package",
-        "filter": ["**/*"]
-      },
-      {
-        "from": "assets/ner_model_package",
-        "to": "ner_model_package",
-        "filter": ["**/*"]
-      }
-    ],
-    "asar": false,
+    "asar": true,
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "win": {
-      "target": ["nsis", "portable"],
-      "icon": "icons/icon.ico",
-      "extraResources": [
-        {
-          "from": "dist-win32",
-          "to": "dist-win32",
-          "filter": ["**/*"]
-        }
-      ]
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "icons/icon.ico"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "icons/icon.icns",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
@@ -106,7 +69,10 @@
       "entitlementsInherit": "entitlements.mac.plist"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "icon": "icons/",
       "category": "Utility"
     },
