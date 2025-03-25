@@ -652,14 +652,15 @@ async function uploadToGoogleSheets(filePath) {
             throw new Error('"messages" array is empty');
         }
 
-        const sheetName = "allMessages";pm
+        const sheetName = "allMessages";
         
         // Define the expected header values for Google Sheet
+        // Added location_confidence column to handle confidence scores
         const expectedHeaders = [
             "id", "date", "date_unixtime", "from", "text", "reply_id", "LANGUAGE", 
             "TRANSLATED_TEXT", "parent_category", "parent_confidence_score", 
             "child_category", "child_confidence_score",
-            "locations_names", "locations_coordinates"
+            "locations_names", "locations_coordinates", "location_confidence"
         ];
         
         // Manage sheet with proper loading
@@ -701,12 +702,14 @@ async function uploadToGoogleSheets(filePath) {
             console.log("New sheet created and headers loaded");
         }
         
-        // Process messages to extract data including categories
+        // Process messages to extract data including categories and confidence scores
         const newRows = messages.map(msg => {
-            // Get only the first location if available
+            // Initialize location variables
             let locationName = "";
             let locationCoords = "";
+            let locationConfidence = "";
             
+            // Handle both formats (with and without confidence scores)
             if (msg.LOCATIONS && Array.isArray(msg.LOCATIONS) && msg.LOCATIONS.length > 0) {
                 const firstLocation = msg.LOCATIONS[0];
                 locationName = firstLocation.location || "";
@@ -714,6 +717,12 @@ async function uploadToGoogleSheets(filePath) {
                 // Check if location has coordinates
                 if (firstLocation.latitude !== undefined && firstLocation.longitude !== undefined) {
                     locationCoords = `(${firstLocation.latitude}, ${firstLocation.longitude})`;
+                }
+                
+                // Check if confidence score is available in the new format
+                if (firstLocation.confidence !== undefined) {
+                    locationConfidence = firstLocation.confidence.toString();
+                    console.log(`Found location with confidence: ${locationName} (${locationConfidence}%)`);
                 }
             }
             
@@ -757,7 +766,8 @@ async function uploadToGoogleSheets(filePath) {
                 child_category: childCategory,
                 child_confidence_score: childScore,
                 locations_names: locationName,
-                locations_coordinates: locationCoords
+                locations_coordinates: locationCoords,
+                location_confidence: locationConfidence // New field for location confidence
             };
         });
         
@@ -769,7 +779,7 @@ async function uploadToGoogleSheets(filePath) {
             try {
                 // Add rows with error handling
                 await sheet.addRows(newRows);
-                console.log(`Successfully added ${newRows.length} rows to Google Sheet with categories`);
+                console.log(`Successfully added ${newRows.length} rows to Google Sheet with categories and location confidence`);
             } catch (rowError) {
                 console.error("Error adding rows:", rowError);
                 
