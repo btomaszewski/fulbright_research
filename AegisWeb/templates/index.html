@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UKR PL SA</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles.css') }}">
+    <script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
+    <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="datasets panel">
+            <div class="panel-heads">
+                <h2>Datasets</h2>
+                <button id="addNew" class="button">
+                    <span class="shadow"></span>
+                    <span class="edge"></span>
+                    <div class="front">
+                        <span><i class="fas fa-plus"></i> New dataset</span>
+                    </div>
+                </button>
+                <!-- Hidden file input -->
+                <input type="file" id="fileInput" webkitdirectory multiple>
+            </div>
+            <div id="datasetList">
+                <ul></ul>
+            </div>
+            <p id="status"></p>
+
+        </div>
+
+        <div class="dashboard panel">
+            <div class="panel-heads">
+                <h2>Dashboard</h2>
+                <button id="exportPDF" class="button">
+                    <span class="shadow"></span>
+                    <span class="edge"></span>
+                    <div class="front">
+                        <span>Export to PDF</span>
+                    </div>
+                </button>
+                <button id="exportImage" class="button">
+                    <span class="shadow"></span>
+                    <span class="edge"></span>
+                    <div class="front">
+                        <span>Export to Image</span>
+                    </div>
+                </button>
+            </div>
+
+            <div id="info-container">
+
+            <div id="statusMessages" class="status-container"></div>
+            <div id="vizContainerContainer"><div id="vizContainer"></div></div>
+            <div id="ai-convo">
+                <div id="chat-container">
+                    <div id="chat-box"></div>
+                </div>
+                
+                <form id="question-form" name="question-form">
+                    <input type="text" name="user_input" id="user_input" placeholder="Chat about the data..." required>
+                    <button type="submit" id="submit-question-btn" class="button">
+                        <span class="shadow"></span>
+                        <span class="edge"></span>
+                        <div class="front">
+                            <span>Send</span>
+                        </div>
+                    </button>
+                </form>
+            </div>
+            </div>
+
+            <button id="reportBtn" class="button">
+                <span class="shadow"></span>
+                <span class="edge"></span>
+                <div class="front">
+                    <span>Generate Summary Report</span>
+                </div>
+            </button>
+
+            <div id="reportModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Summary Report</h2>
+                    <p id="reportText"></p>
+                    <button id="exportSummary" class="button">
+                        <span class="shadow"></span>
+                        <span class="edge"></span>
+                        <div class="front">
+                            <span>Export to PDF</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+document.getElementById('question-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const userInput = document.querySelector('input[name="user_input"]').value;
+    if (!userInput.trim()) return; // Prevent empty messages
+
+    // Append user message to chat
+    appendMessage('user', userInput);
+
+    const formData = new FormData(this);
+    const response = await fetch('/ask', {
+        method: 'POST',
+        body: formData
+    });
+
+    const aiResponse = await response.text();
+
+    // Append AI message to chat
+    appendMessage('ai', aiResponse);
+
+    document.getElementById('question-form').reset();
+});
+
+// Function to append messages to chat
+function appendMessage(role, text) {
+    const chatBox = document.getElementById('chat-box');
+    const messageDiv = document.createElement('div');
+
+    messageDiv.classList.add('message', role);
+    messageDiv.innerHTML = `<strong>${role === 'user' ? 'You' : 'AI'}</strong>: ${formatMessage(text)}`;
+
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
+}
+
+// Function to format AI response (bold headers, line breaks)
+function formatMessage(text) {
+    return text
+        .replace(/Date Range:/g, '<strong>Date Range:</strong>')
+        .replace(/Top Categories:/g, '<strong>Top Categories:</strong>')
+        .replace(/Top Locations:/g, '<strong>Top Locations:</strong>')
+        .replace(/Data Inferences:/g, '<strong>Data Inferences:</strong>')
+        .replace(/\n/g, '<br>'); // Preserve line breaks
+}
+
+        // Status message display functions
+        function showStatus(message, type = 'info') {
+            const statusContainer = document.getElementById('statusMessages');
+            const statusElement = document.createElement('div');
+            statusElement.className = `status-message ${type}`;
+            statusElement.textContent = message;
+
+            statusContainer.appendChild(statusElement);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                statusElement.classList.add('fade-out');
+                setTimeout(() => statusElement.remove(), 500);
+            }, 5000);
+        }
+
+        const addNewButton = document.getElementById("addNew");
+        const fileInput = document.getElementById("fileInput");
+        const datasetList = document.querySelector("#datasetList ul");
+
+        // Trigger the file input when the button is clicked
+        addNewButton.addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener("change", async () => {
+            const files = fileInput.files;
+            if (!files.length) {
+                alert("Please select a directory to upload!");
+                return;
+            }
+            const formData = new FormData();
+            const directoryName = files[0].webkitRelativePath.split("/")[0];
+            for (const file of files) {
+                formData.append("files", file); // Append each file in the directory
+            }
+            // Send the files to the backend
+            const response = await fetch("/upload-directory", {
+                method: "POST",
+                body: formData
+            });
+            const result = await response.json();
+            if (response.ok) {
+                addDatasetToList(directoryName);
+            } else {
+                document.getElementById("status").innerText = "Error: " + result.message;
+            }
+        });
+
+        async function uploadToGoogleSheets(filePath) {
+            try {
+                const response = await fetch('/upload-google-sheet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filePath }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Upload response:', result);
+            } catch (error) {
+                console.error('Error uploading to Google Sheets:', error);
+            }
+        }
+
+        function addDatasetToList(directoryName) {
+            // Create a new list item
+            const li = document.createElement("li");
+            li.classList.add("dataset-item");
+
+            // Create a div to hold the directory name
+            const nameDiv = document.createElement("div");
+            nameDiv.textContent = directoryName;
+            nameDiv.classList.add("dataset-name");
+
+            // Create the upload button
+            const uploadBtn = document.createElement("button");
+            uploadBtn.setAttribute('id', `uploadBtn-${directoryName}`);
+            uploadBtn.setAttribute('class', "button");
+            uploadBtn.dataset.processing = "false";
+            uploadBtn.innerHTML = `
+            <span class="shadow"></span>
+            <span class="edge"></span>
+            <div class="front">
+                <span><i class="fas fa-cogs"></i> Process & Upload</span>
+            </div>
+        `;
+
+            // Add an event listener for the upload button (placeholder functionality)
+            uploadBtn.addEventListener("click", async () => {
+                // Prevent double-clicks
+                if (uploadBtn.dataset.processing === "true") {
+                    return;
+                }
+                // Update button to show processing state
+                uploadBtn.dataset.processing = "true";
+                uploadBtn.querySelector('.front').innerHTML = `
+                <div class="loader">
+                    <div class="loaderB" style="animation-play-state: running;"></div>
+                    <div class="loaderA" style="animation-play-state: running;"></div>
+                </div>
+            `;
+                // call processJson
+                try {
+                    const response = await fetch("/process-json", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ directory: directoryName }) // Send the directory name
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert(`Dataset processed successfully: ${result.message}`);
+                        try {
+                            processedJson = '/tmp/processing/rawJson/' + String(directoryName) + "/result.json"
+                            uploadToGoogleSheets(processedJson)
+
+                            // Diasble button and show green success
+                            uploadBtn.disabled = true;
+                            uploadBtn.querySelector('.front').innerHTML = `
+                            <div class="loader">
+                                <span id="check"><i class="fa-solid fa-check"></i></span>
+                            </div>`;
+                        } catch (error) {
+                            alert(`Error uploading to google sheets: ${error}`)
+                        }
+                    } else {
+                        alert(`Error processing dataset: ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error("Error calling the backend:", error);
+                    alert("An error occurred while processing the dataset.");
+                }
+            });
+
+            // Append the directory name and button to the list item
+            li.appendChild(nameDiv);
+            li.appendChild(uploadBtn);
+
+            // Append the list item to the dataset list
+            datasetList.appendChild(li);
+        }
+
+        const reportText = document.getElementById("reportText");
+
+        // Function to open the report modal
+        function showReportModal(summaryText) {
+            const modal = document.getElementById("reportModal");
+            const closeModal = document.querySelector(".close");
+
+            // Format summary text
+            let formattedText = summaryText
+                .replace(/Date Range:/, "<strong>Date Range:</strong>")
+                .replace(/Top Categories:/, "<strong>Top Categories:</strong>")
+                .replace(/Top Locations:/, "<strong>Top Locations:</strong>")
+                .replace(/Top Questions:/, "<strong>Top Questions:</strong>")
+                .replace(/Data Inferences:/, "<strong>Data Inferences:</strong>")
+                .replace(/\n/g, "<br>"); // Ensure new lines are converted to <br>
+
+            // Set the text inside the modal
+            reportText.innerHTML = formattedText;
+
+            // Display the modal
+            modal.style.display = "block";
+
+            // Close modal when clicking the "X" button
+            closeModal.onclick = function () {
+                modal.style.display = "none";
+            };
+
+            // Close modal when clicking outside of it
+            window.onclick = function (event) {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            };
+        }
+
+        // Function to export the report as a PDF
+        function exportSummaryToPDF(summaryText) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Set font styles
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+
+            // Replace <br> with new lines and manually apply bold styling
+            summaryText = String(summaryText);
+            summaryText = summaryText
+                .replace(/<br>/g, "\n") // Convert <br> to new lines
+                .replace(/<strong>(.*?)<\/strong>/g, "**$1**"); // Simulate bold text for PDF
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 10;
+            const maxWidth = pageWidth - margin * 2;
+            const lineHeight = 7; // Line height for each wrapped line
+            let y = 20; // Start y position
+
+            let lines = summaryText.split("\n");
+
+            lines.forEach(line => {
+                if (line.startsWith("**")) {
+                    doc.setFont("helvetica", "bold");
+                    line = line.replace(/\*\*/g, ""); // Remove bold markers
+                } else {
+                    doc.setFont("helvetica", "normal");
+                }
+
+                let wrappedText = doc.splitTextToSize(line, maxWidth);
+
+                // Check if text will exceed the page height
+                if (y + wrappedText.length * lineHeight > pageHeight - margin) {
+                    doc.addPage(); // Add a new page
+                    y = margin; // Reset y position for new page
+                }
+
+                doc.text(wrappedText, margin, y);
+                y += wrappedText.length * lineHeight;
+            });
+            // Save the PDF
+            doc.save("summaryReport.pdf");
+        }
+
+        // Attach event listener to the report button
+        document.getElementById("reportBtn").addEventListener("click", async function () {
+            try {
+                showReportModal("Generating...");
+                
+                // Call AI to generate the summary (Replace this with your API call)
+                const summaryResponse = await fetch("/generate_summary", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: "Generate a summary report of the data." }) // Replace with user input
+                });
+
+                const result = await summaryResponse.json();
+                showReportModal(result.summary); // Show modal with AI-generated text
+
+            } catch (error) {
+                console.error("Error generating summary:", error);
+            }
+        });
+
+        // Attach event listener to the export button
+        document.getElementById("exportSummary").addEventListener("click", () => {
+            exportSummaryToPDF(reportText.innerHTML);
+        });
+
+
+    </script>
+    <script src="../static/tableau.js"></script>
+
+
+</body>
+
+</html>
