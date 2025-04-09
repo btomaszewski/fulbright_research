@@ -1,0 +1,28 @@
+{
+    "name": "chat-analyser-web",
+    "version": "1.0.0",
+    "description": "Communication data analytics tool with Cloud Run backend - Web Version",
+    "main": "server.js",
+    "author": "Olivia Croteau <osc3732@rit.edu>",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "engines": {
+        "node": "16.x"
+    },
+    "dependencies": {
+        "axios": "^1.8.3",
+        "dotenv": "^16.3.1",
+        "ejs": "^3.1.9",
+        "express": "^4.18.2",
+        "express-session": "^1.17.3",
+        "google-auth-library": "^9.15.1",
+        "google-spreadsheet": "^4.1.4",
+        "multer": "^1.4.5-lts.1",
+        "session-file-store": "^1.5.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.1"
+    }
+}

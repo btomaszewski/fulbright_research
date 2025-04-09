@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis Analytics</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
+    <!-- Tableau JavaScript API -->
+    <script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
+</head>
+<body data-cloud-run-url="<%= typeof cloudRunUrl !== 'undefined' ? cloudRunUrl : 'https://processjson-1061451118144.us-central1.run.app' %>">
+    <div class="container">
+        <div class="datasets panel">
+            <div class="panel-heads">
+                <h2>Datasets</h2>
+                <div class="panel-buttons">
+                    <button id="openAnalysisModal" class="button">
+                        <span class="shadow"></span>
+                        <span class="edge"></span>
+                        <div class="front">
+                            <span><i class="fas fa-chart-line"></i> Analyze Data</span>
+                        </div>
+                    </button>
+                    <button id="addNew" class="button">
+                        <span class="shadow"></span>
+                        <span class="edge"></span>
+                        <div class="front">
+                            <span><i class="fas fa-plus"></i> Upload Directory</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="upload-form" style="display: none;">
+                <form id="directory-upload-form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="directoryName">Directory Name:</label>
+                        <input type="text" id="directoryName" name="directoryName" required placeholder="Enter directory name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="directoryInput">Select Directory:</label>
+                        <input type="file" id="directoryInput" name="directory" webkitdirectory directory multiple>
+                        <p class="info-text">Select a directory containing your data files</p>
+                    </div>
+                    
+                    <div class="file-summary">
+                        <span id="fileCount">0</span> files selected
+                        <div id="fileList" class="file-list-preview"></div>
+                    </div>
+                    
+                    <button type="submit" id="upload-process-btn" class="button">
+                        <span class="shadow"></span>
+                        <span class="edge"></span>
+                        <div class="front">
+                            <span><i class="fas fa-upload"></i> Upload & Process</span>
+                        </div>
+                    </button>
+                </form>
+            </div>
+            
+            <div id="datasetList"></div>
+        </div>
+        
+        <div class="dashboard panel">
+            <div class="panel-heads">
+                <h2>Dashboard</h2>
+                <div class="panel-buttons">
+                    <button id="exportPDF" class="button">
+                        <span class="shadow"></span>
+                        <span class="edge"></span>
+                        <div class="front">
+                          <span>Export to PDF</span>
+                        </div>
+                    </button>
+                    <button id="exportImage" class="button">
+                        <span class="shadow"></span>
+                        <span class="edge"></span>
+                        <div class="front">
+                          <span>Export to Image</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="statusMessages" class="status-container"></div>
+            
+            <!-- Tableau visualization container -->
+            <div id="vizContainer" class="tableau-container">
+                <!-- Tableau visualization will be inserted here -->
+                <div class="dashboard-loader">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading Tableau dashboard...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis Modal -->
+    <div id="analysisModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-chart-bar"></i> Data Analysis</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="analysis-container">
+                    <div class="query-panel panel">
+                        <div class="panel-heads">
+                            <h3>Ask Questions About Your Data</h3>
+                        </div>
+                        
+                        <div class="prompt-selection">
+                            <label for="prompt-select">Choose a pre-defined prompt:</label>
+                            <select id="prompt-select" class="select-input">
+                                <option value="">-- Select a prompt --</option>
+                                <!-- Prompts will be populated here via JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <form id="query-form" class="query-form">
+                            <textarea 
+                                id="query-input" 
+                                name="query" 
+                                placeholder="Type your question about the Telegram data..."></textarea>
+                            
+                            <button type="submit" class="button">
+                                <span class="shadow"></span>
+                                <span class="edge"></span>
+                                <div class="front">
+                                    <i class="fas fa-search"></i> Analyze Data
+                                </div>
+                            </button>
+                        </form>
+                        
+                        <div id="query-loading" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Analyzing your data...</p>
+                        </div>
+                    </div>
+                    
+                    <div id="response-panel" class="response-panel">
+                        <h3>Analysis Results</h3>
+                        <div id="response-content"></div>
+                    </div>
+                    
+                    <div class="summary-panel panel">
+                        <div class="panel-heads">
+                            <h3>Generate Summary Report</h3>
+                        </div>
+                        
+                        <p>Get a comprehensive analysis of your data highlighting key patterns, locations, and insights.</p>
+                        
+                        <button id="generate-summary" class="button">
+                            <span class="shadow"></span>
+                            <span class="edge"></span>
+                            <div class="front">
+                                <i class="fas fa-chart-bar"></i> Generate Summary
+                            </div>
+                        </button>
+                        
+                        <div id="summary-loading" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Generating summary...</p>
+                        </div>
+                        
+                        <div id="summary-output" class="summary-output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="/js/main.js"></script>
+    <!-- Tableau Integration JavaScript -->
+    <script src="/js/tableau.js"></script>
+</body>
+</html>
