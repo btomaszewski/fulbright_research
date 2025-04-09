@@ -8,6 +8,7 @@
     <script src="https://kit.fontawesome.com/683afc83bf.js" crossorigin="anonymous"></script>
     <!-- Tableau JavaScript API -->
     <script type="text/javascript" src="https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body data-cloud-run-url="<%= typeof cloudRunUrl !== 'undefined' ? cloudRunUrl : 'https://processjson-1061451118144.us-central1.run.app' %>">
     <div class="container">
@@ -15,13 +16,6 @@
             <div class="panel-heads">
                 <h2>Datasets</h2>
                 <div class="panel-buttons">
-                    <button id="openAnalysisModal" class="button">
-                        <span class="shadow"></span>
-                        <span class="edge"></span>
-                        <div class="front">
-                            <span><i class="fas fa-chart-line"></i> Analyze Data</span>
-                        </div>
-                    </button>
                     <button id="addNew" class="button">
                         <span class="shadow"></span>
                         <span class="edge"></span>
@@ -67,31 +61,62 @@
             <div class="panel-heads">
                 <h2>Dashboard</h2>
                 <div class="panel-buttons">
-                    <button id="exportPDF" class="button">
+                    <button id="openAnalysisModal" class="button">
                         <span class="shadow"></span>
                         <span class="edge"></span>
                         <div class="front">
-                          <span>Export to PDF</span>
-                        </div>
-                    </button>
-                    <button id="exportImage" class="button">
-                        <span class="shadow"></span>
-                        <span class="edge"></span>
-                        <div class="front">
-                          <span>Export to Image</span>
+                            <span><i class="fas fa-chart-line"></i> Summary Report</span>
                         </div>
                     </button>
                 </div>
             </div>
             
             <div id="statusMessages" class="status-container"></div>
-            
-            <!-- Tableau visualization container -->
-            <div id="vizContainer" class="tableau-container">
-                <!-- Tableau visualization will be inserted here -->
-                <div class="dashboard-loader">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading Tableau dashboard...</p>
+
+            <div id="info-container">
+                <div id="vizContainerContainer">
+                    <div id="vizContainer" class="tableau-container">
+                        <!-- Tableau visualization will be inserted here -->
+                        <div class="dashboard-loader">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading Tableau dashboard...</p>
+                        </div>
+                    </div>
+
+                    <div class="panel-buttons">
+                        <button id="exportPDF" class="button">
+                            <span class="shadow"></span>
+                            <span class="edge"></span>
+                            <div class="front">
+                              <span>Export to PDF</span>
+                            </div>
+                        </button>
+                        <button id="exportImage" class="button">
+                            <span class="shadow"></span>
+                            <span class="edge"></span>
+                            <div class="front">
+                              <span>Export to Image</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="ai-convo">
+                    <div id="chat-container">
+                        <div id="chat-box"></div>
+                    </div>
+
+                    <form id="question-form" name="question-form">
+                        <input type="text" name="user_input" id="user_input" placeholder="Chat about the data..."
+                            required>
+                        <button type="submit" id="submit-question-btn" class="button">
+                            <span class="shadow"></span>
+                            <span class="edge"></span>
+                            <div class="front">
+                                <span>Send</span>
+                            </div>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -106,44 +131,6 @@
             </div>
             <div class="modal-body">
                 <div class="analysis-container">
-                    <div class="query-panel panel">
-                        <div class="panel-heads">
-                            <h3>Ask Questions About Your Data</h3>
-                        </div>
-                        
-                        <div class="prompt-selection">
-                            <label for="prompt-select">Choose a pre-defined prompt:</label>
-                            <select id="prompt-select" class="select-input">
-                                <option value="">-- Select a prompt --</option>
-                                <!-- Prompts will be populated here via JavaScript -->
-                            </select>
-                        </div>
-                        
-                        <form id="query-form" class="query-form">
-                            <textarea 
-                                id="query-input" 
-                                name="query" 
-                                placeholder="Type your question about the Telegram data..."></textarea>
-                            
-                            <button type="submit" class="button">
-                                <span class="shadow"></span>
-                                <span class="edge"></span>
-                                <div class="front">
-                                    <i class="fas fa-search"></i> Analyze Data
-                                </div>
-                            </button>
-                        </form>
-                        
-                        <div id="query-loading" class="loading">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Analyzing your data...</p>
-                        </div>
-                    </div>
-                    
-                    <div id="response-panel" class="response-panel">
-                        <h3>Analysis Results</h3>
-                        <div id="response-content"></div>
-                    </div>
                     
                     <div class="summary-panel panel">
                         <div class="panel-heads">
@@ -157,6 +144,14 @@
                             <span class="edge"></span>
                             <div class="front">
                                 <i class="fas fa-chart-bar"></i> Generate Summary
+                            </div>
+                        </button>
+
+                        <button id="export-summary" class="button">
+                            <span class="shadow"></span>
+                            <span class="edge"></span>
+                            <div class="front">
+                                <span>Export to PDF</span>
                             </div>
                         </button>
                         

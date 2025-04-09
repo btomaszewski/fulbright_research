@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
         borderRadius: "0.625rem",
         device: "desktop",
         onFirstInteractive: function () {
-            console.log("Tableau Dashboard is ready");
             viz = tableau.VizManager.getVizs()[0]; // Store the instance
             
             // Update any loading indicators
@@ -57,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
             containerDiv.innerHTML = '<div class="dashboard-loader">Loading dashboard...</div>';
             
             // Initialize the viz
-            console.log("Initializing Tableau visualization");
             viz = new tableau.Viz(containerDiv, url, options);
         } catch (error) {
             console.error("Error initializing Tableau dashboard:", error);

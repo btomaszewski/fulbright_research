@@ -136,11 +136,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('files', file);
                 formData.append('filePaths', relativePath);
             });
+
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.querySelector('.front').innerHTML;
             
             try {
                 // Update button state
-                const submitButton = this.querySelector('button[type="submit"]');
-                const originalButtonText = submitButton.querySelector('.front').innerHTML;
                 submitButton.disabled = true;
                 submitButton.querySelector('.front').innerHTML = `
                     <div class="loader">
@@ -150,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 
                 // Send request
-                const response = await fetch('/upload-directory', {
+                const response = await fetch('upload-directory', {
                     method: 'POST',
                     body: formData
                 });
@@ -247,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModalBtn = document.querySelector('.close-modal');
     
     // Analysis elements
-    const promptSelect = document.getElementById('prompt-select');
+    // const promptSelect = document.getElementById('prompt-select');
     const queryForm = document.getElementById('query-form');
     const queryInput = document.getElementById('query-input');
     const queryLoading = document.getElementById('query-loading');
@@ -256,13 +257,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const generateSummaryBtn = document.getElementById('generate-summary');
     const summaryLoading = document.getElementById('summary-loading');
     const summaryOutput = document.getElementById('summary-output');
+    const exportSummaryBtn = document.getElementById('export-summary');
     
     // Modal open/close functionality
     if (openModalBtn && modal) {
         openModalBtn.addEventListener('click', function() {
             modal.style.display = 'block';
+            exportSummaryBtn.style.display = 'none';
             // Initialize analysis when modal opens
-            fetchPrompts();
         });
         
         // Close modal when X is clicked
@@ -276,61 +278,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('click', function(event) {
             if (event.target === modal) {
                 modal.style.display = 'none';
-            }
-        });
-    }
-    
-    // Fetch prompts from API
-    async function fetchPrompts() {
-        try {
-            // Only fetch if the select exists and hasn't been populated yet
-            if (!promptSelect || promptSelect.options.length > 1) return;
-            
-            const response = await fetch(`${CLOUD_RUN_URL}/get-prompts`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch prompts');
-            }
-            
-            const data = await response.json();
-            
-            if (data.success && data.prompts) {
-                // Clear any existing options except the first one
-                while (promptSelect.options.length > 1) {
-                    promptSelect.remove(1);
-                }
-                
-                // Add new options
-                data.prompts.forEach(prompt => {
-                    const option = document.createElement('option');
-                    option.value = prompt.id;
-                    option.textContent = prompt.name;
-                    promptSelect.appendChild(option);
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching prompts:', error);
-            showStatus('Failed to load prompts. Please try again later.', 'error');
-        }
-    }
-    
-    // Handle prompt selection
-    if (promptSelect) {
-        promptSelect.addEventListener('change', async function() {
-            if (this.value) {
-                try {
-                    const response = await fetch(`${CLOUD_RUN_URL}/get-prompt/${this.value}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch prompt text');
-                    }
-                    
-                    const data = await response.json();
-                    if (data.success && data.text) {
-                        queryInput.value = data.text;
-                    }
-                } catch (error) {
-                    console.error('Error fetching prompt text:', error);
-                    showStatus('Failed to load prompt text', 'error');
-                }
             }
         });
     }
@@ -384,6 +331,70 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    document.getElementById('question-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const userInput = document.querySelector('input[name="user_input"]').value;
+        if (!userInput.trim()) return; // Prevent empty messages
+
+        // Append user message to chat
+        appendMessage('user', userInput);
+
+        const response = await fetch(`${CLOUD_RUN_URL}/ask`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_input: userInput
+            })
+        });
+
+        const aiResponse = await response.text();
+
+        // Append AI message to chat
+        appendMessage('ai', aiResponse);
+
+        document.getElementById('question-form').reset();
+    });
+
+    // Function to append messages to chat
+    function appendMessage(role, text) {
+        const chatBox = document.getElementById('chat-box');
+        const messageDiv = document.createElement('div');
+
+        messageDiv.classList.add('message', role);
+        messageDiv.innerHTML = `<strong>${role === 'user' ? 'You' : 'AI'}</strong>: ${formatMessage(text)}`;
+
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
+    }
+
+    // Function to format AI chat responses
+    function formatMessage(text) {
+        try {
+            const parsed = JSON.parse(text);
+            let response = parsed.response || '';
+
+            // Remove all instances of ***
+            response = response.replace(/\*{3,}/g, '');
+            response = response.replace(/\*{2,}/g, '');
+    
+            // Convert newlines to <br> for HTML display
+            response = response.replace(/\n/g, '<br>');
+    
+            return `<div class="ai-response">${response}</div>`;
+        } catch (e) {
+            console.error('Invalid message format:', e);
+            // Fallback: just return raw text with safe formatting
+            return `<div class="ai-response">${text.replace(/\n/g, '<br>')}</div>`;
+        }
+    }
+    
+
+    // To be used in summary export, updated when returned by generateSummaryBtn handler
+    let summaryText = "";
     
     // Handle summary generation
     if (generateSummaryBtn) {
@@ -416,6 +427,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show summary with results
                     summaryOutput.textContent = data.summary;
                     summaryOutput.style.display = 'block';
+                    exportSummaryBtn.style.display = 'block';
+
+                    // Set summaryText to be used in exportSummaryBtn handler
+                    summaryText = data.summary;
                 } else {
                     showStatus(data.error || 'Failed to generate summary', 'error');
                 }
@@ -425,5 +440,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 showStatus('Error generating summary. Please try again.', 'error');
             }
         });
+    }
+
+    // Handle summary export
+    if (exportSummaryBtn) {
+        exportSummaryBtn.addEventListener('click', async function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Set font styles
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+
+            // Replace <br> with new lines and manually apply bold styling
+            summaryText = String(summaryText);
+            summaryText = summaryText
+                .replace(/<br>/g, "\n") // Convert <br> to new lines
+                .replace(/<strong>(.*?)<\/strong>/g, "**$1**"); // Simulate bold text for PDF
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 10;
+            const maxWidth = pageWidth - margin * 2;
+            const lineHeight = 7; // Line height for each wrapped line
+            let y = 20; // Start y position
+
+            let lines = summaryText.split("\n");
+
+            lines.forEach(line => {
+                if (line.startsWith("**")) {
+                    doc.setFont("helvetica", "bold");
+                    line = line.replace(/\*\*/g, ""); // Remove bold markers
+                } else {
+                    doc.setFont("helvetica", "normal");
+                }
+
+                let wrappedText = doc.splitTextToSize(line, maxWidth);
+
+                // Check if text will exceed the page height
+                if (y + wrappedText.length * lineHeight > pageHeight - margin) {
+                    doc.addPage(); // Add a new page
+                    y = margin; // Reset y position for new page
+                }
+
+                doc.text(wrappedText, margin, y);
+                y += wrappedText.length * lineHeight;
+            });
+            // Save the PDF
+            doc.save("summaryReport.pdf");
+        })
     }
 });
