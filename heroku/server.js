@@ -216,6 +216,7 @@ app.post('/credentials', uploadCredentials.single('googleCredentialsFile'), (req
 
 // Handle directory upload
 app.post('/upload-directory', uploadFiles.array('files'), async (req, res) => {
+  console.log("UPLOAD-DIRECTORY CALLED");
   try {
     console.log('Directory upload request received');
     console.log('Session ID:', req.sessionID);
