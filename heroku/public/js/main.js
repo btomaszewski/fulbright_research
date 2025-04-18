@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const CLOUD_RUN_URL = document.body.dataset.cloudRunUrl || 
                           'https://processjson-1061451118144.us-central1.run.app';
     
+    // Batch processing configuration
+    const BATCH_SIZE = 5 * 1024 * 1024; // 5MB per batch
+    const MAX_CONCURRENT_BATCHES = 3;   // Maximum concurrent batch uploads
+    
     // Status message display functions
     function showStatus(message, type = 'info') {
         const statusContainer = document.getElementById('statusMessages');
@@ -35,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Handle directory input change
+    // Handle directory input change - Same as before
     const directoryInput = document.getElementById('directoryInput');
     if (directoryInput) {
         directoryInput.addEventListener('change', function(e) {
@@ -91,8 +95,181 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!hasJsonFiles && files.length > 0) {
                     showStatus('Warning: No JSON files detected in the selected directory. At least one JSON file is required.', 'warning');
                 }
+                
+                // Show batch processing info if files are large
+                const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+                if (totalSize > BATCH_SIZE) {
+                    const batchCount = Math.ceil(totalSize / BATCH_SIZE);
+                    showStatus(`Large directory detected (${formatFileSize(totalSize)}). Will be processed in ${batchCount} batches.`, 'info');
+                }
             }
         });
+    }
+    
+    // Format file size for display (KB, MB, GB)
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' bytes';
+        else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        else if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        else return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+    }
+    
+    // Create file batches based on size
+    function createFileBatches(files, paths, batchSize) {
+        const batches = [];
+        let currentBatch = { files: [], paths: [], size: 0 };
+        
+        // Group files into batches based on size
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const path = paths[i];
+            
+            // If file is extremely large, it needs to be handled separately
+            if (file.size > batchSize) {
+                if (currentBatch.files.length > 0) {
+                    batches.push(currentBatch);
+                    currentBatch = { files: [], paths: [], size: 0 };
+                }
+                
+                // Add large file as its own batch with special handling flag
+                batches.push({ 
+                    files: [file], 
+                    paths: [path], 
+                    size: file.size,
+                    largeFile: true 
+                });
+                
+                continue;
+            }
+            
+            // If adding this file would exceed batch size, create a new batch
+            if (currentBatch.size + file.size > batchSize && currentBatch.files.length > 0) {
+                batches.push(currentBatch);
+                currentBatch = { files: [], paths: [], size: 0 };
+            }
+            
+            // Add file to current batch
+            currentBatch.files.push(file);
+            currentBatch.paths.push(path);
+            currentBatch.size += file.size;
+        }
+        
+        // Add the last batch if it has files
+        if (currentBatch.files.length > 0) {
+            batches.push(currentBatch);
+        }
+        
+        return batches;
+    }
+    
+    // Process a single batch
+    async function processBatch(directoryName, batchIndex, totalBatches, batch, uploadId) {
+        try {
+            const formData = new FormData();
+            formData.append('directoryName', directoryName);
+            formData.append('batchIndex', batchIndex);
+            formData.append('totalBatches', totalBatches);
+            formData.append('uploadId', uploadId);
+            
+            // If this is a large file that needs chunking
+            if (batch.largeFile && batch.files[0].size > BATCH_SIZE * 2) {
+                // Special handling for extremely large files
+                // This is a simplified approach - for production, consider using
+                // a proper file chunking library
+                return await processLargeFile(directoryName, batch.files[0], batch.paths[0], batchIndex, totalBatches, uploadId);
+            }
+            
+            // Add all files in this batch to the formData
+            batch.files.forEach((file, index) => {
+                formData.append('files', file);
+                formData.append('filePaths', batch.paths[index]);
+            });
+            
+            // Send this batch to the server
+            const response = await fetch('upload-batch', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Server error');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error(`Batch ${batchIndex + 1}/${totalBatches} error:`, error);
+            throw error;
+        }
+    }
+    
+    // Special handling for extremely large files (chunked upload)
+    async function processLargeFile(directoryName, file, filePath, batchIndex, totalBatches, uploadId) {
+        const CHUNK_SIZE = BATCH_SIZE; // 5MB chunks 
+        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+        
+        // Notify about large file chunking
+        showStatus(`Processing large file (${file.name}) in ${totalChunks} chunks...`, 'info');
+        
+        // Process each chunk
+        for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+            try {
+                const start = chunkIndex * CHUNK_SIZE;
+                const end = Math.min(file.size, start + CHUNK_SIZE);
+                const chunk = file.slice(start, end);
+                
+                const formData = new FormData();
+                formData.append('directoryName', directoryName);
+                formData.append('batchIndex', batchIndex);
+                formData.append('totalBatches', totalBatches);
+                formData.append('uploadId', uploadId);
+                formData.append('chunkIndex', chunkIndex);
+                formData.append('totalChunks', totalChunks);
+                formData.append('fileName', file.name);
+                formData.append('filePath', filePath);
+                formData.append('fileChunk', chunk);
+                
+                const response = await fetch('upload-chunk', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Server error');
+                }
+                
+                // Update progress
+                showStatus(`Processed chunk ${chunkIndex + 1}/${totalChunks} of ${file.name}`, 'info');
+                
+                // If last chunk, get the final response
+                if (chunkIndex === totalChunks - 1) {
+                    const finalResponse = await fetch('finalize-chunks', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            directoryName,
+                            uploadId,
+                            fileName: file.name,
+                            filePath,
+                            totalChunks
+                        })
+                    });
+                    
+                    if (!finalResponse.ok) {
+                        const errorData = await finalResponse.json();
+                        throw new Error(errorData.message || 'Failed to finalize file chunks');
+                    }
+                    
+                    return await finalResponse.json();
+                }
+            } catch (error) {
+                console.error(`Chunk ${chunkIndex + 1}/${totalChunks} error:`, error);
+                throw error;
+            }
+        }
     }
     
     // Handle directory upload form submission
@@ -122,21 +299,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            // Get file paths
+            const filePaths = files.map(file => file.webkitRelativePath || file.name);
+            
+            // Create upload ID
+            const uploadId = 'upload_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            
+            // Create batches based on file sizes
+            const batches = createFileBatches(files, filePaths, BATCH_SIZE);
+            
             // Display processing status
-            showStatus('Uploading and processing directory...', 'info');
+            showStatus(`Processing directory in ${batches.length} batches...`, 'info');
             
-            // Create FormData and append directory name and files
-            const formData = new FormData();
-            formData.append('directoryName', directoryName);
-            
-            // Add all files to the formData
-            files.forEach(file => {
-                // Include relative path information for server-side reconstruction
-                const relativePath = file.webkitRelativePath || file.name;
-                formData.append('files', file);
-                formData.append('filePaths', relativePath);
-            });
-
             const submitButton = this.querySelector('button[type="submit"]');
             const originalButtonText = submitButton.querySelector('.front').innerHTML;
             
@@ -150,71 +324,125 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 
-                // Send request
-                const response = await fetch('upload-directory', {
-                    method: 'POST',
-                    body: formData
-                });
+                let successfulBatches = 0;
+                let failedBatches = 0;
                 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Server error');
+                // Process batches with concurrency limit
+                for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
+                    const batchPromises = [];
+                    
+                    // Process up to MAX_CONCURRENT_BATCHES at once
+                    for (let j = 0; j < MAX_CONCURRENT_BATCHES && i + j < batches.length; j++) {
+                        const batchIndex = i + j;
+                        const batch = batches[batchIndex];
+                        
+                        batchPromises.push(
+                            processBatch(directoryName, batchIndex, batches.length, batch, uploadId)
+                                .then(result => {
+                                    successfulBatches++;
+                                    showStatus(`Batch ${batchIndex + 1}/${batches.length} processed successfully`, 'success');
+                                    return result;
+                                })
+                                .catch(error => {
+                                    failedBatches++;
+                                    showStatus(`Batch ${batchIndex + 1}/${batches.length} failed: ${error.message}`, 'error');
+                                    return null;
+                                })
+                        );
+                    }
+                    
+                    // Wait for current batch of promises to complete
+                    await Promise.all(batchPromises);
+                    
+                    // Update progress
+                    const processedPercent = Math.round(((i + batchPromises.length) / batches.length) * 100);
+                    showStatus(`Overall progress: ${processedPercent}% (${i + batchPromises.length}/${batches.length} batches)`, 'info');
                 }
                 
-                const result = await response.json();
-                
-                // Reset button
-                submitButton.disabled = false;
-                
-                if (result.success) {
-                    submitButton.querySelector('.front').innerHTML = `
-                        <div class="loader">
-                            <span id="check"><i class="fa-solid fa-check"></i></span>
-                        </div>
-                    `;
-                    showStatus(`Success: ${result.message}`, 'success');
+                // After all batches are processed, finalize the upload
+                try {
+                    const finalizeResponse = await fetch('finalize-upload', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            directoryName,
+                            uploadId,
+                            totalBatches: batches.length,
+                            successfulBatches,
+                            failedBatches
+                        })
+                    });
                     
-                    // Add to dataset list
-                    addDatasetToList(directoryName, files.length, result.processResult);
-                    
-                    // Clear form
-                    document.getElementById('directoryName').value = '';
-                    document.getElementById('directoryInput').value = '';
-                    document.getElementById('fileCount').textContent = '0';
-                    document.getElementById('fileList').innerHTML = '';
-                    
-                    // Update processed count
-                    const processedCount = document.getElementById('processed-count');
-                    if (processedCount) {
-                        const currentCount = parseInt(processedCount.textContent) || 0;
-                        processedCount.textContent = currentCount + 1;
+                    if (!finalizeResponse.ok) {
+                        const errorData = await finalizeResponse.json();
+                        throw new Error(errorData.message || 'Failed to finalize upload');
                     }
                     
-                    // Hide upload form
-                    document.getElementById('upload-form').style.display = 'none';
+                    const result = await finalizeResponse.json();
                     
-                    // Refresh Tableau dashboard if available
-                    if (typeof window.refreshDashboard === 'function') {
-                        setTimeout(() => {
-                            window.refreshDashboard();
-                        }, 1000); // Give a little delay to allow Google Sheets to update
+                    // Reset button
+                    submitButton.disabled = false;
+                    
+                    if (result.success) {
+                        submitButton.querySelector('.front').innerHTML = `
+                            <div class="loader">
+                                <span id="check"><i class="fa-solid fa-check"></i></span>
+                            </div>
+                        `;
+                        showStatus(`Success: ${result.message}`, 'success');
+                        
+                        // Add to dataset list
+                        addDatasetToList(directoryName, files.length, result.processResult);
+                        
+                        // Clear form
+                        document.getElementById('directoryName').value = '';
+                        document.getElementById('directoryInput').value = '';
+                        document.getElementById('fileCount').textContent = '0';
+                        document.getElementById('fileList').innerHTML = '';
+                        
+                        // Update processed count
+                        const processedCount = document.getElementById('processed-count');
+                        if (processedCount) {
+                            const currentCount = parseInt(processedCount.textContent) || 0;
+                            processedCount.textContent = currentCount + 1;
+                        }
+                        
+                        // Hide upload form
+                        document.getElementById('upload-form').style.display = 'none';
+                        
+                        // Refresh Tableau dashboard if available
+                        if (typeof window.refreshDashboard === 'function') {
+                            setTimeout(() => {
+                                window.refreshDashboard();
+                            }, 1000); // Give a little delay to allow Google Sheets to update
+                        }
+                    } else {
+                        submitButton.querySelector('.front').innerHTML = originalButtonText;
+                        showStatus(`Error: ${result.message}`, 'error');
                     }
-                } else {
+                } catch (error) {
+                    console.error('Finalize error:', error);
+                    showStatus(`Failed to finalize upload: ${error.message}`, 'error');
+                    
+                    // Reset button
+                    submitButton.disabled = false;
                     submitButton.querySelector('.front').innerHTML = originalButtonText;
-                    showStatus(`Error: ${result.message}`, 'error');
                 }
+                
             } catch (error) {
                 console.error('Upload error:', error);
                 showStatus(`Upload failed: ${error.message}`, 'error');
                 
                 // Reset button
-                const submitButton = this.querySelector('button[type="submit"]');
                 submitButton.disabled = false;
                 submitButton.querySelector('.front').innerHTML = originalButtonText;
             }
         });
     }
     
+    // Function to add dataset to list (same as original)
     function addDatasetToList(dirName, fileCount, processInfo) {
         const ul = document.getElementById('datasetList');
         if (!ul) return;
@@ -240,8 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ul.appendChild(li);
     }
     
-    // ANALYSIS MODAL FUNCTIONALITY
-    
+    // Rest of the original code remains unchanged...
     // Modal elements
     const modal = document.getElementById('analysisModal');
     const openModalBtn = document.getElementById('openAnalysisModal');
@@ -392,7 +619,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-
     // To be used in summary export, updated when returned by generateSummaryBtn handler
     let summaryText = "";
     
