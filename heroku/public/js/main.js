@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return batches;
     }
     
-    // Process a single batch
+    // Process a single batch - UPDATED to use CLOUD_RUN_URL
     async function processBatch(directoryName, batchIndex, totalBatches, batch, uploadId) {
         try {
             const formData = new FormData();
@@ -174,8 +174,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // If this is a large file that needs chunking
             if (batch.largeFile && batch.files[0].size > BATCH_SIZE * 2) {
                 // Special handling for extremely large files
-                // This is a simplified approach - for production, consider using
-                // a proper file chunking library
                 return await processLargeFile(directoryName, batch.files[0], batch.paths[0], batchIndex, totalBatches, uploadId);
             }
             
@@ -185,8 +183,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('filePaths', batch.paths[index]);
             });
             
-            // Send this batch to the server
-            const response = await fetch('upload-batch', {
+            // Send this batch to the server - UPDATED to use CLOUD_RUN_URL
+            const response = await fetch(`${CLOUD_RUN_URL}/upload-media-batch`, {
                 method: 'POST',
                 body: formData
             });
@@ -203,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Special handling for extremely large files (chunked upload)
+    // Special handling for extremely large files (chunked upload) - UPDATED to use CLOUD_RUN_URL
     async function processLargeFile(directoryName, file, filePath, batchIndex, totalBatches, uploadId) {
         const CHUNK_SIZE = BATCH_SIZE; // 5MB chunks 
         const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
@@ -229,7 +227,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.append('filePath', filePath);
                 formData.append('fileChunk', chunk);
                 
-                const response = await fetch('upload-chunk', {
+                // UPDATED to use CLOUD_RUN_URL
+                const response = await fetch(`${CLOUD_RUN_URL}/upload-chunk`, {
                     method: 'POST',
                     body: formData
                 });
@@ -244,7 +243,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // If last chunk, get the final response
                 if (chunkIndex === totalChunks - 1) {
-                    const finalResponse = await fetch('finalize-chunks', {
+                    // UPDATED to use CLOUD_RUN_URL
+                    const finalResponse = await fetch(`${CLOUD_RUN_URL}/finalize-chunks`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -327,74 +327,180 @@ document.addEventListener('DOMContentLoaded', function() {
                 let successfulBatches = 0;
                 let failedBatches = 0;
                 
-                // Process batches with concurrency limit
-                for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
-                    const batchPromises = [];
+                // Initialize processing session - NEW
+                try {
+                    // Extract just the JSON files for initialization
+                    const jsonFiles = files.filter(file => file.name.toLowerCase().endsWith('.json'));
+                    const jsonContents = {};
                     
-                    // Process up to MAX_CONCURRENT_BATCHES at once
-                    for (let j = 0; j < MAX_CONCURRENT_BATCHES && i + j < batches.length; j++) {
-                        const batchIndex = i + j;
-                        const batch = batches[batchIndex];
+                    // Create a media manifest for non-JSON files
+                    const mediaManifest = files
+                        .filter(file => !file.name.toLowerCase().endsWith('.json'))
+                        .map((file, index) => ({
+                            relativePath: filePaths[files.indexOf(file)],
+                            size: file.size
+                        }));
+                    
+                    // Read the JSON files
+                    for (const jsonFile of jsonFiles) {
+                        const reader = new FileReader();
                         
-                        batchPromises.push(
-                            processBatch(directoryName, batchIndex, batches.length, batch, uploadId)
-                                .then(result => {
-                                    successfulBatches++;
-                                    showStatus(`Batch ${batchIndex + 1}/${batches.length} processed successfully`, 'success');
-                                    return result;
-                                })
-                                .catch(error => {
-                                    failedBatches++;
-                                    showStatus(`Batch ${batchIndex + 1}/${batches.length} failed: ${error.message}`, 'error');
-                                    return null;
-                                })
-                        );
+                        // Use a promise to handle the asynchronous file read
+                        const fileContent = await new Promise((resolve, reject) => {
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.onerror = (e) => reject(new Error('Failed to read JSON file'));
+                            reader.readAsText(jsonFile);
+                        });
+                        
+                        jsonContents[jsonFile.name] = fileContent;
                     }
                     
-                    // Wait for current batch of promises to complete
-                    await Promise.all(batchPromises);
-                    
-                    // Update progress
-                    const processedPercent = Math.round(((i + batchPromises.length) / batches.length) * 100);
-                    showStatus(`Overall progress: ${processedPercent}% (${i + batchPromises.length}/${batches.length} batches)`, 'info');
-                }
-                
-                // After all batches are processed, finalize the upload
-                try {
-                    const finalizeResponse = await fetch('finalize-upload', {
+                    // Initialize the processing session
+                    const initResponse = await fetch(`${CLOUD_RUN_URL}/process-json-init`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            directoryName,
-                            uploadId,
-                            totalBatches: batches.length,
-                            successfulBatches,
-                            failedBatches
+                            jsonContents,
+                            mediaManifest,
+                            outputDir: directoryName,
+                            preserveStructure: true
+                        })
+                    });
+                    
+                    if (!initResponse.ok) {
+                        const errorData = await initResponse.json();
+                        throw new Error(errorData.message || 'Failed to initialize processing');
+                    }
+                    
+                    const initResult = await initResponse.json();
+                    
+                    if (!initResult.success) {
+                        throw new Error(initResult.error || 'Failed to initialize processing');
+                    }
+                    
+                    // Use the session ID from the initialization
+                    const sessionId = initResult.sessionId;
+                    
+                    // Only upload media files if needed
+                    if (initResult.needsMediaFiles) {
+                        showStatus('Uploading media files...', 'info');
+                        
+                        // Process batches with concurrency limit
+                        for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
+                            const batchPromises = [];
+                            
+                            // Process up to MAX_CONCURRENT_BATCHES at once
+                            for (let j = 0; j < MAX_CONCURRENT_BATCHES && i + j < batches.length; j++) {
+                                const batchIndex = i + j;
+                                const batch = batches[batchIndex];
+                                
+                                // Only process non-JSON files
+                                if (batch.files.some(file => !file.name.toLowerCase().endsWith('.json'))) {
+                                    const mediaFiles = {};
+                                    
+                                    // Convert each file to base64
+                                    for (let k = 0; k < batch.files.length; k++) {
+                                        const file = batch.files[k];
+                                        
+                                        // Skip JSON files
+                                        if (file.name.toLowerCase().endsWith('.json')) continue;
+                                        
+                                        const reader = new FileReader();
+                                        
+                                        // Use a promise to handle the asynchronous file read
+                                        const base64Content = await new Promise((resolve, reject) => {
+                                            reader.onload = (e) => {
+                                                // Extract the base64 part of the data URL
+                                                const base64 = e.target.result.split(',')[1];
+                                                resolve(base64);
+                                            };
+                                            reader.onerror = (e) => reject(new Error('Failed to read file'));
+                                            reader.readAsDataURL(file);
+                                        });
+                                        
+                                        mediaFiles[batch.paths[k]] = base64Content;
+                                    }
+                                    
+                                    // Only send batch if there are media files
+                                    if (Object.keys(mediaFiles).length > 0) {
+                                        batchPromises.push(
+                                            fetch(`${CLOUD_RUN_URL}/upload-media-batch`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({
+                                                    sessionId,
+                                                    mediaFiles
+                                                })
+                                            })
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    return response.json().then(errorData => {
+                                                        throw new Error(errorData.message || 'Server error');
+                                                    });
+                                                }
+                                                return response.json();
+                                            })
+                                            .then(result => {
+                                                successfulBatches++;
+                                                showStatus(`Batch ${batchIndex + 1}/${batches.length} processed successfully`, 'success');
+                                                return result;
+                                            })
+                                            .catch(error => {
+                                                failedBatches++;
+                                                showStatus(`Batch ${batchIndex + 1}/${batches.length} failed: ${error.message}`, 'error');
+                                                return null;
+                                            })
+                                        );
+                                    }
+                                }
+                            }
+                            
+                            // Wait for current batch of promises to complete
+                            await Promise.all(batchPromises);
+                            
+                            // Update progress
+                            const processedPercent = Math.round(((i + batchPromises.length) / batches.length) * 100);
+                            showStatus(`Overall progress: ${processedPercent}% (${i + batchPromises.length}/${batches.length} batches)`, 'info');
+                        }
+                    }
+                    
+                    // Finalize processing
+                    showStatus('Finalizing processing...', 'info');
+                    
+                    const finalizeResponse = await fetch(`${CLOUD_RUN_URL}/finalize-processing`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            sessionId
                         })
                     });
                     
                     if (!finalizeResponse.ok) {
                         const errorData = await finalizeResponse.json();
-                        throw new Error(errorData.message || 'Failed to finalize upload');
+                        throw new Error(errorData.message || 'Failed to finalize processing');
                     }
                     
-                    const result = await finalizeResponse.json();
+                    const finalizeResult = await finalizeResponse.json();
                     
                     // Reset button
                     submitButton.disabled = false;
                     
-                    if (result.success) {
+                    if (finalizeResult.success) {
                         submitButton.querySelector('.front').innerHTML = `
                             <div class="loader">
                                 <span id="check"><i class="fa-solid fa-check"></i></span>
                             </div>
                         `;
-                        showStatus(`Success: ${result.message}`, 'success');
+                        showStatus(`Success: ${finalizeResult.message}`, 'success');
                         
                         // Add to dataset list
-                        addDatasetToList(directoryName, files.length, result.processResult);
+                        addDatasetToList(directoryName, files.length, finalizeResult.message);
                         
                         // Clear form
                         document.getElementById('directoryName').value = '';
@@ -420,11 +526,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     } else {
                         submitButton.querySelector('.front').innerHTML = originalButtonText;
-                        showStatus(`Error: ${result.message}`, 'error');
+                        showStatus(`Error: ${finalizeResult.error || 'Processing failed'}`, 'error');
                     }
                 } catch (error) {
-                    console.error('Finalize error:', error);
-                    showStatus(`Failed to finalize upload: ${error.message}`, 'error');
+                    console.error('Processing error:', error);
+                    showStatus(`Processing failed: ${error.message}`, 'error');
                     
                     // Reset button
                     submitButton.disabled = false;
@@ -468,7 +574,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ul.appendChild(li);
     }
     
-    // Rest of the original code remains unchanged...
     // Modal elements
     const modal = document.getElementById('analysisModal');
     const openModalBtn = document.getElementById('openAnalysisModal');
@@ -668,31 +773,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle summary export
     if (exportSummaryBtn) {
         exportSummaryBtn.addEventListener('click', async function () {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
+    
             // Set font styles
             doc.setFont("helvetica", "normal");
             doc.setFontSize(12);
-
+    
             // Replace <br> with new lines and manually apply bold styling
             summaryText = String(summaryText);
             summaryText = summaryText
                 .replace(/<br>/g, "\n") // Convert <br> to new lines
                 .replace(/<strong>(.*?)<\/strong>/g, "**$1**"); // Simulate bold text for PDF
-
+    
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             const margin = 10;
             const maxWidth = pageWidth - margin * 2;
             const lineHeight = 7; // Line height for each wrapped line
             let y = 20; // Start y position
-
+    
             let lines = summaryText.split("\n");
-
+    
             lines.forEach(line => {
                 if (line.startsWith("**")) {
                     doc.setFont("helvetica", "bold");
@@ -700,20 +804,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     doc.setFont("helvetica", "normal");
                 }
-
+    
                 let wrappedText = doc.splitTextToSize(line, maxWidth);
-
+    
                 // Check if text will exceed the page height
                 if (y + wrappedText.length * lineHeight > pageHeight - margin) {
                     doc.addPage(); // Add a new page
                     y = margin; // Reset y position for new page
                 }
-
+    
                 doc.text(wrappedText, margin, y);
                 y += wrappedText.length * lineHeight;
             });
             // Save the PDF
             doc.save("summaryReport.pdf");
-        })
+        });
     }
-});
+    });
